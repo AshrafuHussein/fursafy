@@ -70,18 +70,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.registerDetails,
       builder: (context, state) {
-        final role = state.extra as String? ?? 'youth';
-        return RegisterDetailsScreen(role: role);
+        return const RegisterDetailsScreen();
       },
     ),
     GoRoute(
       path: AppRoutes.otp,
       builder: (context, state) {
-        final params = state.extra as Map<String, String>? ?? {};
-        return OtpScreen(
-          phoneNumber: params['phone'] ?? '',
-          verificationId: params['verificationId'] ?? '',
-        );
+        return const OtpScreen();
       },
     ),
     GoRoute(

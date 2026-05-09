@@ -52,10 +52,13 @@ class FursafyTheme {
   // ─── Fixed Colors ───
   static const Color primaryFixed = Color(0xFF86F8C9);
   static const Color primaryFixedDim = Color(0xFF68DBAE);
+  static const Color onPrimaryFixed = Color(0xFF002115);
   static const Color secondaryFixed = Color(0xFFFFDDB7);
   static const Color secondaryFixedDim = Color(0xFFFFB95D);
+  static const Color onSecondaryFixed = Color(0xFF2A1700);
   static const Color tertiaryFixed = Color(0xFFFFDAD6);
   static const Color tertiaryFixedDim = Color(0xFFFFB3AD);
+  static const Color onTertiaryFixed = Color(0xFF410003);
 
   // ─── Typography ───
   static const String headlineFont = 'PlusJakartaSans';

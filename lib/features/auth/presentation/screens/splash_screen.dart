@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../app/router.dart';
-import '../../../../app/theme.dart';
-import '../bloc/auth_bloc.dart';
+import 'package:fursafy/app/router.dart';
+import 'package:fursafy/app/theme.dart';
+import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 
 /// S01 — Splash screen. Checks auth and routes accordingly.
 class SplashScreen extends StatefulWidget {
@@ -17,6 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  late Animation<double> _slideAnimation;
 
   @override
   void initState() {
@@ -27,12 +28,19 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _fadeAnimation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeIn,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
     );
+    _slideAnimation = Tween<double>(begin: 30.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
+
     _controller.forward();
 
     // Navigate after animation
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
       final state = context.read<AuthBloc>().state;
       if (state is AuthAuthenticated) {
@@ -57,49 +65,140 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: FursafyTheme.primary,
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo placeholder
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: const Icon(
-                  Icons.work_rounded,
-                  size: 56,
-                  color: FursafyTheme.primary,
-                ),
+      backgroundColor: FursafyTheme.surface,
+      body: Stack(
+        children: [
+          // Background Decorations
+          Positioned(
+            top: -100,
+            left: -100,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                color: FursafyTheme.primary.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'Fursafy',
-                style: TextStyle(
-                  fontFamily: FursafyTheme.headlineFont,
-                  fontSize: 36,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Fursa kwa Vijana',
-                style: TextStyle(
-                  fontFamily: FursafyTheme.bodyFont,
-                  fontSize: 16,
-                  color: Colors.white.withValues(alpha: 0.8),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            bottom: -150,
+            right: -150,
+            child: Container(
+              width: 500,
+              height: 500,
+              decoration: BoxDecoration(
+                color: FursafyTheme.secondaryContainer.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          // Main Content
+          Center(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Transform.translate(
+                    offset: Offset(0, _slideAnimation.value),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Logo Icon with Gradient
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: 96,
+                              height: 96,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    FursafyTheme.primary,
+                                    FursafyTheme.primaryContainer,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(32),
+                                boxShadow: FursafyTheme.ambientShadow,
+                              ),
+                              child: const Icon(
+                                Icons.trending_up_rounded,
+                                size: 48,
+                                color: FursafyTheme.onPrimary,
+                              ),
+                            ),
+                            // Accent Dot
+                            Positioned(
+                              top: -8,
+                              right: -8,
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: FursafyTheme.secondaryContainer,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: FursafyTheme.surface,
+                                    width: 4,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
+                        // Brand Name
+                        Text(
+                          'Fursafy',
+                          style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                color: FursafyTheme.primary,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1.0,
+                              ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Tagline
+                        Text(
+                          'Your opportunity,\none tap away',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: FursafyTheme.onSurfaceVariant,
+                                height: 1.4,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          // Loading Bar at Bottom
+          Positioned(
+            bottom: 48,
+            left: 48,
+            right: 48,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 4,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: const LinearProgressIndicator(
+                      backgroundColor: FursafyTheme.surfaceContainerHigh,
+                      valueColor: AlwaysStoppedAnimation<Color>(FursafyTheme.primary),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/app/app.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:fursafy/features/auth/presentation/bloc/register_bloc.dart';
 import 'package:fursafy/features/auth/data/repositories/auth_repository_impl.dart';
 
 void main() async {
@@ -26,7 +27,12 @@ void main() async {
   );
 
   // Initialize Firebase
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+    // For UI preview purposes, we allow the app to continue even if Firebase isn't set up yet.
+  }
 
   runApp(
     MultiBlocProvider(
@@ -35,6 +41,11 @@ void main() async {
           create: (context) => AuthBloc(
             authRepository: AuthRepositoryImpl(),
           )..add(AuthCheckRequested()),
+        ),
+        BlocProvider<RegisterBloc>(
+          create: (context) => RegisterBloc(
+            authRepository: AuthRepositoryImpl(),
+          ),
         ),
         // Additional BLoCs will be added as features are implemented
       ],

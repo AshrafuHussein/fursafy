@@ -8,21 +8,37 @@ import 'package:fursafy/features/auth/domain/repositories/auth_repository.dart';
 
 /// Firebase implementation of [AuthRepository].
 class AuthRepositoryImpl implements AuthRepository {
-  final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore;
+  final FirebaseAuth? _injectedFirebaseAuth;
+  final FirebaseFirestore? _injectedFirestore;
 
   AuthRepositoryImpl({
     FirebaseAuth? firebaseAuth,
     FirebaseFirestore? firestore,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  })  : _injectedFirebaseAuth = firebaseAuth,
+        _injectedFirestore = firestore;
+
+  FirebaseAuth get _firebaseAuth {
+    try {
+      return _injectedFirebaseAuth ?? FirebaseAuth.instance;
+    } catch (_) {
+      throw Exception('Firebase is not initialized. Please configure Firebase.');
+    }
+  }
+
+  FirebaseFirestore get _firestore {
+    try {
+      return _injectedFirestore ?? FirebaseFirestore.instance;
+    } catch (_) {
+      throw Exception('Firebase is not initialized.');
+    }
+  }
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    final firebaseUser = _firebaseAuth.currentUser;
-    if (firebaseUser == null) return null;
-
     try {
+      final firebaseUser = _firebaseAuth.currentUser;
+      if (firebaseUser == null) return null;
+
       final doc = await _firestore
           .collection(FirestorePaths.users)
           .doc(firebaseUser.uid)
@@ -36,20 +52,25 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<UserEntity?> get authStateChanges {
-    return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
-      if (firebaseUser == null) return null;
-      try {
-        final doc = await _firestore
-            .collection(FirestorePaths.users)
-            .doc(firebaseUser.uid)
-            .get();
-        if (!doc.exists) return null;
-        return UserEntity.fromMap(doc.data()!);
-      } catch (_) {
-        return null;
-      }
-    });
+    try {
+      return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
+        if (firebaseUser == null) return null;
+        try {
+          final doc = await _firestore
+              .collection(FirestorePaths.users)
+              .doc(firebaseUser.uid)
+              .get();
+          if (!doc.exists) return null;
+          return UserEntity.fromMap(doc.data()!);
+        } catch (_) {
+          return null;
+        }
+      });
+    } catch (_) {
+      return Stream.value(null);
+    }
   }
+
 
   @override
   Future<({UserEntity user, Failure? failure})> signInWithEmail({
