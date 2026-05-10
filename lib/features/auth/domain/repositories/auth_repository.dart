@@ -25,7 +25,9 @@ abstract class AuthRepository {
   });
 
   /// Send phone OTP.
-  Future<Failure?> sendPhoneOtp({required String phoneNumber});
+  Future<({Failure? failure, String? verificationId})> sendPhoneOtp({
+    required String phoneNumber,
+  });
 
   /// Verify phone OTP.
   Future<Failure?> verifyPhoneOtp({

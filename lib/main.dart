@@ -6,6 +6,10 @@ import 'package:fursafy/app/app.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fursafy/features/auth/presentation/bloc/register_bloc.dart';
 import 'package:fursafy/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:fursafy/features/jobs/data/repositories/job_repository_impl.dart';
+import 'package:fursafy/features/jobs/presentation/bloc/job_feed_bloc.dart';
+import 'package:fursafy/features/jobs/presentation/bloc/job_feed_event.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,12 +31,9 @@ void main() async {
   );
 
   // Initialize Firebase
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase initialization failed: $e');
-    // For UI preview purposes, we allow the app to continue even if Firebase isn't set up yet.
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(
     MultiBlocProvider(
@@ -46,6 +47,11 @@ void main() async {
           create: (context) => RegisterBloc(
             authRepository: AuthRepositoryImpl(),
           ),
+        ),
+        BlocProvider<JobFeedBloc>(
+          create: (context) => JobFeedBloc(
+            jobRepository: JobRepositoryImpl(),
+          )..add(const JobFeedLoadRequested()),
         ),
         // Additional BLoCs will be added as features are implemented
       ],

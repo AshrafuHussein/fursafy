@@ -64,6 +64,10 @@ class FursafyTheme {
   static const String headlineFont = 'PlusJakartaSans';
   static const String bodyFont = 'Manrope';
 
+  static TextStyle get headlineStyle => const TextStyle(fontFamily: headlineFont);
+  static TextStyle get bodyStyle => const TextStyle(fontFamily: bodyFont);
+  static TextStyle get labelStyle => const TextStyle(fontFamily: bodyFont);
+
   // ─── Spacing Scale ───
   static const double spacing2 = 2.0;
   static const double spacing4 = 4.0;

@@ -87,7 +87,7 @@ class _SkillPickerScreenState extends State<SkillPickerScreen> {
                         hintStyle: TextStyle(
                           color: FursafyTheme.onSurfaceVariant.withValues(alpha: 0.6),
                         ),
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.search,
                           color: FursafyTheme.onSurfaceVariant,
                         ),
