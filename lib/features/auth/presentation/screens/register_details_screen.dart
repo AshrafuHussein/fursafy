@@ -250,7 +250,7 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
                             });
                           },
                           activeColor: FursafyTheme.primary,
-                          side: BorderSide(
+                          side: const BorderSide(
                             color: FursafyTheme.surfaceContainerHighest,
                             width: 2,
                           ),
@@ -268,23 +268,23 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
                                   color: FursafyTheme.onSurfaceVariant,
                                   height: 1.5,
                                 ),
-                            children: [
+                            children: const [
                               TextSpan(
                                 text: 'Terms of Service',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: FursafyTheme.primary,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              const TextSpan(text: ' and acknowledge the '),
+                              TextSpan(text: ' and acknowledge the '),
                               TextSpan(
                                 text: 'Privacy Policy',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: FursafyTheme.primary,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              const TextSpan(text: '.'),
+                              TextSpan(text: '.'),
                             ],
                           ),
                         ),

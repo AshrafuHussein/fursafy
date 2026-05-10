@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "621661779995",
+    "project_id": "fursafy",
+    "storage_bucket": "fursafy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621661779995:android:18ba11d80722b4baca20be",
+        "android_client_info": {
+          "package_name": "com.example.fursafy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuniO9bbwfF-R73mHXGOZ2FYnni1FP4Sg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

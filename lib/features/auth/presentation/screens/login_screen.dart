@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
+import '../bloc/auth_bloc.dart';
 
 /// S03 — Login screen matching Stitch "Login" UI.
 class LoginScreen extends StatefulWidget {
@@ -12,13 +14,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -93,9 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 40),
 
-                    // Phone Input
+                    // Email Input
                     Text(
-                      'PHONE NUMBER',
+                      'EMAIL ADDRESS',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: FursafyTheme.onSurfaceVariant,
@@ -103,19 +105,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     TextField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(
                         fontFamily: FursafyTheme.bodyFont,
                         fontWeight: FontWeight.w600,
                         color: FursafyTheme.onSurface,
                       ),
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.call_outlined,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
                           color: FursafyTheme.onSurfaceVariant,
                         ),
-                        hintText: '+255 --- --- ---',
+                        hintText: 'user@example.com',
                         hintStyle: TextStyle(
                           fontWeight: FontWeight.w400,
                           color: FursafyTheme.outline,
@@ -175,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         hintText: '••••••••',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontWeight: FontWeight.w400,
                           color: FursafyTheme.outline,
                         ),
@@ -184,24 +186,59 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 40),
 
                     // Sign In Button
-                    ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implement login logic
-                        context.go(AppRoutes.home);
+                    BlocConsumer<AuthBloc, AuthState>(
+                      listener: (context, state) {
+                        if (state is AuthAuthenticated) {
+                          if (state.user.role.name == 'provider') {
+                            context.go(AppRoutes.providerDashboard);
+                          } else {
+                            context.go(AppRoutes.home);
+                          }
+                        } else if (state is AuthError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shadowColor: FursafyTheme.primary.withValues(alpha: 0.1),
-                        elevation: 4,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text('Sign In'),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward_rounded, size: 20),
-                        ],
-                      ),
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: state is AuthLoading
+                              ? null
+                              : () {
+                                  final email = _emailController.text.trim();
+                                  final pass = _passwordController.text;
+                                  if (email.isNotEmpty && pass.isNotEmpty) {
+                                    context.read<AuthBloc>().add(
+                                      AuthSignInRequested(
+                                        email: email,
+                                        password: pass,
+                                      ),
+                                    );
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            shadowColor: FursafyTheme.primary.withValues(alpha: 0.1),
+                            elevation: 4,
+                          ),
+                          child: state is AuthLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ))
+                              : const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Sign In'),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.arrow_forward_rounded, size: 20),
+                                  ],
+                                ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 48),
 

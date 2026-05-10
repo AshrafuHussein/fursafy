@@ -57,17 +57,16 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     }
 
     // Send OTP
-    final failure = await _authRepository.sendPhoneOtp(phoneNumber: event.phone);
-    if (failure != null) {
+    final resultPhone = await _authRepository.sendPhoneOtp(phoneNumber: event.phone);
+    if (resultPhone.failure != null) {
       emit(state.copyWith(
         status: RegisterStatus.failure,
-        errorMessage: failure.message,
+        errorMessage: resultPhone.failure!.message,
       ));
     } else {
       emit(state.copyWith(
         status: RegisterStatus.otpSent,
-        // In a real app we'd get a verificationId here, hardcoding for now
-        verificationId: 'dummy-verification-id',
+        verificationId: resultPhone.verificationId,
       ));
     }
   }

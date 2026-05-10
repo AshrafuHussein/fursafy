@@ -19,7 +19,10 @@ import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/my_jobs_screen.dart';
 import '../features/profile/presentation/screens/provider_dashboard_screen.dart';
+import '../features/profile/presentation/screens/provider_profile_screen.dart';
 import '../features/ratings/presentation/screens/rating_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../features/auth/presentation/bloc/auth_bloc.dart';
 
 /// App route names.
 class AppRoutes {
@@ -114,7 +117,18 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.profile,
-      builder: (context, state) => const ProfileScreen(),
+      builder: (context, state) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            if (authState is AuthAuthenticated) {
+              if (authState.user.role.name == 'provider') {
+                return const ProviderProfileScreen();
+              }
+            }
+            return const ProfileScreen();
+          },
+        );
+      },
     ),
     GoRoute(
       path: AppRoutes.editProfile,

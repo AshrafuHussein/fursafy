@@ -17,21 +17,8 @@ class AuthRepositoryImpl implements AuthRepository {
   })  : _injectedFirebaseAuth = firebaseAuth,
         _injectedFirestore = firestore;
 
-  FirebaseAuth get _firebaseAuth {
-    try {
-      return _injectedFirebaseAuth ?? FirebaseAuth.instance;
-    } catch (_) {
-      throw Exception('Firebase is not initialized. Please configure Firebase.');
-    }
-  }
-
-  FirebaseFirestore get _firestore {
-    try {
-      return _injectedFirestore ?? FirebaseFirestore.instance;
-    } catch (_) {
-      throw Exception('Firebase is not initialized.');
-    }
-  }
+  FirebaseAuth get _firebaseAuth => _injectedFirebaseAuth ?? FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => _injectedFirestore ?? FirebaseFirestore.instance;
 
   @override
   Future<UserEntity?> getCurrentUser() async {
@@ -182,10 +169,50 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Failure?> sendPhoneOtp({required String phoneNumber}) async {
-    // Phone auth will be implemented with verifyPhoneNumber
-    // For now, return null (success placeholder)
-    return null;
+  Future<({Failure? failure, String? verificationId})> sendPhoneOtp({
+    required String phoneNumber,
+  }) async {
+    final completer = Completer<({Failure? failure, String? verificationId})>();
+
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-verification succeeded
+          // This typically happens on Android when SMS is auto-retrieved.
+          // We can link it here if needed, but for our flow, the bloc will wait for codeSent
+          // We just let codeSent handle the flow.
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (!completer.isCompleted) {
+            completer.complete((
+              failure: AuthFailure.fromFirebaseCode(e.code),
+              verificationId: null
+            ));
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          if (!completer.isCompleted) {
+            completer.complete((
+              failure: null,
+              verificationId: verificationId
+            ));
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          if (!completer.isCompleted) {
+            completer.complete((
+              failure: const ServerFailure(message: 'Timeout retrieving OTP'),
+              verificationId: verificationId
+            ));
+          }
+        },
+      );
+      
+      return await completer.future;
+    } catch (e) {
+      return (failure: ServerFailure(message: e.toString()), verificationId: null);
+    }
   }
 
   @override
