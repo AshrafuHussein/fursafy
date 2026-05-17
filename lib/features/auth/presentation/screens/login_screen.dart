@@ -14,13 +14,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -95,9 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 40),
 
-                    // Email Input
+                    // Phone Input
                     Text(
-                      'EMAIL ADDRESS',
+                      'PHONE NUMBER',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: FursafyTheme.onSurfaceVariant,
@@ -105,8 +105,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
                       style: const TextStyle(
                         fontFamily: FursafyTheme.bodyFont,
                         fontWeight: FontWeight.w600,
@@ -114,10 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
-                          Icons.email_outlined,
+                          Icons.phone_outlined,
                           color: FursafyTheme.onSurfaceVariant,
                         ),
-                        hintText: 'user@example.com',
+                        hintText: '+255 000 000 000',
                         hintStyle: TextStyle(
                           fontWeight: FontWeight.w400,
                           color: FursafyTheme.outline,
@@ -205,12 +205,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: state is AuthLoading
                               ? null
                               : () {
-                                  final email = _emailController.text.trim();
+                                  final input = _phoneController.text.trim();
                                   final pass = _passwordController.text;
-                                  if (email.isNotEmpty && pass.isNotEmpty) {
+                                  if (input.isNotEmpty && pass.isNotEmpty) {
+                                    final loginEmail = input.contains('@') ? input : '$input@fursafy.temp';
                                     context.read<AuthBloc>().add(
                                       AuthSignInRequested(
-                                        email: email,
+                                        email: loginEmail,
                                         password: pass,
                                       ),
                                     );
