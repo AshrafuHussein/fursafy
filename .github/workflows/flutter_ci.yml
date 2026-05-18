@@ -1,0 +1,47 @@
+# ===================================================================
+# Fursafy — Flutter CI Pipeline
+# ===================================================================
+# Triggers on push and pull request to the main branch.
+# Runs static analysis and tests with API keys from GitHub Secrets.
+# ===================================================================
+
+name: Flutter CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Flutter SDK ───────────────────────────────────────────────
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: 'stable'
+          cache: true
+
+      # ── Dependencies ──────────────────────────────────────────────
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── Static Analysis ───────────────────────────────────────────
+      - name: Run flutter analyze
+        run: flutter analyze --no-fatal-infos
+
+      # ── Tests ─────────────────────────────────────────────────────
+      - name: Run flutter test
+        run: |
+          flutter test \
+            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
+            --dart-define=FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
