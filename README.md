@@ -8,7 +8,7 @@ A mobile job-matching platform connecting Tanzanian youth (18–35) to short-ter
 
 ## 📱 Screenshots
 
-> *Coming soon — UI screens are designed in [Stitch (Antigravity)](https://stitch.withgoogle.com/) and are being translated to Flutter.*
+> *Coming soon*
 
 ---
 
