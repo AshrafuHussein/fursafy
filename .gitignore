@@ -1,37 +1,108 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# ===================================================================
+# Fursafy — .gitignore
+# Flutter + Firebase project
+# ===================================================================
 
-# IntelliJ related
+# ======================== SECRETS & CREDENTIALS ========================
+# Firebase configuration files (contain API keys)
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
+**/ios/firebase_app_id_file.json
+
+# Environment variables (contain real API keys)
+.env
+.env.local
+.env.production
+.env.staging
+
+# Android keystore files (signing keys)
+*.jks
+*.keystore
+key.properties
+
+# Firebase service account keys
+*-firebase-adminsdk-*.json
+service-account-key.json
+
+# ======================== FLUTTER / DART ========================
+# Build outputs
+/build/
+**/build/
+
+# Dart tool internals
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Pub cache
+.pub-cache/
+.pub/
+pubspec.lock  # Uncomment if you want to track lock file; left ignored for flexibility
+
+# Generated code
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.config.dart
+# Keep firebase_options.dart tracked if needed
+# !lib/firebase_options.dart
+
+# Generated l10n
+.dart_tool/flutter_gen/
+
+# Doc generation
+**/doc/api/
+
+# Coverage
+/coverage/
+
+# iOS build artifacts
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+**/ios/.symlinks/
+
+# ======================== ANDROID ========================
+# Gradle
+.gradle/
+local.properties
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio build artifacts
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# ======================== IDE / EDITOR ========================
+# IntelliJ / Android Studio
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# VS Code
+.vscode/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
+# macOS
+.DS_Store
+**/.DS_Store
+
+# ======================== MISCELLANEOUS ========================
+*.class
+*.log
+*.pyc
+*.swp
+*.swo
+*~
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
 # Symbolication related
 app.*.symbols
@@ -39,15 +110,16 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Firebase Cloud Functions (Node.js)
+functions/node_modules/
+functions/lib/
 
-# Ignore HTML files in the repository root and all PDF files
+# HTML mockups and PDF documents in project root
 /*.html
 *.pdf
 
-# reference documents and UI designs
-
-
+# ======================== FIREBASE EMULATOR ========================
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
