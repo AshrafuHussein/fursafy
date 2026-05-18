@@ -23,7 +23,8 @@ The project supervisor, **Eng. Abdul Kirobo**, has **read-only access** to the r
 
 If you have questions about this project for academic or research purposes, you may reach the author at:
 
-- **Name:** Ashrafu Hussein Hashimu
+- **Name:** Ashrafu Hussein Hashimu 
+- **Email** ashrafuhussien@gmail.com 
 - **Institution:** Arusha Technical College (ATC), Tanzania
 - **Program:** Ordinary Diploma in Computer Science (2025/2026)
 
