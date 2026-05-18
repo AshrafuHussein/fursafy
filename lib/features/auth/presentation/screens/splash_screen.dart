@@ -124,10 +124,14 @@ class _SplashScreenState extends State<SplashScreen>
                                 borderRadius: BorderRadius.circular(32),
                                 boxShadow: FursafyTheme.ambientShadow,
                               ),
-                              child: const Icon(
-                                Icons.trending_up_rounded,
-                                size: 48,
-                                color: FursafyTheme.onPrimary,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(32),
+                                child: Image.asset(
+                                  'assets/icons/icon.png',
+                                  width: 96,
+                                  height: 96,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                             // Accent Dot
@@ -150,21 +154,14 @@ class _SplashScreenState extends State<SplashScreen>
                           ],
                         ),
                         const SizedBox(height: 40),
-                        // Brand Name
-                        Text(
-                          'Fursafy',
-                          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                                color: FursafyTheme.primary,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -1.0,
-                              ),
-                        ),
+
                         const SizedBox(height: 16),
                         // Tagline
                         Text(
                           'Your opportunity,\none tap away',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
                                 color: FursafyTheme.onSurfaceVariant,
                                 height: 1.4,
                               ),
@@ -191,7 +188,9 @@ class _SplashScreenState extends State<SplashScreen>
                     borderRadius: BorderRadius.circular(4),
                     child: const LinearProgressIndicator(
                       backgroundColor: FursafyTheme.surfaceContainerHigh,
-                      valueColor: AlwaysStoppedAnimation<Color>(FursafyTheme.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        FursafyTheme.primary,
+                      ),
                     ),
                   ),
                 ),
