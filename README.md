@@ -123,7 +123,6 @@ Each feature follows **Clean Architecture** with three layers:
 | Frontend | **Flutter** (Dart) | Cross-platform mobile (Android + iOS) |
 | State Management | **BLoC** (`flutter_bloc`) | Predictable state management |
 | Navigation | **GoRouter** | Declarative routing with deep linking |
-| UI Design | **Stitch MCP** (Antigravity) | AI-generated production-ready UI |
 | Auth | **Firebase Auth** | Email/password + phone authentication |
 | Database | **Cloud Firestore** | Real-time NoSQL database |
 | Storage | **Firebase Storage** | Profile images and attachments |
@@ -270,7 +269,7 @@ The core intelligence of Fursafy — a Firebase Cloud Function that triggers on 
 
 ## 👤 Author
 
-**Ashtek** — Ordinary Diploma in Computer Science, Arusha Technical College (2025/2026)
+**Ashrafu Hussein** — Ordinary Diploma in Computer Science, Arusha Technical College (2025/2026)
 
 ---
 
@@ -284,6 +283,5 @@ This project is developed as an academic project for Arusha Technical College.
 
 - [Flutter](https://flutter.dev/) — Cross-platform framework
 - [Firebase](https://firebase.google.com/) — Backend-as-a-Service
-- [Stitch (Antigravity)](https://stitch.withgoogle.com/) — AI UI generation
 - [BLoC](https://bloclibrary.dev/) — State management
 - International Labour Organization (ILO) — Youth employment data
