@@ -10,6 +10,7 @@ import 'package:fursafy/features/jobs/data/repositories/job_repository_impl.dart
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_bloc.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_event.dart';
 import 'firebase_options.dart';
+import 'package:fursafy/core/config/env_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,10 +31,21 @@ void main() async {
     ),
   );
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Validate environment configuration before initializing Firebase
+  final missing = EnvConfig.missingVariables;
+  if (missing.isNotEmpty) {
+    debugPrint('Missing env variables: ${missing.join(', ')}');
+    debugPrint('Pass them with --dart-define or use --dart-define-from-file');
+  }
+
+  // Initialize Firebase with error handling
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+  }
 
   runApp(
     MultiBlocProvider(
