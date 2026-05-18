@@ -43,3 +43,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Ignore HTML files in the repository root and all PDF files
+/*.html
+*.pdf
+
+# reference documents and UI designs
+
+
