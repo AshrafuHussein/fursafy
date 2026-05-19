@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#faf9f4",
+                      "surface-container-high": "#e9e8e3",
+                      "secondary-fixed": "#ffddb7",
+                      "tertiary-fixed": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "inverse-surface": "#2f312d",
+                      "surface-bright": "#faf9f4",
+                      "surface-tint": "#006c4e",
+                      "outline-variant": "#bccac1",
+                      "surface-container-highest": "#e3e3dd",
+                      "surface-dim": "#dbdad5",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed-variant": "#00513a",
+                      "error": "#ba1a1a",
+                      "tertiary": "#993f3a",
+                      "primary-fixed-dim": "#68dbae",
+                      "surface-container": "#efeee9",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#fffbff",
+                      "tertiary-container": "#b85751",
+                      "on-error": "#ffffff",
+                      "primary-container": "#008560",
+                      "primary": "#00694c",
+                      "secondary-container": "#fcaa33",
+                      "inverse-primary": "#68dbae",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#86f8c9",
+                      "surface-container-low": "#f4f4ee",
+                      "surface-variant": "#e3e3dd",
+                      "error-container": "#ffdad6",
+                      "background": "#faf9f4",
+                      "on-background": "#1a1c19",
+                      "secondary": "#855400",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#7e2a27",
+                      "tertiary-fixed-dim": "#ffb3ad",
+                      "on-tertiary-fixed": "#410003",
+                      "on-primary-fixed": "#002115",
+                      "on-secondary-container": "#6b4200",
+                      "outline": "#6d7a73",
+                      "secondary-fixed-dim": "#ffb95d",
+                      "on-surface": "#1a1c19",
+                      "on-surface-variant": "#3d4943",
+                      "inverse-on-surface": "#f1f1eb",
+                      "on-primary-container": "#f5fff7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": ["Plus Jakarta Sans"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full no-border shadow-none bg-surface-container-low">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest flex items-center justify-center">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional portrait of a young Tanzanian man with a warm smile in a sunlit office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXTdz6TOT_aeBAkQ0KpklVjjzkEDfVQLjs_rBiEZMoYFxWXu7EPLJO063r5c3ZRuhHRtIB0cggIG_J1IUzuqMtgF-x0GWsZd1wulmXgLmI3Sc78w6rEhHRMQoewar8CxXVzA29I0E0jRIDQZ9g5G4ifn7OMpea4TECc4ZWWGQXb3EenEQZTLHISgKKEM2sEO3h7BQC-1yK-QE5yEowiwvdqQTgLQLIdVf4ZKOp62JRUjdN_WtvEQobIFVgbPX5FLgGaavXspnmMffb"/>
+</div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-lg uppercase">Fursafy</h1>
+</div>
+<button class="text-[#00694c] dark:text-[#008560] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 active:scale-95 transition-transform p-2 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<main class="max-w-xl mx-auto px-6 py-8">
+<!-- Editorial Header -->
+<div class="mb-10 mt-4">
+<h2 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight mb-2">Daily Curation</h2>
+<p class="text-on-surface-variant font-medium">Your personalized updates and career milestones.</p>
+</div>
+<!-- Notification List -->
+<div class="space-y-4">
+<!-- Job Match Notification - Editorial Scale Card -->
+<div class="group relative bg-surface-container-lowest rounded-xl p-6 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-[0.98] cursor-pointer">
+<div class="flex items-start gap-4">
+<div class="p-3 bg-primary/10 rounded-xl text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold uppercase tracking-widest text-primary font-label">Career Engine</span>
+<span class="text-[11px] text-on-surface-variant font-medium">2m ago</span>
+</div>
+<h3 class="font-headline font-bold text-lg text-on-surface leading-tight mb-2">New job match near you!</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-4">A Junior Creative Lead role at "Visionary Studios" matches 95% of your skill profile in Dar es Salaam.</p>
+<div class="inline-flex items-center px-4 py-2 bg-primary text-on-primary rounded-full text-sm font-bold transition-transform hover:scale-105">
+                            View Opportunity
+                        </div>
+</div>
+</div>
+</div>
+<!-- Acceptance Notification - Tonal Depth Card -->
+<div class="bg-surface-container-low rounded-xl p-6 transition-all duration-300 hover:bg-surface-container active:scale-[0.98] cursor-pointer">
+<div class="flex items-start gap-4">
+<div class="p-3 bg-secondary-container/20 rounded-xl text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold uppercase tracking-widest text-secondary font-label">Milestone</span>
+<span class="text-[11px] text-on-surface-variant font-medium">1h ago</span>
+</div>
+<h3 class="font-headline font-bold text-lg text-on-surface leading-tight mb-1">Your application was accepted</h3>
+<p class="text-on-surface-variant text-sm">TechFlow Africa has reviewed your portfolio and would like to proceed with an interview.</p>
+</div>
+</div>
+</div>
+<!-- Yesterday Section -->
+<div class="pt-8 pb-4">
+<h4 class="text-[12px] font-black text-outline uppercase tracking-[0.2em]">Yesterday</h4>
+</div>
+<!-- Feedback Notification - Asymmetric Editorial Feel -->
+<div class="flex gap-4">
+<div class="hidden sm:block w-24 flex-shrink-0 pt-6">
+<span class="text-[11px] font-bold text-on-surface-variant block text-right">MAR 24</span>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-xl p-5 border-l-4 border-secondary-container">
+<div class="flex items-start gap-4">
+<div class="p-2 text-on-secondary-container">
+<span class="material-symbols-outlined">rate_review</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-base text-on-surface mb-1">Please rate your experience</h3>
+<p class="text-on-surface-variant text-sm mb-4">How was your interaction with the 'Growth Program' portal last week?</p>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high text-xs font-bold hover:bg-secondary-container/20 transition-colors">Not now</button>
+<button class="px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold shadow-sm">Rate Portal</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Informational/Update - Tonal Shift Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 opacity-80">
+<div class="flex items-start gap-4">
+<div class="p-3 bg-surface-container-highest rounded-xl text-on-surface-variant">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant font-label">System Update</span>
+<span class="text-[11px] text-on-surface-variant font-medium">1d ago</span>
+</div>
+<h3 class="font-headline font-bold text-base text-on-surface">Privacy Policy Refresh</h3>
+<p class="text-on-surface-variant text-sm">We've updated our terms to better protect your professional data.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Asymmetric Decorative Element -->
+<div class="mt-16 p-8 bg-[#00694c] rounded-3xl relative overflow-hidden text-on-primary">
+<div class="relative z-10">
+<h3 class="font-headline font-bold text-xl mb-2">Stay Ahead</h3>
+<p class="text-primary-fixed/80 text-sm max-w-[200px]">Complete your profile to unlock more curated opportunities.</p>
+</div>
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-primary-container rounded-full blur-3xl opacity-50"></div>
+<div class="absolute right-4 top-4 opacity-20">
+<span class="material-symbols-outlined text-[100px]" style="font-variation-settings: 'opsz' 48;">auto_awesome</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-[#faf9f4]/90 dark:bg-neutral-900/90 backdrop-blur-2xl fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-6 rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] no-border bg-surface-container-lowest">
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="home_max">home_max</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="work_outline">work_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Work</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-3xl" data-icon="add_circle">add_circle</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Add</span>
+</a>
+<!-- ACTIVE ITEM: Inbox corresponds to Notifications -->
+<a class="flex flex-col items-center justify-center text-[#00694c] dark:text-[#008560] bg-[#00694c]/10 rounded-xl px-4 py-1 active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="mail" style="font-variation-settings: 'FILL' 1;">mail</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Inbox</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="person_outline">person_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

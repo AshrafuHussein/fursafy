@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fursafy - Job Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar from JSON -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full no-border shadow-none bg-surface-container-low">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-neutral-500 cursor-pointer" data-icon="arrow_back">arrow_back</span>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-lg">Fursafy</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#00694c] dark:text-[#008560]" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a professional young man with a friendly expression and soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNO3Ej_lTcGNR6cPJ05CghnEq9PIdEgWRcIXRemddVUjFfpAtxKeF_WRZxVtTlNQLt6iEu03ltM29KsPr1lhQLd-1wu4bND4IVb_XCig4hCnA6qSo-Snlw0tqBBCK6YxgCFwV_sizwrW631ngS9dSi8UUOT77zLLYP5JI-i-da5tetWB3Q21GblReu5_s1YRlZmT0-hFTN_tqc9kcfMjjkOEX0VWWfoiXJ1amOq1J5NqgwxrcYjQPD_KXw0BwuDBThdXZ1AwDQYxDC"/>
+</div>
+</div>
+</header>
+<main class="max-w-md mx-auto px-6 pt-6 pb-32">
+<!-- Job Details Content (Background Layer) -->
+<div class="space-y-8">
+<div class="relative rounded-xl overflow-hidden aspect-[16/9]">
+<img class="w-full h-full object-cover" data-alt="modern minimalist office workspace with large windows, natural light, and green plants for a professional tech atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAruktzpeeIkDcWLW5-j2WEzowaU6wYKQFJw-aaWZJTVkekKk-OcVgMJ1gErBjiUCbMTqg9G0gNPfbSkTnBR_xmXbEaTY8lesQhzzOBfX5ZlOkpaWOQ2uUI9LKwwD5ZAf1Gq_hTfraN9-p_a4BL-60labQlV5opE7Jeh-xgBFYOgnbkOZwCpm6GoHlRs_jtRietCaXhEnpyW43RAlwCDSPf0ePdU8HeRRx1lIVgAJv-9Tayq8ovb5J5RCGIAGiSnurTq1ykEfx_fTIF"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Remote</span>
+</div>
+</div>
+<div class="space-y-2">
+<h1 class="text-3xl font-extrabold tracking-tight text-on-surface">Senior UX Designer</h1>
+<p class="text-primary font-semibold">Tanzania Tech Solutions • $2,500 - $4,000</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-lg">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="schedule">schedule</span>
+<p class="text-xs text-on-surface-variant font-medium uppercase tracking-tighter">Full Time</p>
+<p class="text-sm font-bold">40 hrs / week</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="location_on">location_on</span>
+<p class="text-xs text-on-surface-variant font-medium uppercase tracking-tighter">Location</p>
+<p class="text-sm font-bold">Dar Es Salaam</p>
+</div>
+</div>
+<div class="space-y-4">
+<h2 class="text-xl font-bold">About the Role</h2>
+<p class="text-on-surface-variant leading-relaxed">
+                    We are looking for a creative visionary to lead our design system evolution. You will be responsible for crafting high-end digital experiences for the next generation of Tanzanian professionals.
+                </p>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="check_circle">check_circle</span>
+<span class="text-on-surface-variant">5+ years of experience in Product Design.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="check_circle">check_circle</span>
+<span class="text-on-surface-variant">Expertise in Material Design 3 and Tailwind CSS.</span>
+</li>
+</ul>
+</div>
+</div>
+</main>
+<!-- Overlay / Backdrop -->
+<div class="fixed inset-0 bg-inverse-surface/40 backdrop-blur-sm z-[60]"></div>
+<!-- Bottom Sheet -->
+<div class="fixed bottom-0 left-0 w-full z-[70] bg-[#faf9f4] dark:bg-neutral-900 rounded-t-[1.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-0 transition-transform duration-500 max-w-2xl mx-auto inset-x-0">
+<!-- Drag Handle -->
+<div class="flex justify-center pt-4 pb-2">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="px-6 pb-10 pt-4 space-y-8">
+<div class="space-y-1">
+<h3 class="text-2xl font-bold tracking-tight text-on-surface">Apply for this role</h3>
+<p class="text-on-surface-variant text-sm">Send a short message to the hiring manager.</p>
+</div>
+<!-- Application Card Summary -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
+<div class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-2xl" data-icon="work">work</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Senior UX Designer</h4>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Tanzania Tech Solutions</p>
+</div>
+</div>
+<!-- Intro Message Text Field -->
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Intro Message</label>
+<div class="relative">
+<textarea class="w-full bg-surface-container-highest border-none rounded-xl p-4 text-on-surface placeholder:text-neutral-400 focus:ring-0 focus:bg-surface-container-low transition-all resize-none" placeholder="Tell them why you're a great fit..." rows="4"></textarea>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-primary transform scale-x-0 transition-transform origin-left"></div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-3">
+<button class="w-full bg-[#1D9E75] hover:bg-[#15805d] text-white font-bold py-4 rounded-full shadow-lg shadow-[#1D9E75]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span>Confirm Application</span>
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+<button class="w-full bg-transparent text-on-surface-variant font-semibold py-3 rounded-full hover:bg-surface-container-high transition-colors">
+                    Cancel
+                </button>
+</div>
+</div>
+</div>
+<!-- Hidden Bottom Nav for Details Screen (Filtered by rule) -->
+</body></html>

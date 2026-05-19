@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fursafy - Splash</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #faf9f4;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #00694c 0%, #008560 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<main class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6">
+<!-- Background Editorial Elements -->
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-32 -right-32 w-[32rem] h-[32rem] bg-secondary-container/10 rounded-full blur-3xl"></div>
+<!-- Image Decoration: Editorial Abstract Shape -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg aspect-square opacity-20 pointer-events-none">
+<div class="w-full h-full rounded-[2rem] rotate-12 border-[1.5px] border-primary/20 scale-110"></div>
+<div class="absolute inset-0 rounded-[3rem] -rotate-6 border-[1px] border-secondary/20 scale-105"></div>
+</div>
+<!-- Branding Section -->
+<div class="relative z-10 flex flex-col items-center text-center">
+<!-- Logo Icon with Gradient & Shadow -->
+<div class="mb-10 relative">
+<div class="w-24 h-24 hero-gradient rounded-[2rem] flex items-center justify-center shadow-xl shadow-primary/20 transform -rotate-3 transition-transform hover:rotate-0">
+<span class="material-symbols-outlined text-on-primary text-5xl" style="font-variation-settings: 'FILL' 1;">
+                        trending_up
+                    </span>
+</div>
+<!-- Subtle Secondary Accent Dot -->
+<div class="absolute -top-2 -right-2 w-6 h-6 bg-secondary-container rounded-full border-4 border-surface shadow-sm"></div>
+</div>
+<!-- Brand Name -->
+<h1 class="font-headline font-black text-6xl tracking-tighter text-primary mb-4">
+                Fursafy
+            </h1>
+<!-- Tagline with Editorial Spacing -->
+<p class="font-body text-on-surface-variant text-lg font-medium tracking-tight max-w-[200px] leading-relaxed">
+                Your opportunity, one tap away
+            </p>
+</div>
+<!-- Background Image Accent (Subtle, professional) -->
+<div class="absolute bottom-12 w-full flex justify-center px-8 opacity-40">
+<div class="w-full max-w-sm h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full w-1/3 bg-primary rounded-full animate-[loading_2s_infinite_ease-in-out]"></div>
+</div>
+</div>
+<!-- Editorial Detail: Hidden context image used as texture -->
+<div class="absolute inset-0 -z-10 overflow-hidden mix-blend-overlay opacity-30">
+<img alt="" class="w-full h-full object-cover grayscale" data-alt="smooth professional gradient flowing from deep forest green to soft mint with subtle film grain texture for editorial depth" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQPtYuCKBpj8OzQrossSYg4H87NBfXIBT7-gMzM14-CS4ylhF40yn1apUZDwVMEAy-nkS2lXKjGyiZETH6I49src5Cxxb31WqknW25chrKDc8-2L21CuGTImr6rcok06I1-6iaKrS0waR72hwiTOUxn0lOfKlyOFVVncunBdbfc14vpGMdkUDsslMau6vZD1RxY5cFa1RwrIphxb2ZkUEnD_dWT2i7QUcmHH60SpIJkyfg-6hxN1Z2a1S2DJYJAPEqG3-bCnDG34c"/>
+</div>
+</main>
+<!-- Custom Animation for Loading (Implicitly clean) -->
+<style>
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+    </style>
+</body></html>

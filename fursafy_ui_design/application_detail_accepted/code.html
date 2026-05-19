@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Application Detail | Fursafy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#faf9f4",
+                      "surface-container-high": "#e9e8e3",
+                      "secondary-fixed": "#ffddb7",
+                      "tertiary-fixed": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "inverse-surface": "#2f312d",
+                      "surface-bright": "#faf9f4",
+                      "surface-tint": "#006c4e",
+                      "outline-variant": "#bccac1",
+                      "surface-container-highest": "#e3e3dd",
+                      "surface-dim": "#dbdad5",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed-variant": "#00513a",
+                      "error": "#ba1a1a",
+                      "tertiary": "#993f3a",
+                      "primary-fixed-dim": "#68dbae",
+                      "surface-container": "#efeee9",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#fffbff",
+                      "tertiary-container": "#b85751",
+                      "on-error": "#ffffff",
+                      "primary-container": "#008560",
+                      "primary": "#00694c",
+                      "secondary-container": "#fcaa33",
+                      "inverse-primary": "#68dbae",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#86f8c9",
+                      "surface-container-low": "#f4f4ee",
+                      "surface-variant": "#e3e3dd",
+                      "error-container": "#ffdad6",
+                      "background": "#faf9f4",
+                      "on-background": "#1a1c19",
+                      "secondary": "#855400",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#7e2a27",
+                      "tertiary-fixed-dim": "#ffb3ad",
+                      "on-tertiary-fixed": "#410003",
+                      "on-primary-fixed": "#002115",
+                      "on-secondary-container": "#6b4200",
+                      "outline": "#6d7a73",
+                      "secondary-fixed-dim": "#ffb95d",
+                      "on-surface": "#1a1c19",
+                      "on-surface-variant": "#3d4943",
+                      "inverse-on-surface": "#f1f1eb",
+                      "on-primary-container": "#f5fff7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Plus Jakarta Sans"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #faf9f4;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Top Navigation Bar (Modified for Sub-page context) -->
+<header class="bg-[#faf9f4]/80 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="font-['Plus_Jakarta_Sans'] font-bold text-lg text-[#00694c]">Application Details</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface" data-icon="share">share</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a smiling young African professional woman in a clean office environment with natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjBx37bPBAe3TM6Mjmj9uzX-0_v7eyAtxLqioMFZd0LWnY_cVWtEeNT7Q_HN9TtJEKJQeSxBC21AKUX47oB9wiDxpnYsO8GqidmowQld_0iM7DBXfcL_5jHofJ92tNKbMn7rDBD9oL-sm7hiY2asC_6UF1jRpZY1Um4gceNc_h-CQ-2GleKY8RL6PwFtAr2sMefqxD18hTBlajHbQXZIIpiDs8P_G_IkBAZ1QFdjWPG-LJNW_Oahk9gcQ1hz3Zks96mMb1428MszUd"/>
+</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-6 pb-24 pt-4 space-y-8">
+<!-- Hero Section: Status & Job Header -->
+<section class="relative">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full w-fit">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label font-bold text-[12px] tracking-widest uppercase text-primary">Accepted</span>
+</div>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface leading-tight">
+                    Sustainable Agri-Tech <br/>Lead Designer
+                </h1>
+<div class="flex items-center gap-3 mt-2">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="Company Logo" class="w-full h-full object-cover" data-alt="Minimalist abstract leaf logo in a geometric shape representing nature and technology integration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8gU1ij76ESdhQC49YSK0to_0UPnMzpxsHPZdIR6QnFFked9buSZ2JcwjFkxpzyHnr0XhQM-6oJzyqJkfkwbirF3olZ3A9CSWiFkeigOjxeupP5ljxRArC3yum2fLFEOVCDfb9wdEJ6XGob_C87GsrilQ-pXGIxMcvYB0JL_F4gFNJJJtyLE8H8iSkvZltQQXGPuTYj-NYd70h8bxpMD-m_q0JTVaGV96pgnO3naMqqPry38TL7oibi0qw3C1HdOpYxpaCLMHZ4jhY"/>
+</div>
+<div>
+<p class="font-headline font-bold text-lg leading-none">GreenRoots Tanzania</p>
+<p class="text-on-surface-variant text-sm mt-1">Arusha, Tanzania • Full-time</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Info Stats -->
+<section class="grid grid-cols-2 gap-4">
+<div class="p-6 bg-surface-container-low rounded-xl flex flex-col gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="payments">payments</span>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Estimated Salary</p>
+<p class="font-headline font-bold text-xl text-on-surface">TZS 1.2M - 1.8M</p>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="event_available">event_available</span>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Starting Date</p>
+<p class="font-headline font-bold text-xl text-on-surface">Oct 15, 2023</p>
+</div>
+</section>
+<!-- Provider Contact Card (Glassmorphism & Tonal Depth) -->
+<section class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_24px_rgba(0,105,76,0.05)] border border-white/50">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h2 class="text-xl font-bold font-headline mb-1">Point of Contact</h2>
+<p class="text-on-surface-variant text-sm">Your assigned coordinator for onboarding.</p>
+</div>
+<div class="bg-secondary-fixed px-3 py-1 rounded-full text-[11px] font-black uppercase text-on-secondary-fixed">Verified</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl mb-6">
+<div class="relative">
+<img alt="Provider" class="w-14 h-14 rounded-full object-cover" data-alt="Professional headshot of a mature African man in a business suit with a friendly expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA57QrgKif_12ZsFBIoBGYsqaPoio4VzrpTaYm74luILIgJ_5z1xNQMUjRcQPA-S2Swp3DsPWo6hNlch966bMe4GgxWWb714aAY6QYEEn06cfOLD4wrjS1EjZSq74DVuuJVmx4ROITTrPQEqNfeJSvFwazAfOoklDIZXy3UiKdrf_tz9diaIWLN0A0dj1EKOXyz_mNUlrrM7nCtAr7NF0ND2-d5qeNAS4F98oOrHfcf_f4YSSyhKWeU9D9Lly7d89iCCI58uS3jLWpo"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-primary border-2 border-surface rounded-full"></div>
+</div>
+<div class="flex-1">
+<p class="font-headline font-bold text-on-surface">Baraka Machumu</p>
+<p class="text-sm text-on-surface-variant">Operations Lead</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 bg-primary text-on-primary py-3 px-6 rounded-full font-bold active:scale-95 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]" data-icon="chat">chat</span>
+                    Message
+                </button>
+<button class="flex items-center justify-center gap-2 bg-surface-container-high text-on-surface py-3 px-6 rounded-full font-bold active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="call">call</span>
+                    Call
+                </button>
+</div>
+</section>
+<!-- Map & Directions Section -->
+<section class="space-y-4">
+<div class="flex justify-between items-center">
+<h2 class="text-xl font-bold font-headline">Location &amp; Office</h2>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                    Full Map <span class="material-symbols-outlined text-[16px]" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+<div class="relative w-full h-48 rounded-xl overflow-hidden bg-surface-container-highest group">
+<img alt="Map location" class="w-full h-full object-cover grayscale opacity-80" data-alt="Stylized topographic map with vibrant green highlights and professional aesthetic" data-location="Arusha" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcOphAbOCDauBa3erj3-fXuSybsj0Pu7CJovpscNNclpgqAhOweKYVU0TIYdkV_tQYjiZL74i2HnwPH4coIaZT-tL9lHXzfLiY9EU5tUDr8ty5DClZjZjEy8gow83KY-eoHiAtFBoeN0Dei53ycT_t-NNDgRwapL-Yj9MW4QdGG5EkaIaJaOr36Sj-80XtymrZ8quT_DlawkGyXsgfH733NwT9vVB6p7O9vw_-IxDSwKK7wA_daEI9g85VywnGtsNC0AgN5XTAlUmV"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<div class="bg-primary p-3 rounded-full shadow-xl animate-pulse">
+<span class="material-symbols-outlined text-white" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+<div class="bg-white/90 backdrop-blur-md p-3 rounded-lg max-w-[70%]">
+<p class="text-xs font-bold text-primary uppercase tracking-tighter">GreenRoots Hub</p>
+<p class="text-xs text-neutral-600 truncate">Plot 45, Nyerere Road, Arusha</p>
+</div>
+<button class="bg-primary text-white p-3 rounded-xl shadow-lg flex items-center gap-2 font-bold text-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="directions">directions</span>
+                        View Directions
+                    </button>
+</div>
+</div>
+</section>
+<!-- Next Steps Checklist -->
+<section class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+<h2 class="text-lg font-bold font-headline mb-4">Your Next Steps</h2>
+<div class="space-y-4">
+<div class="flex gap-4 items-start">
+<div class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center mt-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="check" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<div>
+<p class="font-bold text-sm">Review Offer Letter</p>
+<p class="text-xs text-on-surface-variant">The document was sent to your email yesterday.</p>
+</div>
+</div>
+<div class="flex gap-4 items-start opacity-60">
+<div class="w-6 h-6 rounded-full border-2 border-neutral-300 flex items-center justify-center mt-1"></div>
+<div>
+<p class="font-bold text-sm">Background Check Verification</p>
+<p class="text-xs text-on-surface-variant">Upload your national ID via the portal.</p>
+</div>
+</div>
+<div class="flex gap-4 items-start opacity-60">
+<div class="w-6 h-6 rounded-full border-2 border-neutral-300 flex items-center justify-center mt-1"></div>
+<div>
+<p class="font-bold text-sm">Equipment Setup</p>
+<p class="text-xs text-on-surface-variant">Coordinate with Baraka for laptop pickup.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Suppressed on Detail Screen as per UX guidelines, but added if needed by platform shell) -->
+<!-- The "Shell Visibility" rule says suppress if sub-page features a "Back" action. We have a back action above. -->
+<!-- Optional Floating Bottom Action (Actionable Detail) -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-gradient-to-t from-surface via-surface to-transparent md:hidden">
+<button class="w-full bg-primary py-4 rounded-full text-on-primary font-headline font-bold text-lg shadow-xl shadow-primary/20 active:scale-[0.98] transition-all">
+            Confirm Arrival for Onboarding
+        </button>
+</div>
+</body></html>

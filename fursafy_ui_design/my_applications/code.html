@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Applications - Fursafy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#faf9f4",
+                      "surface-container-high": "#e9e8e3",
+                      "secondary-fixed": "#ffddb7",
+                      "tertiary-fixed": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "inverse-surface": "#2f312d",
+                      "surface-bright": "#faf9f4",
+                      "surface-tint": "#006c4e",
+                      "outline-variant": "#bccac1",
+                      "surface-container-highest": "#e3e3dd",
+                      "surface-dim": "#dbdad5",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed-variant": "#00513a",
+                      "error": "#ba1a1a",
+                      "tertiary": "#993f3a",
+                      "primary-fixed-dim": "#68dbae",
+                      "surface-container": "#efeee9",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#fffbff",
+                      "tertiary-container": "#b85751",
+                      "on-error": "#ffffff",
+                      "primary-container": "#008560",
+                      "primary": "#00694c",
+                      "secondary-container": "#fcaa33",
+                      "inverse-primary": "#68dbae",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#86f8c9",
+                      "surface-container-low": "#f4f4ee",
+                      "surface-variant": "#e3e3dd",
+                      "error-container": "#ffdad6",
+                      "background": "#faf9f4",
+                      "on-background": "#1a1c19",
+                      "secondary": "#855400",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#7e2a27",
+                      "tertiary-fixed-dim": "#ffb3ad",
+                      "on-tertiary-fixed": "#410003",
+                      "on-primary-fixed": "#002115",
+                      "on-secondary-container": "#6b4200",
+                      "outline": "#6d7a73",
+                      "secondary-fixed-dim": "#ffb95d",
+                      "on-surface": "#1a1c19",
+                      "on-surface-variant": "#3d4943",
+                      "inverse-on-surface": "#f1f1eb",
+                      "on-primary-container": "#f5fff7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Plus Jakarta Sans"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #faf9f4;
+        }
+        .editorial-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-50 no-border shadow-none bg-surface-container-low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a smiling young Tanzanian woman with braided hair against a soft natural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBziSFSmssA9xwRcTfey8-Gq-FFiWnEz-Ojkh1-sb3k5yTFBlLmsRoWMrcd3FM1d1EnlOIML5oRf6zQm7OEIBn8TXFhVrhE5SvonwN8T-I9ML9kTgO2AuAy9dqp0vMjhJ4SLwyJCAf6NEy6du5QgKhf00UEsjxmNtKXTp5T3CrqeNipY9TRZszLd4FIHUKJcPFj1Fw5wzfvDsx7SAnu2qccd670Hqg4B_5uDl4fAgLlP8zXZ3siqCMRjE4ZMbGYLU7vaFp6BBTpSa_X"/>
+</div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-lg">Fursafy</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[#00694c]">notifications</span>
+</button>
+</header>
+<main class="px-6 pt-8 max-w-2xl mx-auto">
+<!-- Editorial Header -->
+<div class="mb-10">
+<span class="font-label text-secondary font-bold tracking-widest text-[10px] uppercase mb-2 block">Track your growth</span>
+<h2 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight leading-tight">My Applications</h2>
+</div>
+<!-- Sticky Tabs -->
+<div class="sticky top-20 z-40 bg-surface/90 backdrop-blur-md -mx-6 px-6 py-4 mb-6">
+<div class="flex p-1 bg-surface-container-high rounded-full gap-1">
+<button class="flex-1 py-2.5 rounded-full text-sm font-bold transition-all bg-surface-container-lowest text-primary editorial-shadow">Pending</button>
+<button class="flex-1 py-2.5 rounded-full text-sm font-semibold text-on-surface-variant hover:bg-surface-container-highest transition-all">Accepted</button>
+<button class="flex-1 py-2.5 rounded-full text-sm font-semibold text-on-surface-variant hover:bg-surface-container-highest transition-all">Rejected</button>
+</div>
+</div>
+<!-- Applications List (Editorial Cards) -->
+<div class="space-y-6">
+<!-- Card 1: Pending -->
+<div class="bg-surface-container-lowest rounded-xl p-5 editorial-shadow group relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Pending</span>
+</div>
+<div class="flex gap-4 items-start">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Company Logo" class="w-full h-full object-cover" data-alt="Modern eco-friendly office interior with lush green plants and natural wood textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ThgBPmP2ifRbDOtD5sjkoKKIuwhbLCUby8o8QJKQ2zAKi1-qEZuP7ux0IgXpckrYagcMEIDAytLKoEBhqfIBb43oJ5_AdIJAsxu1sAHgJK2yosULzKkaburSWvNIhFZPtNIBWCmzVOpzLJwgM-RehQapYBEvpaROarMHPYupJAr5e1jC0Wy-ehwejp3NEY2pZ6mfezWVToZOoxp_afWT67IKPhe2KFeknJLb5f5DQ2sJoMeQZSXIA8WCm_UNuHf0KBxWEkrmIIwl"/>
+</div>
+<div class="flex-1 pr-16">
+<h3 class="font-headline text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Urban Forest Initiative</h3>
+<p class="font-body text-sm text-on-surface-variant mt-1">Nursery Coordinator</p>
+<div class="flex items-center gap-3 mt-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="text-[11px] font-medium font-label uppercase tracking-tighter">Dar es Salaam</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant border-l border-outline-variant/30 pl-3">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="text-[11px] font-medium font-label uppercase tracking-tighter">Applied 2d ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 flex gap-3">
+<button class="flex-1 bg-surface-container-low text-on-surface-variant py-3 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-surface-container-high transition-colors">View Details</button>
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg text-xs font-bold uppercase tracking-widest active:scale-95 transition-transform">Withdraw</button>
+</div>
+</div>
+<!-- Card 2: Pending (Bento-style variation) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-low rounded-xl p-5 border-l-4 border-secondary overflow-hidden relative">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-surface-container-lowest rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">eco</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter">High Interest</span>
+</div>
+<h3 class="font-headline text-base font-bold leading-tight">Coastal Restoration Project</h3>
+<p class="font-body text-xs text-on-surface-variant mt-2">Marine Biology Intern</p>
+<div class="mt-6 flex items-end justify-between">
+<div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Status</p>
+<p class="text-sm font-bold text-secondary">Reviewing Profile</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant/30">chevron_right</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-5 editorial-shadow border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">bolt</span>
+</div>
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Priority Application</p>
+</div>
+<h3 class="font-headline text-base font-bold leading-tight">Green Tech Solutions</h3>
+<p class="font-body text-xs text-on-surface-variant mt-1">Junior Solar Installer</p>
+<div class="mt-4 flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-surface bg-surface-container-high"></div>
+<div class="w-6 h-6 rounded-full border-2 border-surface bg-surface-container-high"></div>
+<div class="w-6 h-6 rounded-full border-2 border-surface bg-surface-container-high flex items-center justify-center text-[8px] font-bold text-on-surface-variant">+12</div>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-2">14 other applicants</p>
+</div>
+</div>
+<!-- Empty Space/Message for rejected/accepted sections if navigated -->
+<div class="py-12 px-8 rounded-2xl bg-surface-container/30 border-2 border-dashed border-outline-variant/30 text-center">
+<span class="material-symbols-outlined text-outline-variant text-4xl mb-3">history_edu</span>
+<p class="text-on-surface-variant text-sm font-medium">Keep applying to increase your chances!<br/>New opportunities added daily.</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-6 bg-[#faf9f4]/90 dark:bg-neutral-900/90 backdrop-blur-2xl rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] no-border">
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#00694c] dark:text-[#008560] bg-[#00694c]/10 rounded-xl px-4 py-1 active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined fill-icon" style="font-variation-settings: 'FILL' 1;">work_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Work</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Inbox</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

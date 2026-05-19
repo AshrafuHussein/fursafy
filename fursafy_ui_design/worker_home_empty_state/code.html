@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fursafy - Home Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f4]/80 backdrop-blur-xl docked full-width top-0 sticky z-50 no-border shadow-none bg-surface-container-low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest flex items-center justify-center transition-transform active:scale-95">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a young professional smiling warmly against a soft-focus architectural background, professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx45my81BnOp0jMtqOg7LGLjuu766GHTeGS1c6vfMcWO-RO_UB0XCko4ZkCkGGdUEcBtGt0Nl7pXILmoFUz1Cd2MO-52nR1EHUhK75gjkDSv7O7uKBXTx7ChE1KLI_Py4o0grUhTIcPsygbuuHB-uQ2hBA3uLwb_2WjuQRY6TRfEn1cLP9nN5W25MvBenMztDdSrHNMfiZuHeuAHgWXge_N5wyKxAiebQXpWDCYqIkm_FAWoKVrSlTMO4utgQeFndFhE59BSJJT6cG"/>
+</div>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] text-lg">Fursafy</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 transition-transform active:scale-95 text-[#00694c]">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-8 pb-24">
+<!-- Asymmetric Decorative Element -->
+<div class="relative w-full max-w-md flex flex-col items-center">
+<!-- Empty State Illustration/Iconography -->
+<div class="relative mb-12">
+<!-- Soft background glow -->
+<div class="absolute inset-0 bg-primary-fixed opacity-20 blur-3xl rounded-full"></div>
+<div class="relative w-64 h-64 bg-surface-container-low rounded-[2.5rem] flex items-center justify-center overflow-hidden rotate-3 shadow-sm">
+<img class="w-full h-full object-cover opacity-10 mix-blend-multiply" data-alt="Minimalist abstract pattern of map coordinates and pins in a soft botanical green and amber color palette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4lrZ9O9KwgXzSLhuDIvxLNCKvjE0BUrSFCpsQEuxPaD8QwgrJQ7w_KCtuNXq1V7zzO4OOL4HJwUML1VQc3nwQlovmQVwVIb0cYlKl9Let4ghItgm1oGdnXIrWp_X_Wvo9gl7y9RrniPJaBe3tr3OFCiL2XT75JhaeXpXQwJ904ZRe-3mnvOBDpOoE9Ot1RGF7EDTsUmXbEOlcZUOhbxWb-RlEBPOl_91KU-JCZZHiOrY7BNJ3D2BqNsloFPd2XOvw7vkdPSQec0s0"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="p-8 bg-surface-container-lowest rounded-full shadow-xl -rotate-3 border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary text-6xl" style="font-variation-settings: 'FILL' 1;">location_off</span>
+</div>
+</div>
+</div>
+<!-- Floating geometric accent -->
+<div class="absolute -top-4 -right-4 w-12 h-12 bg-secondary-container rounded-xl rotate-12 shadow-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container text-2xl">search_off</span>
+</div>
+</div>
+<!-- Content -->
+<div class="text-center space-y-4 max-w-xs">
+<h2 class="text-3xl font-extrabold text-on-surface tracking-tight leading-tight">
+                    No jobs available near you
+                </h2>
+<p class="text-on-surface-variant font-medium leading-relaxed">
+                    The horizon looks a bit quiet today. Try expanding your search radius or refreshing your feed.
+                </p>
+</div>
+<!-- Action Button -->
+<div class="mt-10">
+<button class="group flex items-center gap-3 bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-lg shadow-lg shadow-primary/20 hover:bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-500">refresh</span>
+<span>Refresh</span>
+</button>
+</div>
+<!-- Contextual Tip (Editorial Detail) -->
+<div class="mt-12 p-4 bg-surface-container-low rounded-xl border-l-4 border-secondary-container">
+<p class="text-sm font-semibold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+                    Pro-tip: Complete your profile to get matched with remote roles.
+                </p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-6 bg-[#faf9f4]/90 backdrop-blur-2xl rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] no-border bg-surface-container-lowest md:hidden">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-[#00694c] bg-[#00694c]/10 rounded-xl px-4 py-1 active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="home_max" style="font-variation-settings: 'FILL' 1;">home_max</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<!-- Work -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="work_outline">work_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Work</span>
+</a>
+<!-- Add -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined text-3xl" data-icon="add_circle">add_circle</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Add</span>
+</a>
+<!-- Inbox -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Inbox</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="person_outline">person_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
