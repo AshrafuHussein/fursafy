@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
@@ -236,7 +237,7 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
             ),
       // Floating Edit Job button
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => context.push('/provider/jobs/${widget.jobId}/edit'),
         backgroundColor: FursafyTheme.secondary,
         foregroundColor: FursafyTheme.onSecondary,
         elevation: 8,
@@ -254,7 +255,9 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
             ? FursafyTheme.error
             : FursafyTheme.onSurfaceVariant;
 
-    return Container(
+    return GestureDetector(
+      onTap: () => _showApplicantProfile(app),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -356,6 +359,166 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
           )),
         ],
       ),
+    ),
+    );
+  }
+
+  void _showApplicantProfile(ApplicationEntity app) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: FursafyTheme.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        maxChildSize: 0.92,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (ctx, scrollCtrl) => FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection(FirestorePaths.youthProfiles)
+              .doc(app.youthId).get(),
+          builder: (ctx, snap) {
+            final profileData = snap.data?.data() as Map<String, dynamic>?;
+            final skills = List<String>.from(profileData?['skills'] ?? []);
+            final bio = profileData?['bio'] as String? ?? '';
+            final rating = (profileData?['ratingAvg'] as num?)?.toDouble() ?? 0.0;
+            final jobsDone = (profileData?['jobsCompleted'] as num?)?.toInt() ?? 0;
+
+            return ListView(
+              controller: scrollCtrl,
+              padding: const EdgeInsets.all(32),
+              children: [
+                // Handle
+                Center(child: Container(width: 48, height: 6,
+                  decoration: BoxDecoration(
+                    color: FursafyTheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(100)))),
+                const SizedBox(height: 32),
+
+                // Avatar + Name
+                Center(child: Column(children: [
+                  Container(
+                    width: 96, height: 96,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: FursafyTheme.surfaceContainerHigh),
+                    child: app.youthAvatarUrl != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Image.network(app.youthAvatarUrl!, fit: BoxFit.cover))
+                        : Center(child: Text(
+                            app.youthName.isNotEmpty ? app.youthName[0].toUpperCase() : '?',
+                            style: FursafyTheme.headlineStyle.copyWith(
+                              fontSize: 40, fontWeight: FontWeight.w800,
+                              color: FursafyTheme.primary))),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(app.youthName, style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 24, fontWeight: FontWeight.w800)),
+                  if (bio.isNotEmpty) ...[                    const SizedBox(height: 8),
+                    Text(bio, textAlign: TextAlign.center,
+                      style: FursafyTheme.bodyStyle.copyWith(
+                        color: FursafyTheme.onSurfaceVariant, height: 1.5)),
+                  ],
+                ])),
+                const SizedBox(height: 24),
+
+                // Stats row
+                Row(children: [
+                  Expanded(child: _profileStat('Rating', rating > 0 ? rating.toStringAsFixed(1) : '—')),
+                  Expanded(child: _profileStat('Jobs Done', '$jobsDone')),
+                  Expanded(child: _profileStat('Skills', '${skills.length}')),
+                ]),
+                const SizedBox(height: 24),
+
+                // Skills
+                if (skills.isNotEmpty) ...[                  Text('SKILLS', style: FursafyTheme.labelStyle.copyWith(
+                    fontSize: 11, fontWeight: FontWeight.w700,
+                    letterSpacing: 2.0, color: FursafyTheme.onSurfaceVariant)),
+                  const SizedBox(height: 12),
+                  Wrap(spacing: 8, runSpacing: 8,
+                    children: skills.map((s) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: FursafyTheme.primaryFixed,
+                        borderRadius: BorderRadius.circular(100)),
+                      child: Text(s, style: FursafyTheme.labelStyle.copyWith(
+                        fontWeight: FontWeight.w700, fontSize: 13,
+                        color: FursafyTheme.onPrimaryFixed)),
+                    )).toList()),
+                  const SizedBox(height: 24),
+                ],
+
+                // Cover message
+                if (app.coverMessage != null && app.coverMessage!.isNotEmpty) ...[                  Text('COVER MESSAGE', style: FursafyTheme.labelStyle.copyWith(
+                    fontSize: 11, fontWeight: FontWeight.w700,
+                    letterSpacing: 2.0, color: FursafyTheme.onSurfaceVariant)),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: FursafyTheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(16)),
+                    child: Text(app.coverMessage!,
+                      style: FursafyTheme.bodyStyle.copyWith(
+                        color: FursafyTheme.onSurface, height: 1.6)),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // Actions
+                if (app.status == ApplicationStatus.pending) ...[                  SizedBox(height: 52, width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () { Navigator.pop(ctx); _showConfirmDialog(app, true); },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: FursafyTheme.primary,
+                        foregroundColor: FursafyTheme.onPrimary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100))),
+                      child: Text('Accept Applicant', style: FursafyTheme.bodyStyle.copyWith(
+                        fontWeight: FontWeight.w700, fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(height: 48, width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () { Navigator.pop(ctx); _showConfirmDialog(app, false); },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: FursafyTheme.error,
+                        side: BorderSide(color: FursafyTheme.error.withValues(alpha: 0.3)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100))),
+                      child: Text('Reject', style: FursafyTheme.bodyStyle.copyWith(
+                        fontWeight: FontWeight.w700, fontSize: 16, color: FursafyTheme.error)),
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _profileStat(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: FursafyTheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12)),
+      child: Column(children: [
+        Text(value, style: FursafyTheme.headlineStyle.copyWith(
+          fontSize: 22, fontWeight: FontWeight.w800, color: FursafyTheme.primary)),
+        const SizedBox(height: 4),
+        Text(label, style: FursafyTheme.labelStyle.copyWith(
+          fontSize: 11, color: FursafyTheme.onSurfaceVariant, fontWeight: FontWeight.w600)),
+      ]),
     );
   }
 

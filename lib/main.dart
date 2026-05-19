@@ -9,6 +9,12 @@ import 'package:fursafy/features/auth/data/repositories/auth_repository_impl.dar
 import 'package:fursafy/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_bloc.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_event.dart';
+import 'package:fursafy/features/applications/data/repositories/application_repository_impl.dart';
+import 'package:fursafy/features/applications/presentation/bloc/application_bloc.dart';
+import 'package:fursafy/features/ratings/data/repositories/rating_repository_impl.dart';
+import 'package:fursafy/features/ratings/presentation/bloc/rating_bloc.dart';
+import 'package:fursafy/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:fursafy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'firebase_options.dart';
 import 'package:fursafy/core/config/env_config.dart';
 
@@ -65,7 +71,21 @@ void main() async {
             jobRepository: JobRepositoryImpl(),
           )..add(const JobFeedLoadRequested()),
         ),
-        // Additional BLoCs will be added as features are implemented
+        BlocProvider<ApplicationBloc>(
+          create: (context) => ApplicationBloc(
+            applicationRepository: ApplicationRepositoryImpl(),
+          ),
+        ),
+        BlocProvider<RatingBloc>(
+          create: (context) => RatingBloc(
+            ratingRepository: RatingRepositoryImpl(),
+          ),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (context) => ProfileBloc(
+            profileRepository: ProfileRepositoryImpl(),
+          ),
+        ),
       ],
       child: const FursafyApp(),
     ),

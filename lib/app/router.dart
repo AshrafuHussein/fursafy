@@ -11,9 +11,11 @@ import '../features/auth/presentation/screens/skill_picker_screen.dart';
 import '../features/jobs/presentation/screens/home_feed_screen.dart';
 import '../features/jobs/presentation/screens/job_detail_screen.dart';
 import '../features/jobs/presentation/screens/post_job_screen.dart';
+import '../features/jobs/presentation/screens/edit_job_screen.dart';
 import '../features/jobs/presentation/screens/search_filter_screen.dart';
 import '../features/applications/presentation/screens/my_applications_screen.dart';
 import '../features/applications/presentation/screens/applicants_screen.dart';
+import '../features/applications/presentation/screens/application_detail_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
@@ -21,6 +23,7 @@ import '../features/profile/presentation/screens/my_jobs_screen.dart';
 import '../features/profile/presentation/screens/provider_dashboard_screen.dart';
 import '../features/profile/presentation/screens/provider_profile_screen.dart';
 import '../features/ratings/presentation/screens/rating_screen.dart';
+import '../features/ratings/presentation/screens/provider_rating_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -48,6 +51,8 @@ class AppRoutes {
   static const String providerDashboard = '/provider/home';
   static const String myJobs = '/provider/jobs';
   static const String rateJob = '/rate/:jobId';
+  static const String providerRateJob = '/provider/rate/:jobId';
+  static const String applicationDetail = '/applications/:applicationId';
   static const String youthPublicProfile = '/youth/:uid';
   static const String map = '/map';
 }
@@ -112,6 +117,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const MyApplicationsScreen(),
     ),
     GoRoute(
+      path: AppRoutes.applicationDetail,
+      builder: (context, state) {
+        final applicationId = state.pathParameters['applicationId']!;
+        return ApplicationDetailScreen(applicationId: applicationId);
+      },
+    ),
+    GoRoute(
       path: AppRoutes.notifications,
       builder: (context, state) => const NotificationsScreen(),
     ),
@@ -141,6 +153,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ProviderDashboardScreen(),
     ),
     GoRoute(
+      path: AppRoutes.editJob,
+      builder: (context, state) {
+        final jobId = state.pathParameters['jobId']!;
+        return EditJobScreen(jobId: jobId);
+      },
+    ),
+    GoRoute(
       path: AppRoutes.postJob,
       builder: (context, state) => const PostJobScreen(),
     ),
@@ -162,6 +181,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final jobId = state.pathParameters['jobId']!;
         return RatingScreen(jobId: jobId);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.providerRateJob,
+      builder: (context, state) {
+        final jobId = state.pathParameters['jobId']!;
+        return ProviderRatingScreen(jobId: jobId);
       },
     ),
   ],
