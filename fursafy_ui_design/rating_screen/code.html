@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen selection:bg-primary/10">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-50 no-border shadow-none bg-surface-container-low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional headshot of a young creative professional with a friendly smile in soft natural studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk0fn3hjZHhNCi-AMVQjaVcpCCq1oBLluVahZnkawbjFYa4mVkfOf-VPTojn5PwL7OU3H5EuyKlUDaeIOnjX3YQZZLdSWXI8L3kOCI86lkogy9lw41r002UpYO0eQ9ZDzW0AHC7xwWhvSWIwNfrwK-bPTJyxMrWnk8oMxfqxIe7YKMx5MdFLBYxPfd2hxAhZe1cydGZiiX8rWSMotdprS4P5tfprf6K4_1C_5Myz0vnTtqlf_O7UDqDmDmAmZpSTMYLSeLOLSMzIBn"/>
+</div>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-lg">Fursafy</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#00694c]" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="max-w-2xl mx-auto px-6 py-12 md:py-20">
+<!-- Editorial Header Section -->
+<div class="mb-12 space-y-4">
+<span class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-xs font-bold tracking-widest uppercase font-label">
+                Feedback Loop
+            </span>
+<h1 class="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight leading-tight">
+                Rate your <span class="text-primary italic">collaboration</span>.
+            </h1>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-md">
+                Your professional insights help our community grow stronger and more reliable.
+            </p>
+</div>
+<!-- Rating Bento Card -->
+<div class="bg-surface-container-low rounded-[2rem] p-8 md:p-12 relative overflow-hidden">
+<!-- Decorative Accent -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="relative z-10 flex flex-col items-center">
+<!-- Provider Identity -->
+<div class="flex flex-col items-center mb-10 text-center">
+<div class="w-24 h-24 rounded-2xl overflow-hidden mb-6 shadow-xl rotate-3 transform hover:rotate-0 transition-transform duration-500">
+<img alt="Provider" class="w-full h-full object-cover" data-alt="close-up portrait of a skilled craftsperson in a workshop setting with warm cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYqCidVDr3hicTxeTk4NVqtSQxw2oqgqARzNjtehzXVHkM8PPLJdABy5C6oV1FC7M-RFWjDBh2FBYCyhnCLMfsUCwdZhgPosUEylvLKtV6jTEPL4ijij97p71JzxMom4bvCvlUL8-QQkd-yax3GF26mOYf_WToacQYZ2pISk4l9cNUQBBW9Hq8iikOjWTbDwGPR7T78IsZLz8I1Vm-z10NfqBhgrHixKXJJVc1ZwNZdw1EZ_jXP5ej3PCnYmJ4uv3awFvVnVtXHx7d"/>
+</div>
+<h2 class="text-2xl font-bold text-on-surface mb-1">Amos Mwanange</h2>
+<p class="text-on-surface-variant font-medium">Senior Creative Strategist</p>
+</div>
+<!-- Star Component -->
+<div class="flex gap-2 mb-12 group">
+<!-- Interactive Star Array -->
+<button class="text-secondary-container hover:scale-110 transition-transform active:scale-90 p-1">
+<span class="material-symbols-outlined text-5xl sm:text-6xl" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-secondary-container hover:scale-110 transition-transform active:scale-90 p-1">
+<span class="material-symbols-outlined text-5xl sm:text-6xl" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-secondary-container hover:scale-110 transition-transform active:scale-90 p-1">
+<span class="material-symbols-outlined text-5xl sm:text-6xl" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-secondary-container hover:scale-110 transition-transform active:scale-90 p-1">
+<span class="material-symbols-outlined text-5xl sm:text-6xl" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="text-surface-container-highest hover:scale-110 transition-transform active:scale-90 p-1 group-hover:text-secondary-container/40">
+<span class="material-symbols-outlined text-5xl sm:text-6xl" data-icon="star">star</span>
+</button>
+</div>
+<!-- Review Form -->
+<div class="w-full space-y-8">
+<div class="space-y-3">
+<label class="block text-sm font-bold text-primary px-1 tracking-wide uppercase font-label">Share your experience</label>
+<div class="group">
+<textarea class="w-full min-h-[160px] bg-surface-container-highest border-none rounded-2xl p-6 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-0 focus:bg-surface-container-low transition-all duration-300 resize-none" placeholder="How was your experience working with Amos Mwanange?"></textarea>
+<div class="h-0.5 w-0 group-focus-within:w-full bg-primary transition-all duration-500 rounded-full mx-auto -mt-0.5"></div>
+</div>
+</div>
+<!-- Category Chips (Editorial touch) -->
+<div class="space-y-4">
+<p class="text-sm font-semibold text-on-surface-variant">What stood out the most?</p>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-2.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-sm font-bold transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-95">Timely Communication</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-bold transition-all hover:bg-surface-container-high">Quality of Work</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-bold transition-all hover:bg-surface-container-high">Professionalism</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-bold transition-all hover:bg-surface-container-high">Problem Solving</button>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-6">
+<button class="w-full py-5 rounded-full bg-primary text-on-primary font-bold text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 group">
+                            Submit Review
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="w-full py-4 mt-2 text-on-surface-variant font-semibold text-sm hover:text-primary transition-colors">
+                            Maybe Later
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Safety Trust Banner (Asymmetric Content) -->
+<div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-tertiary-fixed/30 p-8 rounded-[1.5rem] flex flex-col justify-between">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-6" data-icon="verified_user">verified_user</span>
+<div>
+<h3 class="font-bold text-on-tertiary-fixed text-lg mb-2">Verified Feedback</h3>
+<p class="text-sm text-on-tertiary-fixed-variant leading-relaxed">Your reviews are processed securely to ensure the platform remains transparent and trustworthy for all members.</p>
+</div>
+</div>
+<div class="bg-secondary-fixed/30 p-8 rounded-[1.5rem] flex flex-col justify-between">
+<span class="material-symbols-outlined text-secondary text-4xl mb-6" data-icon="auto_awesome">auto_awesome</span>
+<div>
+<h3 class="font-bold text-on-secondary-fixed text-lg mb-2">Impact Score</h3>
+<p class="text-sm text-on-secondary-fixed-variant leading-relaxed">Top reviewers gain "Curator Status," granting early access to exclusive high-end job opportunities.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Navigation Shell Suppressed for Task-Focused Page per Guidelines -->
+</body></html>

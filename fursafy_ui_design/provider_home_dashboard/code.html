@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#faf9f4",
+                    "surface-container-high": "#e9e8e3",
+                    "secondary-fixed": "#ffddb7",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2f312d",
+                    "surface-bright": "#faf9f4",
+                    "surface-tint": "#006c4e",
+                    "outline-variant": "#bccac1",
+                    "surface-container-highest": "#e3e3dd",
+                    "surface-dim": "#dbdad5",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#00513a",
+                    "error": "#ba1a1a",
+                    "tertiary": "#993f3a",
+                    "primary-fixed-dim": "#68dbae",
+                    "surface-container": "#efeee9",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "on-secondary-fixed": "#2a1700",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary-container": "#b85751",
+                    "on-error": "#ffffff",
+                    "primary-container": "#008560",
+                    "primary": "#00694c",
+                    "secondary-container": "#fcaa33",
+                    "inverse-primary": "#68dbae",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#86f8c9",
+                    "surface-container-low": "#f4f4ee",
+                    "surface-variant": "#e3e3dd",
+                    "error-container": "#ffdad6",
+                    "background": "#faf9f4",
+                    "on-background": "#1a1c19",
+                    "secondary": "#855400",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7e2a27",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-tertiary-fixed": "#410003",
+                    "on-primary-fixed": "#002115",
+                    "on-secondary-container": "#6b4200",
+                    "outline": "#6d7a73",
+                    "secondary-fixed-dim": "#ffb95d",
+                    "on-surface": "#1a1c19",
+                    "on-surface-variant": "#3d4943",
+                    "inverse-on-surface": "#f1f1eb",
+                    "on-primary-container": "#f5fff7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 w-full bg-[#faf9f4]/80 backdrop-blur-xl no-border shadow-none bg-surface-container-low">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] text-lg">Fursafy</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[#00694c]">notifications</span>
+</button>
+</header>
+<main class="px-6 py-8 max-w-5xl mx-auto">
+<!-- Welcome Section -->
+<section class="mb-10">
+<h1 class="text-3xl font-extrabold tracking-tight mb-2">Karibu, Global Logistics</h1>
+<p class="text-on-surface-variant font-medium">Manage your hiring pipeline and find Tanzania's best talent.</p>
+</section>
+<!-- Bento Grid Stats Section -->
+<section class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12">
+<div class="col-span-2 md:col-span-1 p-6 rounded-xl bg-primary text-on-primary shadow-sm flex flex-col justify-between aspect-square md:aspect-auto">
+<span class="material-symbols-outlined text-4xl mb-4">analytics</span>
+<div>
+<p class="text-primary-fixed text-sm font-label uppercase tracking-widest mb-1">Active Jobs</p>
+<h3 class="text-5xl font-bold">12</h3>
+</div>
+</div>
+<div class="p-6 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between border border-outline-variant/10">
+<span class="material-symbols-outlined text-secondary text-3xl mb-4">group</span>
+<div>
+<p class="text-on-surface-variant text-sm font-label uppercase tracking-widest mb-1">Applicants</p>
+<h3 class="text-4xl font-bold">1,284</h3>
+</div>
+</div>
+<div class="p-6 rounded-xl bg-surface-container shadow-sm flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary text-3xl mb-4">check_circle</span>
+<div>
+<p class="text-on-surface-variant text-sm font-label uppercase tracking-widest mb-1">Jobs Filled</p>
+<h3 class="text-4xl font-bold">48</h3>
+</div>
+</div>
+</section>
+<!-- Recruitment Progress Section (Visual Context) -->
+<section class="mb-12">
+<div class="bg-surface-container-low rounded-xl p-6">
+<div class="flex justify-between items-end mb-6">
+<h2 class="text-xl font-bold">Hiring Health</h2>
+<span class="text-primary font-bold text-sm">Target: 60 Filled</span>
+</div>
+<div class="h-4 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[80%] rounded-full"></div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant font-medium">Your profile is 80% towards your quarterly goal. Keep it up!</p>
+</div>
+</section>
+<!-- My Recent Jobs (Editorial List) -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold">My Recent Jobs</h2>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                    View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Job Card 1 -->
+<div class="group bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="professional modern office interior with large windows and clean workspace furniture in soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZvfQoyebftdA31wGjcrjZJ8UWkzg-OA2iFJdqueTUok8wyTJRhMxoKZZOznfyJgTazkuOuUVSoItXsQBdojBC0SRc0WtHdWHD3hTUK-HMZygADrS1ZD1xq5mDsxoTm090M-_eU-GYiBL8Y2COMw1QHVsOmkhN9OGlUdjz7fyeESpGyVyZTTnexxyrQ_FcHN8ulj9-sjNJ4mhHhgGizULyJlJvC1INM_b2f9ATlssi2B4AtDf-A-oOGj1z4Ih7CSbSw56bMsMNXvTo"/>
+</div>
+<div>
+<h4 class="font-bold text-lg group-hover:text-primary transition-colors">Senior Software Engineer</h4>
+<div class="flex gap-4 mt-1">
+<span class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">location_on</span> Dar es Salaam
+                                </span>
+<span class="flex items-center gap-1 text-xs font-semibold text-secondary-container bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span> Urgent
+                                </span>
+</div>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="text-2xl font-black text-primary">242</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Applicants</span>
+</div>
+</div>
+<!-- Job Card 2 -->
+<div class="group bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="creative team brainstorming around a wooden table in a brightly lit studio with sketches and laptops" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfKyjF6rfYlmSRWQIXU-IGlVv_ok6pX9qx-4O-cIh_qMdg6vwdz1fPhFHWfTVTaJYGZy2yp0OTukBWZIMrkzfEnxegmkAMivyuiHvHQ1qSYiZZo62fVZih01mSwE7V_h5qgCStjwhRVbNGq9unQ4yvlD8_E5vqH1i7iSy7sqW_eB42rag4LMFc9a96ai6RhHEQvhYa5X2sTQDWxPm2j7BrUcQjHbDv92BDx3As98tAQtBxjZnSFnjh7DOzirKUJ9t2mUwb0zQDEWCW"/>
+</div>
+<div>
+<h4 class="font-bold text-lg group-hover:text-primary transition-colors">Marketing Coordinator</h4>
+<div class="flex gap-4 mt-1">
+<span class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">location_on</span> Arusha
+                                </span>
+<span class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">schedule</span> Posted 2d ago
+                                </span>
+</div>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="text-2xl font-black text-primary">89</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Applicants</span>
+</div>
+</div>
+<!-- Job Card 3 -->
+<div class="group bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="industrial designer working on a detailed blueprint in a modern high-tech laboratory with neon accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB20PC8DosrcaF3jHDR6BDYF_vdUCDzqgaQ-xkzlTr1YUIrjOpbiWzEAJmYQDSEwiVrSkfgkKZK4VVcR3TwQPcFzIqaVLHePGV_Vhnw1xIOhZLAXwsSBb2iUiI5MRci_bBWEmtv9mzZ771eFXpacageNuGelRm5j3LJWiT-qpOYbLha97z3I3MtliZE8g8naJcG6Ak7OnDo2uDIiJndX3VoXhP6q86b-1P58CijOsXeOXOphP2il_4kxqGksC1FreMCsouAcog6eNNW"/>
+</div>
+<div>
+<h4 class="font-bold text-lg group-hover:text-primary transition-colors">Operations Manager</h4>
+<div class="flex gap-4 mt-1">
+<span class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">location_on</span> Mwanza
+                                </span>
+<span class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">verified</span> Verified
+                                </span>
+</div>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="text-2xl font-black text-primary">15</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Applicants</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-28 right-6 w-16 h-16 bg-secondary-container text-on-secondary-container rounded-full shadow-xl flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-8 bg-[#faf9f4]/90 backdrop-blur-2xl rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] no-border">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-[#00694c] bg-[#00694c]/10 rounded-xl px-4 py-1 active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home_max</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<!-- Work -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">work_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Work</span>
+</a>
+<!-- Add (Contextual center) -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Add</span>
+</a>
+<!-- Inbox -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Inbox</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-neutral-400 hover:text-[#00694c] transition-colors active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

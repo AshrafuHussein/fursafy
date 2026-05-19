@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Applicant Profile - Fursafy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#faf9f4",
+                    "surface-container-high": "#e9e8e3",
+                    "secondary-fixed": "#ffddb7",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2f312d",
+                    "surface-bright": "#faf9f4",
+                    "surface-tint": "#006c4e",
+                    "outline-variant": "#bccac1",
+                    "surface-container-highest": "#e3e3dd",
+                    "surface-dim": "#dbdad5",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#00513a",
+                    "error": "#ba1a1a",
+                    "tertiary": "#993f3a",
+                    "primary-fixed-dim": "#68dbae",
+                    "surface-container": "#efeee9",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "on-secondary-fixed": "#2a1700",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary-container": "#b85751",
+                    "on-error": "#ffffff",
+                    "primary-container": "#008560",
+                    "primary": "#00694c",
+                    "secondary-container": "#fcaa33",
+                    "inverse-primary": "#68dbae",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#86f8c9",
+                    "surface-container-low": "#f4f4ee",
+                    "surface-variant": "#e3e3dd",
+                    "error-container": "#ffdad6",
+                    "background": "#faf9f4",
+                    "on-background": "#1a1c19",
+                    "secondary": "#855400",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7e2a27",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-tertiary-fixed": "#410003",
+                    "on-primary-fixed": "#002115",
+                    "on-secondary-container": "#6b4200",
+                    "outline": "#6d7a73",
+                    "secondary-fixed-dim": "#ffb95d",
+                    "on-surface": "#1a1c19",
+                    "on-surface-variant": "#3d4943",
+                    "inverse-on-surface": "#f1f1eb",
+                    "on-primary-container": "#f5fff7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-mesh {
+            background-color: #faf9f4;
+            background-image: radial-gradient(at 0% 0%, rgba(0, 105, 76, 0.05) 0px, transparent 50%),
+                              radial-gradient(at 100% 0%, rgba(133, 84, 0, 0.05) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-mesh font-body text-on-surface min-h-screen flex items-end justify-center">
+<!-- Backdrop Simulation -->
+<div class="fixed inset-0 bg-inverse-surface/20 backdrop-blur-sm z-0"></div>
+<!-- Applicant Profile Bottom Sheet -->
+<div class="relative w-full max-w-xl bg-surface-container-lowest rounded-t-[2.5rem] shadow-[0_-8px_40px_rgba(0,0,0,0.08)] z-10 flex flex-col max-h-[813px] overflow-hidden">
+<!-- Drag Handle -->
+<div class="flex justify-center pt-4 pb-2">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full"></div>
+</div>
+<!-- Scrollable Content Area -->
+<div class="overflow-y-auto px-6 pb-32">
+<!-- Header Section: Identity & Photo -->
+<div class="flex flex-col items-center mt-6 text-center">
+<div class="relative mb-6">
+<div class="w-32 h-32 rounded-full overflow-hidden ring-4 ring-primary-fixed p-1">
+<img class="w-full h-full object-cover rounded-full" data-alt="portrait of a young Tanzanian professional woman smiling warmly against a soft-focus urban park background with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm5ZtX6bXozlhCG1dhzST5aWwGk1qR-6dMK11L7A10lMX4aMW-mfmL8B6eo3tZNos9W51E5HSGYERNKmbtHOu6AwFtG5M7yZRJfeopWuwE38FEW4oCuPZchrsCwZS7IQ9F_WbxMD7-Uc5FcV30RLCei6bJx0MTp__OupHAWE7oxUdXBT8_rsYOpJI-bWQ23TTwFdOPiIRbLT8HiB7MzaU_rXyqVNDanEDkHXWE15v31O32f7LTlzQxiCTz0pJGJCkC-He8s3nEwi8r"/>
+</div>
+<div class="absolute bottom-0 right-1 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full flex items-center gap-1 shadow-sm border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-headline font-bold text-sm tracking-tight">4.9</span>
+</div>
+</div>
+<h1 class="font-headline font-extrabold text-3xl text-on-surface tracking-tight mb-1">Neema Jumanne</h1>
+<p class="text-on-surface-variant font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+                    Dar es Salaam, Tanzania
+                </p>
+</div>
+<!-- Stats Grid (Editorial Scale) -->
+<div class="grid grid-cols-3 gap-4 mt-8">
+<div class="bg-surface-container-low p-4 rounded-xl text-center">
+<span class="block text-primary font-headline font-extrabold text-xl">24</span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Jobs Done</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl text-center">
+<span class="block text-primary font-headline font-extrabold text-xl">98%</span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Success</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl text-center">
+<span class="block text-primary font-headline font-extrabold text-xl">1hr</span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Response</span>
+</div>
+</div>
+<!-- Skills Section -->
+<div class="mt-10">
+<h2 class="font-headline font-bold text-lg text-on-surface mb-4">Core Skills</h2>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-2 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-sm font-semibold">Digital Marketing</span>
+<span class="px-4 py-2 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-sm font-semibold">Content Creation</span>
+<span class="px-4 py-2 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-sm font-semibold">Swahili Translation</span>
+<span class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-sm font-semibold">Project Management</span>
+<span class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-sm font-semibold">Data Entry</span>
+</div>
+</div>
+<!-- Job History (Asymmetric Editorial Style) -->
+<div class="mt-10 mb-6">
+<h2 class="font-headline font-bold text-lg text-on-surface mb-6">Recent Experience</h2>
+<div class="space-y-6">
+<!-- History Item 1 -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-fixed">campaign</span>
+</div>
+<div class="w-0.5 h-full bg-surface-container-highest mt-2"></div>
+</div>
+<div class="flex-1 pb-6">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline font-bold text-on-surface">Brand Ambassador</h3>
+<span class="text-[11px] font-bold text-on-surface-variant/60 uppercase">2023 - Pres.</span>
+</div>
+<p class="text-sm font-semibold text-primary mb-2">Vodacom Tanzania</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">Led grassroots marketing campaigns across Dar es Salaam, increasing app registrations by 15%.</p>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed">edit_note</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline font-bold text-on-surface">Social Media Manager</h3>
+<span class="text-[11px] font-bold text-on-surface-variant/60 uppercase">2022 - 2023</span>
+</div>
+<p class="text-sm font-semibold text-primary mb-2">Bongo Media Group</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">Managed a portfolio of 5 clients, curating high-engagement visual content for Instagram and TikTok.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer Action Buttons -->
+<div class="absolute bottom-0 left-0 w-full p-6 bg-surface-container-lowest/80 backdrop-blur-xl flex flex-col gap-3">
+<button class="w-full py-4 bg-primary text-on-primary rounded-full font-headline font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">check_circle</span>
+                Accept Applicant
+            </button>
+<div class="flex gap-3">
+<button class="flex-1 py-4 bg-surface-container-highest text-on-surface-variant rounded-full font-headline font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+                    Message
+                </button>
+<button class="flex-1 py-4 bg-error-container text-on-error-container rounded-full font-headline font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]">cancel</span>
+                    Reject
+                </button>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fursafy - Reject Applicant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#faf9f4",
+                      "surface-container-high": "#e9e8e3",
+                      "secondary-fixed": "#ffddb7",
+                      "tertiary-fixed": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "inverse-surface": "#2f312d",
+                      "surface-bright": "#faf9f4",
+                      "surface-tint": "#006c4e",
+                      "outline-variant": "#bccac1",
+                      "surface-container-highest": "#e3e3dd",
+                      "surface-dim": "#dbdad5",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed-variant": "#00513a",
+                      "error": "#ba1a1a",
+                      "tertiary": "#993f3a",
+                      "primary-fixed-dim": "#68dbae",
+                      "surface-container": "#efeee9",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#fffbff",
+                      "tertiary-container": "#b85751",
+                      "on-error": "#ffffff",
+                      "primary-container": "#008560",
+                      "primary": "#00694c",
+                      "secondary-container": "#fcaa33",
+                      "inverse-primary": "#68dbae",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#86f8c9",
+                      "surface-container-low": "#f4f4ee",
+                      "surface-variant": "#e3e3dd",
+                      "error-container": "#ffdad6",
+                      "background": "#faf9f4",
+                      "on-background": "#1a1c19",
+                      "secondary": "#855400",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#7e2a27",
+                      "tertiary-fixed-dim": "#ffb3ad",
+                      "on-tertiary-fixed": "#410003",
+                      "on-primary-fixed": "#002115",
+                      "on-secondary-container": "#6b4200",
+                      "outline": "#6d7a73",
+                      "secondary-fixed-dim": "#ffb95d",
+                      "on-surface": "#1a1c19",
+                      "on-surface-variant": "#3d4943",
+                      "inverse-on-surface": "#f1f1eb",
+                      "on-primary-container": "#f5fff7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "xxl": "1.5rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Plus Jakarta Sans"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen relative overflow-hidden">
+<!-- Top App Bar -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-50 no-border shadow-none bg-surface-container-low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional headshot of a recruitment manager in a clean minimalist office setting with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6Q9MHFEFLzNHWq1iFz6KqNuddeHbVZDMqibelg-HilqHR0NfvshzVieqR7tTFaXQR1fJQY6HQ7S9fNgbmxIzLIU5SO2wQsE6HTqcpFR8vwQvs_SZUxJVMmtRTMh3ZaFc2Q8mRt6c7I3pgJjcDys-Br8rXt90UeccR4fHTbToe8kCL7JBmf7dXMcxitnlAyAtLlG83wV0pXSFmdI5n1z3q_rHOyr9yGnkkOUg6hk50dHS3EObIZmDvshKLAdCiov54PPcJ3Maf6zgM"/>
+</div>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-xl">Fursafy</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-neutral-500 hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 p-2 rounded-full active:scale-95 transition-transform">notifications</button>
+</div>
+</header>
+<!-- Content Background (Contextual for the Dialog) -->
+<main class="max-w-screen-xl mx-auto px-6 py-8 pb-32">
+<div class="flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex justify-between items-end">
+<div class="space-y-2">
+<span class="text-secondary font-semibold font-label text-sm tracking-widest uppercase">Applicant Review</span>
+<h1 class="text-4xl font-extrabold tracking-tight">Kassim Majaliwa</h1>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-highest px-6 py-3 rounded-full font-bold text-on-surface-variant transition-all hover:bg-surface-container-high">Message</button>
+<button class="bg-primary px-8 py-3 rounded-full font-bold text-on-primary transition-all active:scale-95">Shortlist</button>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Profile Summary -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xxl flex flex-col gap-6">
+<div class="flex items-start gap-6">
+<img class="w-32 h-40 object-cover rounded-xl shadow-sm" data-alt="close-up portrait of a young professional Tanzanian male smiling confidently in a modern studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA92CiacEKFo6z93OtfwCq1lP1fHlG5kBbnkIyL_QLXYKikC4V-5v0UtPTRLNxSoZ_LwM_OWAoQv7aGIouec0BnDBwpA2yR3D-cfGh8TW3k1GNqmJ9l1NkHyVfwMWGY7Ydo-_y2XV8R9F_EXf0_EZLtw4Rg2UXYpEZnkeZ0MxEEivx0tZr9SZmCftKAbjdi1CTW0X4C1HooGFDcwgjWCOgz2y9h886lYTWVahfI0rCkO4miX68jA9oXPEvV_yULA_1GsJYfYPYd-4lS"/>
+<div class="space-y-4">
+<div>
+<h3 class="text-xl font-bold">Graphic Designer</h3>
+<p class="text-on-surface-variant">Dar es Salaam, Tanzania • 3 years exp.</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-bold">Figma</span>
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-bold">Adobe Suite</span>
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-bold">Branding</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold text-lg">Personal Statement</h4>
+<p class="text-on-surface-variant leading-relaxed">
+                            A highly motivated designer focused on creating visual identities that resonate with the East African market. Passionate about minimalism and editorial typography.
+                        </p>
+</div>
+</div>
+<!-- Metrics Column -->
+<div class="space-y-6">
+<div class="bg-surface-container-highest p-6 rounded-xxl">
+<h4 class="font-bold mb-4">Portfolio Score</h4>
+<div class="flex items-end gap-2">
+<span class="text-5xl font-black text-primary">8.4</span>
+<span class="text-on-surface-variant mb-2 font-bold">/10</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[84%]"></div>
+</div>
+</div>
+<div class="bg-secondary-fixed text-on-secondary-fixed p-6 rounded-xxl">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-bold text-sm uppercase tracking-wider">Fast Mover</span>
+</div>
+<p class="font-medium text-sm">Responded to all queries within 2 hours.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BOTTOM NAVBAR -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-6 bg-[#faf9f4]/90 dark:bg-neutral-900/90 backdrop-blur-2xl no-border bg-surface-container-lowest shadow-[0_-4px_20px_rgba(0,0,0,0.04)] rounded-t-[1.5rem]">
+<div class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined">home_max</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</div>
+<!-- Active Item: Work -->
+<div class="flex flex-col items-center justify-center text-[#00694c] dark:text-[#008560] bg-[#00694c]/10 rounded-xl px-4 py-1 active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Work</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Add</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Inbox</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Profile</span>
+</div>
+</nav>
+<!-- OVERLAY & REJECT CONFIRMATION DIALOG -->
+<div class="fixed inset-0 z-[100] bg-on-surface/30 backdrop-blur-sm flex items-center justify-center px-6">
+<div class="bg-surface-container-lowest w-full max-w-sm rounded-xxl shadow-[0_24px_48px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col">
+<!-- Dialog Content -->
+<div class="p-8 space-y-4">
+<div class="w-12 h-12 bg-error-container rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">person_remove</span>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">Reject Applicant?</h2>
+<p class="text-on-surface-variant font-body leading-relaxed">
+                    Are you sure? This action cannot be undone. Kassim will be notified and removed from your active pool.
+                </p>
+</div>
+<!-- Dialog Actions -->
+<div class="p-6 bg-surface-container-low flex flex-col gap-3">
+<button class="w-full bg-error text-on-error py-4 rounded-full font-bold text-base shadow-sm active:scale-[0.98] transition-transform">
+                    Reject
+                </button>
+<button class="w-full text-primary font-bold py-3 hover:bg-surface-container-high rounded-full transition-colors active:scale-[0.98]">
+                    Cancel
+                </button>
+</div>
+</div>
+</div>
+</body></html>

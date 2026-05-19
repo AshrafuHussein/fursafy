@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Edit Profile - Fursafy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar - Main UI -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-40 no-border shadow-none bg-surface-container-low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="User Profile" data-alt="Close up portrait of a smiling young professional man with a clean beard in soft natural daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU81IaTCYnR2C5O4LwtwBZGG8EUUiQ45Pg_4KbvpHhQrO-bNZ_b-cu3KeVgy0XyRCeFXdF3Qdu8PxyP2_WAUcvpSgtyRDRNIZzybdFNgfU1CCLaHnJQrn6TfnKhzr8qWbXk1cYcTaIiIZ6REa_Wiu4gp6VRysLJ-p0alyVV-_Khn-6D3UO4e3n8SYw_TFvw2qzjkQ_EbvoEGlc8IaOTiz270QiBfoSrOIHZRvOLtzo1bqaqbX489aFMJ8FPnDhITpxgKrS3oj8g80W"/>
+</div>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-lg">Fursafy</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#00694c] dark:text-[#008560]">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas (Blurred Background for the Sheet) -->
+<main class="px-6 py-8 pb-32">
+<section class="space-y-8">
+<div class="space-y-2">
+<h1 class="text-3xl font-extrabold tracking-tight text-on-surface">Your Profile</h1>
+<p class="text-on-surface-variant">Manage your digital curator presence</p>
+</div>
+<!-- Profile Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-6">
+<div class="relative">
+<img alt="User Profile" class="w-24 h-24 rounded-full object-cover" data-alt="Portrait of a professional man with a friendly expression, studio lighting, high resolution" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaO7Q4bE4Nit3RX6xRRRZWBDKujvXfd16Hy4zyr4_t9eBnG3l9YXgBaD6Snjgf1cAGa3euv-Q5M7Iaji2xJyS--q1gW_oqBoLAoLqmGALfLyH3wrZNZk76M1QEuHr3VFjoI7oTHRiOFiWuca7alQaZIVzImopiE7OIrYllxdiNu6guBdhqbzLZwLrGsTwzUhD8-pd85K1fvoeVhZ_Lck8h1UToQ45SaYP_5iU_YiugJsiuMcAmoDHp6ieyc3fLArFoDa2YdW1zAEcS"/>
+<div class="absolute bottom-0 right-0 bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-sm">edit</span>
+</div>
+</div>
+<div>
+<h2 class="text-xl font-bold">Baraka Malaba</h2>
+<p class="text-on-surface-variant text-sm mb-2">Digital Content Specialist</p>
+<div class="flex items-center gap-2 text-primary font-semibold text-xs">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span>Dar es Salaam, TZ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-5 rounded-xl flex flex-col gap-1">
+<span class="text-on-surface-variant text-xs font-bold uppercase tracking-wider">Completed</span>
+<span class="text-2xl font-black text-primary">12</span>
+</div>
+<div class="bg-surface-container-low p-5 rounded-xl flex flex-col gap-1">
+<span class="text-on-surface-variant text-xs font-bold uppercase tracking-wider">Rating</span>
+<span class="text-2xl font-black text-secondary">4.9</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Sheet Overlay / Scrim -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex flex-col justify-end">
+<!-- The Bottom Sheet -->
+<div class="bg-surface-container-lowest rounded-t-[2.5rem] w-full max-h-[795px] overflow-hidden flex flex-col shadow-2xl relative">
+<!-- Drag Handle -->
+<div class="flex justify-center pt-4 pb-2">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full"></div>
+</div>
+<!-- Sheet Content -->
+<div class="px-8 pb-12 pt-6 overflow-y-auto">
+<div class="mb-8 text-center">
+<h2 class="text-2xl font-extrabold text-on-surface">Edit Profile</h2>
+<p class="text-on-surface-variant text-sm mt-1">Refine your professional identity</p>
+</div>
+<!-- Profile Photo Update Placeholder -->
+<div class="flex flex-col items-center mb-10">
+<div class="relative group cursor-pointer">
+<div class="w-32 h-32 rounded-full overflow-hidden ring-4 ring-primary-fixed/30 transition-all group-hover:ring-primary-fixed">
+<img alt="Current Profile" class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="Close-up of a professional man, soft studio light, warm tones, high quality" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB_RPRgX0K7sT8cLxw0FQ8w4hf5wjyy4_L2JljJbJHGV4O25EQLzMd4dG3mNTRqB7FxMf2IfBImAbV1eoLd5sHY-pepvdKGR1ZADOU3yZ0d43PmXjw2q1p_nVZ9Bgfuw_48yA9e0xbOFarbM3gZR2znQdEAA8X4zM9-siud0ZJv699z2vMqx8qRQuHU-3ZTE4vqNu7Qu5esYYwd3q5qUBdp93nacyRAh_xtzOaSYcTXbEonUGEVL1iObJP0D-rNnzXPZe71tYS4va8"/>
+</div>
+<div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+<span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+</div>
+</div>
+<button class="mt-4 text-primary font-bold text-sm hover:underline">Change Photo</button>
+</div>
+<!-- Form Fields -->
+<form class="space-y-6">
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Full Name</label>
+<div class="bg-surface-container-low rounded-xl px-4 py-3 focus-within:bg-surface-container transition-colors">
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium placeholder:text-outline p-0" type="text" value="Baraka Malaba"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Professional Bio</label>
+<div class="bg-surface-container-low rounded-xl px-4 py-3 focus-within:bg-surface-container transition-colors">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium placeholder:text-outline p-0 resize-none" rows="3">Passionate digital storyteller curating high-impact experiences for local brands in Tanzania.</textarea>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Location</label>
+<div class="bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-3 focus-within:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium placeholder:text-outline p-0" type="text" value="Dar es Salaam, TZ"/>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-6 space-y-3">
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-bold text-lg shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all" type="submit">
+                            Save Changes
+                        </button>
+<button class="w-full py-4 rounded-full font-bold text-on-surface-variant hover:bg-surface-container transition-colors active:scale-95" type="button">
+                            Discard
+                        </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- BottomNavBar - Suppressed for task focus but included for layout context if needed. In this case, the Sheet covers it -->
+<nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-4 pt-3 pb-6 bg-[#faf9f4]/90 dark:bg-neutral-900/90 backdrop-blur-2xl rounded-t-[1.5rem] no-border bg-surface-container-lowest shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">work_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Work</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-[#00694c] transition-colors active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Inbox</span>
+</a>
+<!-- Active State: Profile -->
+<a class="flex flex-col items-center justify-center text-[#00694c] dark:text-[#008560] bg-[#00694c]/10 rounded-xl px-4 py-1 active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_outline</span>
+<span class="font-['Manrope'] text-[11px] font-semibold tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

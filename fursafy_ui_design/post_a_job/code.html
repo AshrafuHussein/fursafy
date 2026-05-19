@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Post a Job | Fursafy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #faf9f4;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar from Shared Components JSON -->
+<header class="bg-[#faf9f4]/80 dark:bg-neutral-900/80 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full no-border shadow-none bg-surface-container-low">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-[#00694c] dark:text-[#008560] active:scale-95 transition-transform" data-icon="arrow_back">arrow_back</button>
+<span class="font-['Plus_Jakarta_Sans'] font-black tracking-tight text-[#00694c] dark:text-[#008560] text-lg">Fursafy</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="professional portrait of a young Tanzanian male entrepreneur with a friendly smile, studio lighting, high resolution" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPM9GcQ6a3PfOcWhj5zKjTYatWAA5faZQ-t4HSAHeT1DbnQUHuoRMZQb5qhuUtsnoTk1QE-2lQ1M3ph5kJuscL1x7UmbnQCKwJM8l4yqv_iycItcuV3oz5HwTKLuUWikrLYg9-lCfWfgZ3sfaPxRLTtlTCLwCSvjFmYnxx6Cr8imdc2HZxR45LdX1twZBPohOGl-W_0SJGtrj2yJDIhixMayN_zwHaT1oSIOYkg4cGlpflnHz7r7MkkcXcuUWO6Tlx_CLvdcHxsEqI"/>
+</div>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-6 pt-10 pb-32">
+<!-- Editorial Header Section -->
+<div class="mb-12">
+<p class="text-secondary font-semibold font-label text-sm uppercase tracking-widest mb-2">Opportunity Creator</p>
+<h1 class="text-4xl md:text-5xl font-extrabold text-on-surface leading-tight tracking-tight">Post a new <br/><span class="text-primary italic">job opening.</span></h1>
+<p class="mt-4 text-on-surface-variant max-w-lg leading-relaxed">Fill in the details below to find the best curated talent for your project or company.</p>
+</div>
+<form class="space-y-12">
+<!-- Basic Information Section -->
+<section class="bg-surface-container-low p-8 rounded-xl">
+<div class="mb-8">
+<h2 class="text-xl font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                        Core Details
+                    </h2>
+</div>
+<div class="grid grid-cols-1 gap-8">
+<div class="space-y-2">
+<label class="text-sm font-bold font-label text-on-surface-variant ml-1">Job Title</label>
+<input class="w-full bg-surface-container-highest border-none rounded-lg p-4 focus:ring-0 focus:bg-surface-container-low transition-all border-b-2 border-transparent focus:border-primary" placeholder="e.g. Senior Creative Designer" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-bold font-label text-on-surface-variant ml-1">Job Description</label>
+<textarea class="w-full bg-surface-container-highest border-none rounded-lg p-4 focus:ring-0 focus:bg-surface-container-low transition-all border-b-2 border-transparent focus:border-primary" placeholder="Describe the role, responsibilities, and impact..." rows="6"></textarea>
+</div>
+</div>
+</section>
+<!-- Skills & Requirements (Editorial Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                        Skills Required
+                    </h2>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-4 py-2 bg-primary-fixed text-on-primary-fixed font-semibold rounded-full text-xs cursor-pointer hover:opacity-80 transition-opacity">Graphic Design</span>
+<span class="px-4 py-2 bg-primary-fixed text-on-primary-fixed font-semibold rounded-full text-xs cursor-pointer hover:opacity-80 transition-opacity">React.js</span>
+<span class="px-4 py-2 bg-surface-container-highest text-on-surface-variant font-semibold rounded-full text-xs border border-outline-variant/20 hover:bg-primary-fixed/30 transition-all cursor-pointer">Marketing</span>
+<span class="px-4 py-2 bg-surface-container-highest text-on-surface-variant font-semibold rounded-full text-xs border border-outline-variant/20 hover:bg-primary-fixed/30 transition-all cursor-pointer">Project Management</span>
+<span class="px-4 py-2 bg-surface-container-highest text-on-surface-variant font-semibold rounded-full text-xs border border-outline-variant/20 hover:bg-primary-fixed/30 transition-all cursor-pointer">Social Media</span>
+</div>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded-full px-6 py-3 text-sm focus:ring-0 focus:bg-surface-container-high" placeholder="Add custom skill..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="bg-primary/5 p-8 rounded-xl flex flex-col justify-center border border-primary/10">
+<span class="material-symbols-outlined text-primary text-4xl mb-4" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<h3 class="font-bold text-lg mb-2">Curator Tip</h3>
+<p class="text-sm text-on-surface-variant leading-relaxed">Adding at least 5 skills increases candidate matching accuracy by 40%.</p>
+</div>
+</section>
+<!-- Logistics & Pay -->
+<section class="bg-surface-container-low p-8 rounded-xl">
+<h2 class="text-xl font-bold mb-8 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                    Logistics
+                </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="text-sm font-bold font-label text-on-surface-variant ml-1">Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="location_on">location_on</span>
+<input class="w-full bg-surface-container-highest border-none rounded-lg pl-12 pr-4 py-4 focus:ring-0 focus:bg-surface-container-low transition-all border-b-2 border-transparent focus:border-primary" placeholder="Dar es Salaam, Tanzania" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-bold font-label text-on-surface-variant ml-1">Deadline</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="calendar_today">calendar_today</span>
+<input class="w-full bg-surface-container-highest border-none rounded-lg pl-12 pr-4 py-4 focus:ring-0 focus:bg-surface-container-low transition-all border-b-2 border-transparent focus:border-primary" type="date"/>
+</div>
+</div>
+<div class="space-y-2 md:col-span-2">
+<label class="text-sm font-bold font-label text-on-surface-variant ml-1">Budget / Pay (TZS)</label>
+<div class="flex items-center gap-4">
+<div class="relative flex-1">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">TZS</span>
+<input class="w-full bg-surface-container-highest border-none rounded-lg pl-14 pr-4 py-4 focus:ring-0 focus:bg-surface-container-low transition-all border-b-2 border-transparent focus:border-primary" placeholder="500,000" type="number"/>
+</div>
+<div class="bg-surface-container-highest p-1 rounded-full flex gap-1">
+<button class="px-6 py-3 rounded-full bg-primary text-on-primary font-bold text-sm shadow-md" type="button">Fixed</button>
+<button class="px-6 py-3 rounded-full text-on-surface-variant font-bold text-sm" type="button">Hourly</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Media/Banner (Asymmetric layout) -->
+<section class="relative h-48 rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="creative team brainstorming around a table in a bright modern office with warm wooden accents and plants" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa2AxY45FxRDkZDTQqGnwp_LyZeeuLUQE73qsgo-sgGODkI-2pNW9fKzjAmH_wOm8Pg2_Sek4Npj7T9ju4py6JkiXjV_NpxoSeqzUMoZCb9DVseEhEf7XJ_gazYfs9mXhi_g6PNxGba95r1pzqxXOqHGQ1SZ0CCaGRejqjEUSuaoqO-k0d2rTDSRZkOKJU5qQVCchmbCrez5ZfOo-SBld52qYY2CckrPmd1koHsg4t5wvgm-GTWfWwl3dVtiFqt9lWrv9NQ8oe7aL-"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex flex-col justify-center px-8">
+<h3 class="text-white font-bold text-xl">Make your listing stand out.</h3>
+<p class="text-white/80 text-sm max-w-xs mt-1">Quality descriptions attract quality people.</p>
+</div>
+</section>
+<!-- Final Action -->
+<div class="pt-8 flex flex-col md:flex-row items-center gap-6">
+<button class="w-full md:w-auto px-12 py-5 bg-primary text-on-primary font-bold rounded-full text-lg shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95" type="submit">
+                    Post Job
+                </button>
+<button class="text-on-surface-variant font-bold hover:text-primary transition-colors" type="button">
+                    Save as Draft
+                </button>
+</div>
+</form>
+</main>
+<!-- Navigation suppression: Not rendering BottomNavBar because this is a focused Task-Focused/Transactional journey -->
+</body></html>

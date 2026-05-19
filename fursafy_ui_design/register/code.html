@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register | Fursafy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f4",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed": "#ffddb7",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface-bright": "#faf9f4",
+                        "surface-tint": "#006c4e",
+                        "outline-variant": "#bccac1",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "primary-fixed-dim": "#68dbae",
+                        "surface-container": "#efeee9",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-container": "#b85751",
+                        "on-error": "#ffffff",
+                        "primary-container": "#008560",
+                        "primary": "#00694c",
+                        "secondary-container": "#fcaa33",
+                        "inverse-primary": "#68dbae",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-low": "#f4f4ee",
+                        "surface-variant": "#e3e3dd",
+                        "error-container": "#ffdad6",
+                        "background": "#faf9f4",
+                        "on-background": "#1a1c19",
+                        "secondary": "#855400",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "on-secondary-container": "#6b4200",
+                        "outline": "#6d7a73",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "on-surface": "#1a1c19",
+                        "on-surface-variant": "#3d4943",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 24px 48px -12px rgba(26, 28, 25, 0.04);
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #faf9f4;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
+<main class="flex-grow flex flex-col md:flex-row min-h-screen overflow-hidden">
+<!-- Editorial Side Panel (Visual Context) -->
+<section class="hidden md:flex md:w-5/12 bg-primary relative overflow-hidden flex-col justify-between p-12 lg:p-16">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-12">
+<span class="text-primary-fixed font-headline font-black text-3xl tracking-tighter">Fursafy</span>
+</div>
+<h1 class="text-surface text-5xl lg:text-7xl font-headline font-extrabold leading-[1.1] tracking-tight mb-6">
+                    Step into <br/>your <span class="text-secondary-fixed">growth</span> <br/>era.
+                </h1>
+<p class="text-primary-fixed/80 text-lg font-body max-w-sm">
+                    Connect with premium opportunities curated for the next generation of Tanzanian leaders.
+                </p>
+</div>
+<div class="absolute inset-0 opacity-20 mix-blend-overlay">
+<img class="w-full h-full object-cover" data-alt="Modern collaborative workspace with natural light, showcasing a professional and aspirational environment for career growth" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP8z-zc0PupoOpAZL6sd2Plt3upoPghgn26i1PYQRIQaUsp67tSrIu3_ZIc-6raJdJrUPk4qilxo72nM2KjEryprs76yI_pLv6w1zaobwRZnCM9om4MbyOFXwudmYfydLjYKtZT0v6F0DJwccoCIwSW16UA-BExuEjf_oD6iEnMjXw6whYhj0lCixGUFceZjCdxOZAGUsQizEL2byssbIXGmyJtjmD79QLxT8didulpINImP4OWVrkLspGMst70lTEI_wNvB1mA6uX"/>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-4 p-6 bg-surface-container-lowest/10 backdrop-blur-md rounded-xl border border-surface-container-lowest/10">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="Portrait of a confident young Tanzanian professional woman smiling warmly in soft natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Lgkpmk8HQI5640iUZ6Jy9aHXAab13EeGoNeEzrjzm13J5MGh8QcFqqbNoocnYc6JPkfRCwkxgrKJHVDVh9NG1gMrxwiUycvutL8lsnUAA8FWgnODW6-Y5zzo_O45XMPqBFqeNcEJBvaE5-AhL1vkd15cjrtXMhmO5smcxNY8kvoZtNHZGBi2gHy-xBQMJ29n-s666C-vZsplirmlfev1-9hfU1AekPC0gcJEySncrDV0L7tZUIa9jr43miTV7RuZThUiqIwIgcNx"/>
+</div>
+<div>
+<p class="text-surface font-semibold text-sm">Join 5,000+ peers</p>
+<p class="text-primary-fixed/70 text-xs">Recently registered in Dar es Salaam</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Form Canvas -->
+<section class="flex-grow flex flex-col justify-center items-center p-6 md:p-12 lg:p-24 bg-surface relative">
+<!-- Mobile Brand Logo -->
+<div class="md:hidden self-start mb-12">
+<span class="text-primary font-headline font-black text-2xl tracking-tighter">Fursafy</span>
+</div>
+<div class="w-full max-w-md space-y-10">
+<!-- Header Text -->
+<header>
+<h2 class="text-on-surface text-3xl font-headline font-extrabold tracking-tight mb-2">Create your account</h2>
+<p class="text-on-surface-variant font-body">Begin your journey toward excellence.</p>
+</header>
+<form class="space-y-8">
+<!-- Profile Upload Asymmetric Layout -->
+<div class="flex flex-col items-center sm:flex-row gap-6 mb-12">
+<div class="relative group">
+<div class="w-28 h-28 rounded-3xl bg-surface-container-highest flex items-center justify-center overflow-hidden border-4 border-surface shadow-lg group-hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant/40" data-icon="add_a_photo">add_a_photo</span>
+</div>
+<button class="absolute -bottom-2 -right-2 bg-secondary text-on-secondary w-10 h-10 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="text-center sm:text-left space-y-1">
+<h3 class="text-on-surface font-headline font-bold text-lg">Profile Photo</h3>
+<p class="text-on-surface-variant text-sm max-w-[180px]">Help employers recognize you instantly.</p>
+</div>
+</div>
+<div class="space-y-5">
+<!-- Name Field -->
+<div class="relative group">
+<label class="block text-xs font-label font-bold text-on-surface-variant uppercase tracking-widest ml-1 mb-2">Full Name</label>
+<div class="flex items-center bg-surface-container-highest rounded-full px-6 py-4 transition-all focus-within:bg-surface-container-low focus-within:ring-2 ring-primary/10">
+<span class="material-symbols-outlined text-on-surface-variant/60 mr-3" data-icon="person">person</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/40 font-body" placeholder="e.g. Salim Mohammed" type="text"/>
+</div>
+</div>
+<!-- Phone Field -->
+<div class="relative group">
+<label class="block text-xs font-label font-bold text-on-surface-variant uppercase tracking-widest ml-1 mb-2">Phone Number</label>
+<div class="flex items-center bg-surface-container-highest rounded-full px-6 py-4 transition-all focus-within:bg-surface-container-low focus-within:ring-2 ring-primary/10">
+<span class="material-symbols-outlined text-on-surface-variant/60 mr-3" data-icon="call">call</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/40 font-body" placeholder="+255 000 000 000" type="tel"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="relative group">
+<label class="block text-xs font-label font-bold text-on-surface-variant uppercase tracking-widest ml-1 mb-2">Security Key</label>
+<div class="flex items-center bg-surface-container-highest rounded-full px-6 py-4 transition-all focus-within:bg-surface-container-low focus-within:ring-2 ring-primary/10">
+<span class="material-symbols-outlined text-on-surface-variant/60 mr-3" data-icon="lock">lock</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/40 font-body" placeholder="Create a strong password" type="password"/>
+<button class="text-on-surface-variant/60 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-3 px-2">
+<input class="w-5 h-5 rounded-md border-surface-container-highest text-primary focus:ring-primary/20 bg-surface-container-low" type="checkbox"/>
+<label class="text-xs text-on-surface-variant font-body leading-relaxed">
+                            I agree to the <span class="text-primary font-bold hover:underline cursor-pointer">Terms of Service</span> and acknowledge the <span class="text-primary font-bold hover:underline cursor-pointer">Privacy Policy</span>.
+                        </label>
+</div>
+<!-- Actions -->
+<div class="space-y-4 pt-4">
+<button class="w-full bg-primary text-on-primary py-5 rounded-full font-headline font-bold text-lg editorial-shadow active:scale-[0.98] transition-transform flex items-center justify-center gap-2" type="submit">
+                            Complete Registration
+                            <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<div class="flex items-center justify-center gap-2 pt-2">
+<p class="text-on-surface-variant text-sm font-body">Already have an account?</p>
+<a class="text-primary font-bold text-sm hover:underline" href="#">Log in here</a>
+</div>
+</div>
+</form>
+</div>
+<!-- Subtle background branding element -->
+<div class="absolute -bottom-16 -right-16 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -top-16 -left-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+</section>
+</main>
+</body></html>
