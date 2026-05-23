@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
+import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 /// S08 — Job Detail screen (Youth view) — Stitch editorial design.
@@ -20,6 +24,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   JobEntity? _job;
   bool _loading = true;
   bool _bookmarked = false;
+  bool _hasApplied = false;
+  bool _isApplying = false;
 
   @override
   void initState() {
@@ -34,8 +40,25 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           .doc(widget.jobId)
           .get();
       if (doc.exists && doc.data() != null) {
+        final job = JobEntity.fromMap(doc.id, doc.data()!);
+        
+        bool hasApplied = false;
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final appSnap = await FirebaseFirestore.instance
+              .collection(FirestorePaths.applications)
+              .where('jobId', isEqualTo: job.id)
+              .where('youthId', isEqualTo: user.uid)
+              .limit(1)
+              .get();
+          if (appSnap.docs.isNotEmpty) {
+            hasApplied = true;
+          }
+        }
+
         setState(() {
-          _job = JobEntity.fromMap(doc.id, doc.data()!);
+          _job = job;
+          _hasApplied = hasApplied;
           _loading = false;
         });
       } else {
@@ -145,7 +168,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             // Confirm Application button
             SizedBox(width: double.infinity, height: 56,
               child: ElevatedButton(
-                onPressed: () { Navigator.pop(ctx); _showSuccessDialog(); },
+                onPressed: () { 
+                  Navigator.pop(ctx); 
+                  _submitApplication(coverController.text.trim()); 
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FursafyTheme.primary,
                   foregroundColor: FursafyTheme.onPrimary,
@@ -180,6 +206,55 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _submitApplication(String coverMessage) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || _job == null) return;
+
+    setState(() => _isApplying = true);
+
+    try {
+      String youthName = user.displayName ?? 'Youth';
+      String? youthAvatarUrl = user.photoURL;
+
+      final userDoc = await FirebaseFirestore.instance.collection(FirestorePaths.users).doc(user.uid).get();
+      if (userDoc.exists) {
+        youthName = userDoc.data()?['displayName'] ?? youthName;
+        youthAvatarUrl = userDoc.data()?['avatarUrl'] ?? youthAvatarUrl;
+      }
+
+      final appRef = FirebaseFirestore.instance.collection(FirestorePaths.applications).doc();
+      final appEntity = ApplicationEntity(
+        id: appRef.id,
+        jobId: _job!.id,
+        jobTitle: _job!.title,
+        youthId: user.uid,
+        youthName: youthName,
+        youthAvatarUrl: youthAvatarUrl,
+        providerId: _job!.providerId,
+        status: ApplicationStatus.pending,
+        coverMessage: coverMessage.isNotEmpty ? coverMessage : null,
+        appliedAt: DateTime.now(),
+      );
+
+      await appRef.set(appEntity.toMap());
+
+      if (mounted) {
+        setState(() {
+          _hasApplied = true;
+          _isApplying = false;
+        });
+        _showSuccessDialog();
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isApplying = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send application.')),
+        );
+      }
+    }
   }
 
   void _showSuccessDialog() {
@@ -239,8 +314,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 SizedBox(width: double.infinity, height: 52,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.pop(context);
+                      Navigator.pop(ctx); // Close dialog
+                      context.push(AppRoutes.myApplications);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: FursafyTheme.primary,
@@ -589,20 +664,27 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           // Apply button
           Expanded(child: SizedBox(height: 56,
             child: ElevatedButton(
-              onPressed: _showApplySheet,
+              onPressed: _hasApplied || _isApplying ? null : _showApplySheet,
               style: ElevatedButton.styleFrom(
+                disabledBackgroundColor: _hasApplied ? FursafyTheme.surfaceContainerHighest : null,
+                disabledForegroundColor: _hasApplied ? FursafyTheme.onSurfaceVariant : null,
                 backgroundColor: FursafyTheme.primary,
                 foregroundColor: FursafyTheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-                elevation: 8,
+                elevation: _hasApplied ? 0 : 8,
                 shadowColor: FursafyTheme.primary.withValues(alpha: 0.3)),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Apply Now', style: FursafyTheme.headlineStyle.copyWith(
-                  fontWeight: FontWeight.w800, fontSize: 18)),
-                const SizedBox(width: 8),
-                const Icon(Icons.bolt, size: 20),
-              ]),
+              child: _isApplying
+                  ? const SizedBox(
+                      width: 24, height: 24,
+                      child: CircularProgressIndicator(color: FursafyTheme.onPrimary, strokeWidth: 2))
+                  : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Text(_hasApplied ? 'Applied' : 'Apply Now', style: FursafyTheme.headlineStyle.copyWith(
+                        fontWeight: FontWeight.w800, fontSize: 18,
+                        color: _hasApplied ? FursafyTheme.onSurfaceVariant : FursafyTheme.onPrimary)),
+                      const SizedBox(width: 8),
+                      if (!_hasApplied) const Icon(Icons.bolt, size: 20),
+                    ]),
             ),
           )),
         ]),

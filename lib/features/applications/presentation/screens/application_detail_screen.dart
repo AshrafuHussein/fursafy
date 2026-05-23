@@ -19,6 +19,11 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
   Map<String, dynamic>? _job;
   Map<String, dynamic>? _provider;
   bool _loading = true;
+  Map<String, bool> _appChecklist = {
+    'reviewOffer': true,
+    'backgroundCheck': false,
+    'equipmentSetup': false,
+  };
 
   @override
   void initState() {
@@ -51,9 +56,70 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
         _app = app;
         _job = jobDoc.data();
         _provider = providerData;
+        _appChecklist = app.checklist ?? {
+          'reviewOffer': true,
+          'backgroundCheck': false,
+          'equipmentSetup': false,
+        };
         _loading = false;
       });
     } catch (_) { setState(() => _loading = false); }
+  }
+
+  Future<void> _toggleChecklistItem(String key) async {
+    if (_app == null) return;
+    final currentVal = _appChecklist[key] ?? false;
+    final newVal = !currentVal;
+
+    setState(() {
+      _appChecklist[key] = newVal;
+    });
+
+    try {
+      await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .doc(_app!.id)
+          .update({'checklist': _appChecklist});
+    } catch (e) {
+      setState(() {
+        _appChecklist[key] = currentVal;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update checklist: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmArrival() async {
+    if (_app == null) return;
+    setState(() => _loading = true);
+    try {
+      await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .doc(widget.applicationId)
+          .update({'arrived': true});
+      
+      setState(() {
+        _app = _app!.copyWith(arrived: true);
+        _loading = false;
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Arrival confirmed! You can now rate the provider.'),
+        backgroundColor: FursafyTheme.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ));
+    } catch (e) {
+      setState(() => _loading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to confirm arrival: $e'),
+      ));
+    }
   }
 
   @override
@@ -128,7 +194,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                       Expanded(child: _statCard(
                         icon: Icons.event_available, iconColor: FursafyTheme.primary,
                         label: 'STARTING DATE',
-                        value: 'To be confirmed')),
+                        value: 'Oct 15, 2023')),
                     ]),
                     const SizedBox(height: 24),
 
@@ -136,9 +202,13 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                     _contactCard(),
                     const SizedBox(height: 24),
 
+                    // Location & Office (Map Section)
+                    _locationOffice(),
+                    const SizedBox(height: 24),
+
                     // Next Steps
                     _nextSteps(),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 120),
                   ],
                 ),
       // Bottom CTA
@@ -151,15 +221,17 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                   colors: [FursafyTheme.surface.withValues(alpha: 0), FursafyTheme.surface])),
               child: SizedBox(height: 56,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _app!.arrived
+                      ? () => context.push('/rate/${_app!.jobId}')
+                      : _confirmArrival,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: FursafyTheme.primary,
-                    foregroundColor: FursafyTheme.onPrimary,
+                    backgroundColor: _app!.arrived ? FursafyTheme.secondary : FursafyTheme.primary,
+                    foregroundColor: _app!.arrived ? FursafyTheme.onSecondary : FursafyTheme.onPrimary,
                     elevation: 8,
-                    shadowColor: FursafyTheme.primary.withValues(alpha: 0.2),
+                    shadowColor: (_app!.arrived ? FursafyTheme.secondary : FursafyTheme.primary).withValues(alpha: 0.2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100))),
-                  child: Text('Confirm Arrival for Onboarding',
+                  child: Text(_app!.arrived ? 'Rate Provider' : 'Confirm Arrival for Onboarding',
                     style: FursafyTheme.headlineStyle.copyWith(
                       fontWeight: FontWeight.w700, fontSize: 16)),
                 ),
@@ -290,7 +362,11 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
           Row(children: [
             Expanded(child: SizedBox(height: 48,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Starting chat...')),
+                  );
+                },
                 icon: const Icon(Icons.chat, size: 18),
                 label: Text('Message', style: FursafyTheme.bodyStyle.copyWith(
                   fontWeight: FontWeight.w700)),
@@ -305,7 +381,11 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
             const SizedBox(width: 12),
             Expanded(child: SizedBox(height: 48,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Calling coordinator...')),
+                  );
+                },
                 icon: const Icon(Icons.call, size: 18),
                 label: Text('Call', style: FursafyTheme.bodyStyle.copyWith(
                   fontWeight: FontWeight.w700)),
@@ -323,11 +403,151 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
     );
   }
 
+  Widget _locationOffice() {
+    final locationName = _job?['locationName'] as String? ?? 'Arusha';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Location & Office',
+              style: FursafyTheme.headlineStyle.copyWith(
+                fontSize: 20, fontWeight: FontWeight.w700)),
+            TextButton.icon(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Opening Full Map...')),
+                );
+              },
+              icon: const Icon(Icons.open_in_new, size: 16, color: FursafyTheme.primary),
+              label: Text('Full Map',
+                style: FursafyTheme.bodyStyle.copyWith(
+                  color: FursafyTheme.primary, fontWeight: FontWeight.w700, fontSize: 14)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 192,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: FursafyTheme.surfaceContainerHighest,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                // Map Background Image
+                Image.network(
+                  'https://lh3.googleusercontent.com/aida-public/AB6AXuDcOphAbOCDauBa3erj3-fXuSybsj0Pu7CJovpscNNclpgqAhOweKYVU0TIYdkV_tQYjiZL74i2HnwPH4coIaZT-tL9lHXzfLiY9EU5tUDr8ty5DClZjZjEy8gow83KY-eoHiAtFBoeN0Dei53ycT_t-NNDgRwapL-Yj9MW4QdGG5EkaIaJaOr36Sj-80XtymrZ8quT_DlawkGyXsgfH733NwT9vVB6p7O9vw_-IxDSwKK7wA_daEI9g85VywnGtsNC0AgN5XTAlUmV',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                // Gradient overlay
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.4)],
+                      ),
+                    ),
+                  ),
+                ),
+                // Pulse Center Pin
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: FursafyTheme.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: FursafyTheme.primary.withValues(alpha: 0.4),
+                          blurRadius: 16,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.location_on, color: Colors.white, size: 24),
+                  ),
+                ),
+                // Bottom banner on map
+                Positioned(
+                  bottom: 12,
+                  left: 12,
+                  right: 12,
+                  child: Row(
+                    children: [
+                      // Address card
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('GreenRoots Hub',
+                                style: FursafyTheme.headlineStyle.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: FursafyTheme.primary)),
+                              const SizedBox(height: 2),
+                              Text('Plot 45, Nyerere Road, $locationName',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: FursafyTheme.bodyStyle.copyWith(
+                                  fontSize: 10,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // View Directions Button
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Calculating Route...')),
+                          );
+                        },
+                        icon: const Icon(Icons.directions, size: 16),
+                        label: const Text('Directions'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: FursafyTheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          textStyle: FursafyTheme.bodyStyle.copyWith(
+                            fontSize: 11, fontWeight: FontWeight.w700),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _nextSteps() {
     final steps = [
-      {'title': 'Review Offer Letter', 'desc': 'Check your email for the document.', 'done': true},
-      {'title': 'Background Check', 'desc': 'Upload your national ID via the portal.', 'done': false},
-      {'title': 'Equipment Setup', 'desc': 'Coordinate with the provider for pickup.', 'done': false},
+      {'key': 'reviewOffer', 'title': 'Review Offer Letter', 'desc': 'The document was sent to your email yesterday.'},
+      {'key': 'backgroundCheck', 'title': 'Background Check Verification', 'desc': 'Upload your national ID via the portal.'},
+      {'key': 'equipmentSetup', 'title': 'Equipment Setup', 'desc': 'Coordinate with Baraka for laptop pickup.'},
     ];
     return Container(
       padding: const EdgeInsets.all(24),
@@ -341,40 +561,48 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
             fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 20),
           ...steps.map((s) {
-            final done = s['done'] as bool;
+            final key = s['key'] as String;
+            final done = _appChecklist[key] ?? false;
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 24, height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: done ? FursafyTheme.primary : FursafyTheme.outlineVariant,
-                        width: 2)),
-                    child: done
-                        ? const Icon(Icons.check, size: 14, color: FursafyTheme.primary)
-                        : null,
+              child: InkWell(
+                onTap: () => _toggleChecklistItem(key),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 24, height: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: done ? FursafyTheme.primary : FursafyTheme.outlineVariant,
+                            width: 2)),
+                        child: done
+                            ? const Icon(Icons.check, size: 14, color: FursafyTheme.primary)
+                            : null,
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(child: Opacity(
+                        opacity: done ? 1.0 : 0.6,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(s['title'] as String,
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                fontSize: 14, fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 2),
+                            Text(s['desc'] as String,
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                  fontSize: 12, color: FursafyTheme.onSurfaceVariant)),
+                          ],
+                        ),
+                      )),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(child: Opacity(
-                    opacity: done ? 1.0 : 0.6,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s['title'] as String,
-                          style: FursafyTheme.bodyStyle.copyWith(
-                            fontSize: 14, fontWeight: FontWeight.w700)),
-                        const SizedBox(height: 2),
-                        Text(s['desc'] as String,
-                          style: FursafyTheme.bodyStyle.copyWith(
-                            fontSize: 12, color: FursafyTheme.onSurfaceVariant)),
-                      ],
-                    ),
-                  )),
-                ],
+                ),
               ),
             );
           }),
