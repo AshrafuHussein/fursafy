@@ -108,13 +108,50 @@ class RatingRepositoryImpl implements RatingRepository {
       final total = snap.docs.fold<int>(
           0, (acc, d) => acc + (d.data()['score'] as int? ?? 0));
       final avg = total / snap.docs.length;
+      
+      final ratingAvg = double.parse(avg.toStringAsFixed(1));
+      final ratingCount = snap.docs.length;
 
+      // Update in users collection
       await _db.collection(FirestorePaths.users).doc(userId).update({
-        'averageRating': double.parse(avg.toStringAsFixed(1)),
-        'totalRatings': snap.docs.length,
+        'ratingAvg': ratingAvg,
+        'ratingCount': ratingCount,
+        'averageRating': ratingAvg, // Keep for backward compatibility with profile screen
+        'totalRatings': ratingCount,
       });
-    } catch (_) {
-      // Non-critical — silently fail
+      
+      // Also attempt to update youth_profiles if it exists
+      try {
+        await _db.collection(FirestorePaths.youthProfiles).doc(userId).update({
+          'ratingAvg': ratingAvg,
+          'ratingCount': ratingCount,
+          'averageRating': ratingAvg,
+        });
+      } catch (_) {}
+
+      // If the rated user is a provider, update the rating on all their jobs
+      try {
+        final jobsSnap = await _db
+            .collection(FirestorePaths.jobs)
+            .where('providerId', isEqualTo: userId)
+            .get();
+            
+        if (jobsSnap.docs.isNotEmpty) {
+          final batch = _db.batch();
+          for (final doc in jobsSnap.docs) {
+            batch.update(doc.reference, {
+              'providerRating': ratingAvg,
+            });
+          }
+          await batch.commit();
+        }
+      } catch (e) {
+        print('[RatingRepository] Error updating jobs rating: $e');
+      }
+      
+    } catch (e, stack) {
+      print('[RatingRepository] _updateAverageScore error: $e');
+      print('[RatingRepository] Stack: $stack');
     }
   }
 }

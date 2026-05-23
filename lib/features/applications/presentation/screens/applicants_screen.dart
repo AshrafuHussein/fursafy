@@ -49,7 +49,13 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
           .collection(FirestorePaths.applications).doc(app.id)
           .update({'status': status.name});
 
+      debugPrint('[Applicants] Status updated to ${status.name} for app=${app.id}');
+      debugPrint('[Applicants] Writing notification for youthId=${app.youthId}');
+
       // Write notification for the youth in user-specific sub-collection
+      final notifPath = 'notifications/${app.youthId}/items';
+      debugPrint('[Applicants] Notification path: $notifPath');
+
       await FirebaseFirestore.instance
           .collection('notifications')
           .doc(app.youthId)
@@ -66,11 +72,16 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
         'applicationId': app.id,
       });
 
+      debugPrint('[Applicants] Notification written successfully!');
+
       setState(() {
         final i = _applicants.indexWhere((a) => a.id == app.id);
         if (i != -1) _applicants[i] = app.copyWith(status: status);
       });
-    } catch (_) {}
+    } catch (e, stack) {
+      debugPrint('[Applicants] ERROR in _updateStatus: $e');
+      debugPrint('[Applicants] Stack: $stack');
+    }
   }
 
   void _showConfirmDialog(ApplicationEntity app, bool isAccept) {

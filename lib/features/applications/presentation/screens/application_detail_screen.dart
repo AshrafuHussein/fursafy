@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
+import 'package:go_router/go_router.dart';
 
 /// Application Detail — Accepted status view with provider contact,
 /// salary info, and next steps checklist (Stitch design).

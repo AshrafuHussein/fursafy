@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/ratings/domain/entities/rating_entity.dart';
+import 'package:fursafy/features/ratings/data/repositories/rating_repository_impl.dart';
 
 /// Rating Screen — Provider rates Youth after job completion (Stitch design).
 class ProviderRatingScreen extends StatefulWidget {
@@ -67,13 +68,19 @@ class _ProviderRatingScreenState extends State<ProviderRatingScreen> {
       final traitStr = _selectedTraits.isNotEmpty
           ? ' [${_selectedTraits.join(', ')}]' : '';
       final comment = '${_commentCtrl.text.trim()}$traitStr';
-      final rating = RatingEntity(
-        id: '', raterId: uid, raterName: userName,
-        rateeId: _youthId, jobId: widget.jobId,
-        score: _score, comment: comment, createdAt: DateTime.now(),
+      final repo = RatingRepositoryImpl();
+      final res = await repo.submitRating(
+        raterId: uid,
+        raterName: userName,
+        rateeId: _youthId,
+        jobId: widget.jobId,
+        score: _score,
+        comment: comment,
       );
-      await FirebaseFirestore.instance
-          .collection(FirestorePaths.ratings).add(rating.toMap());
+      
+      if (res.failure != null) {
+        throw Exception(res.failure!.message);
+      }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

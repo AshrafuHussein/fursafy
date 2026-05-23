@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/router.dart';
+import 'package:fursafy/core/constants/app_constants.dart';
 
 /// S11 — Notifications screen — Editorial "Daily Curation" design.
 class NotificationsScreen extends StatefulWidget {
@@ -28,28 +29,53 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Future<void> _loadNotifications() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
+    debugPrint('[Notifications] Loading for uid=$uid');
     if (uid == null) {
       setState(() => _loading = false);
       return;
     }
     try {
-      final snap = await FirebaseFirestore.instance
+      final ref = FirebaseFirestore.instance
           .collection('notifications')
           .doc(uid)
-          .collection('items')
-          .orderBy('createdAt', descending: true)
+          .collection('items');
+
+      debugPrint('[Notifications] Query path: ${ref.path}');
+
+      // Simple get without orderBy — avoids index requirements on sub-collections
+      final snap = await ref
           .limit(30)
-          .get();
+          .get()
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint('[Notifications] Got ${snap.docs.length} docs');
+      for (final d in snap.docs) {
+        debugPrint('[Notifications]  -> ${d.id}: ${d.data()}');
+      }
+
+      final items = snap.docs.map((d) {
+        final data = d.data();
+        data['id'] = d.id;
+        return data;
+      }).toList();
+
+      // Sort client-side: newest first
+      items.sort((a, b) {
+        final aTime = a['createdAt'] as Timestamp?;
+        final bTime = b['createdAt'] as Timestamp?;
+        if (aTime == null && bTime == null) return 0;
+        if (aTime == null) return 1;
+        if (bTime == null) return -1;
+        return bTime.compareTo(aTime);
+      });
 
       setState(() {
-        _notifications = snap.docs.map((d) {
-          final data = d.data();
-          data['id'] = d.id;
-          return data;
-        }).toList();
+        _notifications = items;
         _loading = false;
       });
-    } catch (_) {
+    } catch (e, stack) {
+      debugPrint('[Notifications] ERROR: $e');
+      debugPrint('[Notifications] Stack: $stack');
       setState(() => _loading = false);
     }
   }
