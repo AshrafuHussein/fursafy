@@ -96,7 +96,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: GestureDetector(
-                          onTap: () => setState(() => _activeTab = i),
+                           onTap: () => setState(() => _activeTab = i),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -153,8 +153,74 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
                     child: _postNewCard(),
                   )),
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
+      ),
+      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    return Container(
+      decoration: BoxDecoration(
+        color: FursafyTheme.surface.withValues(alpha: 0.9),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(Icons.home_max, 'HOME', false, onTap: () => context.go(AppRoutes.providerDashboard)),
+              _buildNavItem(Icons.work, 'WORK', true),
+              _buildNavItem(Icons.add_circle_outline, 'ADD', false, onTap: () => context.push(AppRoutes.postJob)),
+              _buildNavItem(Icons.mail_outline, 'INBOX', false, onTap: () => context.go(AppRoutes.notifications)),
+              _buildNavItem(Icons.person_outline, 'PROFILE', false, onTap: () => context.go(AppRoutes.profile)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool isActive, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? FursafyTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive ? FursafyTheme.primary : FursafyTheme.outline,
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: FursafyTheme.labelStyle.copyWith(
+                color: isActive ? FursafyTheme.primary : FursafyTheme.outline,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

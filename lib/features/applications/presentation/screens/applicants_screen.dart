@@ -48,11 +48,40 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
       await FirebaseFirestore.instance
           .collection(FirestorePaths.applications).doc(app.id)
           .update({'status': status.name});
+
+      debugPrint('[Applicants] Status updated to ${status.name} for app=${app.id}');
+      debugPrint('[Applicants] Writing notification for youthId=${app.youthId}');
+
+      // Write notification for the youth in user-specific sub-collection
+      final notifPath = 'notifications/${app.youthId}/items';
+      debugPrint('[Applicants] Notification path: $notifPath');
+
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(app.youthId)
+          .collection('items')
+          .add({
+        'type': status == ApplicationStatus.accepted ? 'application_accepted' : 'application_rejected',
+        'title': status == ApplicationStatus.accepted ? 'Application Accepted' : 'Application Rejected',
+        'message': status == ApplicationStatus.accepted
+            ? 'Your application for ${app.jobTitle} has been accepted!'
+            : 'Your application for ${app.jobTitle} was not selected.',
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+        'jobId': app.jobId,
+        'applicationId': app.id,
+      });
+
+      debugPrint('[Applicants] Notification written successfully!');
+
       setState(() {
         final i = _applicants.indexWhere((a) => a.id == app.id);
         if (i != -1) _applicants[i] = app.copyWith(status: status);
       });
-    } catch (_) {}
+    } catch (e, stack) {
+      debugPrint('[Applicants] ERROR in _updateStatus: $e');
+      debugPrint('[Applicants] Stack: $stack');
+    }
   }
 
   void _showConfirmDialog(ApplicationEntity app, bool isAccept) {
@@ -354,6 +383,23 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                         fontWeight: FontWeight.w700, fontSize: 14)),
                     ),
                   )),
+                ])
+              else if (app.status == ApplicationStatus.accepted)
+                Row(children: [
+                  Expanded(child: SizedBox(height: 40,
+                    child: ElevatedButton(
+                      onPressed: () => context.push('/provider/rate/${app.jobId}'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: FursafyTheme.secondary,
+                        foregroundColor: FursafyTheme.onSecondary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
+                      ),
+                      child: Text('Rate Worker', style: FursafyTheme.bodyStyle.copyWith(
+                        fontWeight: FontWeight.w700, fontSize: 14)),
+                    ),
+                  )),
                 ]),
             ],
           )),
@@ -494,6 +540,20 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                           borderRadius: BorderRadius.circular(100))),
                       child: Text('Reject', style: FursafyTheme.bodyStyle.copyWith(
                         fontWeight: FontWeight.w700, fontSize: 16, color: FursafyTheme.error)),
+                    ),
+                  ),
+                ] else if (app.status == ApplicationStatus.accepted) ...[
+                  SizedBox(height: 52, width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () { Navigator.pop(ctx); context.push('/provider/rate/${app.jobId}'); },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: FursafyTheme.secondary,
+                        foregroundColor: FursafyTheme.onSecondary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100))),
+                      child: Text('Rate Worker', style: FursafyTheme.bodyStyle.copyWith(
+                        fontWeight: FontWeight.w700, fontSize: 16)),
                     ),
                   ),
                 ],

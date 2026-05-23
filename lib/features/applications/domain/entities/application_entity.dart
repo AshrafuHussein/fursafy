@@ -15,6 +15,9 @@ class ApplicationEntity extends Equatable {
   final String? coverMessage;
   final DateTime appliedAt;
 
+  final Map<String, bool>? checklist;
+  final bool arrived;
+
   const ApplicationEntity({
     required this.id,
     required this.jobId,
@@ -26,10 +29,12 @@ class ApplicationEntity extends Equatable {
     this.status = ApplicationStatus.pending,
     this.coverMessage,
     required this.appliedAt,
+    this.checklist,
+    this.arrived = false,
   });
 
   @override
-  List<Object?> get props => [id, jobId, youthId, status, appliedAt];
+  List<Object?> get props => [id, jobId, youthId, status, appliedAt, checklist, arrived];
 
   Map<String, dynamic> toMap() => {
         'jobId': jobId,
@@ -41,6 +46,8 @@ class ApplicationEntity extends Equatable {
         'status': status.name,
         'coverMessage': coverMessage,
         'appliedAt': Timestamp.fromDate(appliedAt),
+        'checklist': checklist,
+        'arrived': arrived,
       };
 
   factory ApplicationEntity.fromMap(String id, Map<String, dynamic> map) =>
@@ -57,6 +64,10 @@ class ApplicationEntity extends Equatable {
         coverMessage: map['coverMessage'] as String?,
         appliedAt:
             (map['appliedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        checklist: map['checklist'] != null
+            ? Map<String, bool>.from(map['checklist'] as Map)
+            : null,
+        arrived: map['arrived'] as bool? ?? false,
       );
 
   ApplicationEntity copyWith({
@@ -70,6 +81,8 @@ class ApplicationEntity extends Equatable {
     ApplicationStatus? status,
     String? coverMessage,
     DateTime? appliedAt,
+    Map<String, bool>? checklist,
+    bool? arrived,
   }) =>
       ApplicationEntity(
         id: id ?? this.id,
@@ -82,5 +95,7 @@ class ApplicationEntity extends Equatable {
         status: status ?? this.status,
         coverMessage: coverMessage ?? this.coverMessage,
         appliedAt: appliedAt ?? this.appliedAt,
+        checklist: checklist ?? this.checklist,
+        arrived: arrived ?? this.arrived,
       );
 }

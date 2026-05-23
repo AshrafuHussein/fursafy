@@ -384,7 +384,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
 
   Widget _buildEditorialJobCard(JobEntity job) {
     return GestureDetector(
-      onTap: () => context.push('/jobs/${job.id}'),
+      onTap: () => context.push('/provider/jobs/${job.id}/applicants'),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),

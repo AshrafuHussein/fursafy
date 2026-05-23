@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
+import 'package:fursafy/features/profile/presentation/widgets/skill_picker_dialog.dart';
 
-/// S12 — Youth Profile screen (Stitch Exact Match).
+
+/// S12 — Youth Profile screen — Editorial hero design.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -51,292 +53,712 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _openSkillPicker(List<String> currentSkills) async {
+    final result = await Navigator.of(context).push<List<String>>(
+      MaterialPageRoute(
+        builder: (context) => SkillPickerDialog(initialSelectedSkills: currentSkills),
+        fullscreenDialog: true,
+      ),
+    );
+
+    if (result != null) {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return;
+
+      setState(() => _loading = true);
+      try {
+        await FirebaseFirestore.instance
+            .collection(FirestorePaths.youthProfiles)
+            .doc(uid)
+            .set({
+          'skills': result,
+        }, SetOptions(merge: true));
+
+        await _loadProfile();
+      } catch (e) {
+        setState(() => _loading = false);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating skills: $e'),
+            backgroundColor: FursafyTheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     if (_userData?['role'] == 'provider') {
-        // Redirection logic should ideally be in router, 
-        // but for immediate fix if they land here:
-        return const Center(child: Text('Redirecting to Provider Profile...'));
+      return const Center(child: Text('Redirecting to Provider Profile...'));
     }
 
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: FursafyTheme.surface.withValues(alpha: 0.8),
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: FursafyTheme.primary),
-          onPressed: () => Navigator.pop(context),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: FursafyTheme.surfaceContainerHighest,
+              ),
+              child: const Icon(Icons.person, color: FursafyTheme.onSurfaceVariant),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'FURSAFY',
+              style: FursafyTheme.headlineStyle.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: FursafyTheme.primary,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
-            onPressed: () => context.push(AppRoutes.editProfile),
-            icon: const Icon(Icons.settings_outlined, color: FursafyTheme.onSurfaceVariant),
+            icon: const Icon(Icons.notifications, color: FursafyTheme.primary),
+            onPressed: () => context.go(AppRoutes.notifications),
           ),
           const SizedBox(width: 8),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: FursafyTheme.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: FursafyTheme.primary))
           : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom + 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Editorial Header
-                  Text(
-                    'CURATOR OF PROGRESS',
-                    style: FursafyTheme.labelStyle.copyWith(
-                      color: FursafyTheme.primary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
-                      fontSize: 10,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: FursafyTheme.surfaceContainerHighest,
-                        backgroundImage: _userData?['avatarUrl'] != null
-                            ? NetworkImage(_userData!['avatarUrl'] as String)
-                            : null,
-                        child: _userData?['avatarUrl'] == null
-                            ? const Icon(Icons.person, size: 40, color: FursafyTheme.outline)
-                            : null,
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _userData?['displayName'] ?? 'Alex Johnson',
-                              style: FursafyTheme.headlineStyle.copyWith(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
-                                height: 1.1,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _userData?['locationName'] ?? 'Dar es Salaam, TZ',
-                              style: FursafyTheme.bodyStyle.copyWith(
-                                color: FursafyTheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  // Hero Image Section
+                  _buildHeroSection(context),
+                  const SizedBox(height: 32),
+
+                  // Stats Bento Grid
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildStatsGrid(),
                   ),
                   const SizedBox(height: 32),
 
-                  // Bio Section
-                  _buildSectionHeader('About', FursafyTheme.primary),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: FursafyTheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      _profileData?['bio'] ?? 'Crafting digital experiences with a focus on human connection and community growth.',
-                      style: FursafyTheme.bodyStyle.copyWith(
-                        height: 1.6,
-                        color: FursafyTheme.onSurfaceVariant,
-                      ),
-                    ),
+                  // Skills Section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildSkillsSection(),
                   ),
                   const SizedBox(height: 32),
 
-                  // Expertise Section (Skills)
-                  _buildSectionHeader('Expertise', FursafyTheme.secondary),
-                  const SizedBox(height: 16),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: ((_profileData?['skills'] as List?) ?? ['UX Design', 'Branding', 'Project Management'])
-                          .map<Widget>((s) => Container(
-                                margin: const EdgeInsets.only(right: 8),
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: FursafyTheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.2)),
-                                ),
-                                child: Text(
-                                  s.toString(),
-                                  style: FursafyTheme.labelStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: FursafyTheme.onSurface,
-                                  ),
-                                ),
-                              ))
-                          .toList(),
-                    ),
+                  // Professional Bio
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildBioSection(),
                   ),
                   const SizedBox(height: 32),
 
-                  // Experience Section
-                  _buildSectionHeader('Experience', FursafyTheme.tertiary),
-                  const SizedBox(height: 16),
-                  _buildExperienceCard(
-                    'Lead Designer',
-                    'Fursafy Creative',
-                    '2022 - Present',
-                    true,
+                  // Location Card
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildLocationCard(),
                   ),
-                  _buildExperienceCard(
-                    'Freelance Illustrator',
-                    'Global Logistics',
-                    '2020 - 2022',
-                    false,
-                  ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
 
-                  // Action Buttons
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: FursafyTheme.primary,
-                        foregroundColor: FursafyTheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'View Public Profile',
-                        style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                  // Sign Out
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildSignOutButton(context),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => context.push(AppRoutes.editProfile),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            side: const BorderSide(color: FursafyTheme.outlineVariant),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                          ),
-                          child: Text(
-                            'Edit Profile',
-                            style: FursafyTheme.bodyStyle.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: FursafyTheme.onSurface,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () async {
-                            await FirebaseAuth.instance.signOut();
-                            if (!context.mounted) return;
-                            context.go(AppRoutes.login);
-                          },
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            foregroundColor: Colors.redAccent,
-                          ),
-                          child: Text(
-                            'Sign Out',
-                            style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 64),
                 ],
               ),
             ),
+      bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
-  Widget _buildSectionHeader(String title, Color dotColor) {
-    return Row(
-      children: [
-        Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+  Widget _buildBottomNav(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: FursafyTheme.surfaceContainerLowest,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _navItem(context, Icons.home_max_rounded, 'HOME', false,
+                  onTap: () => context.go(AppRoutes.home)),
+              _navItem(context, Icons.search_rounded, 'SEARCH', false,
+                  onTap: () => context.push(AppRoutes.search)),
+              _navItem(context, Icons.description_outlined, 'APPLIED', false,
+                  onTap: () => context.go(AppRoutes.myApplications)),
+              _navItem(context, Icons.notifications_none_rounded, 'ALERTS', false,
+                  onTap: () => context.go(AppRoutes.notifications)),
+              _navItem(context, Icons.person_outline_rounded, 'PROFILE', true),
+            ],
+          ),
         ),
-        const SizedBox(width: 8),
-        Text(
-          title.toUpperCase(),
-          style: FursafyTheme.labelStyle.copyWith(
-            fontWeight: FontWeight.w900,
-            fontSize: 12,
-            letterSpacing: 1.5,
-            color: FursafyTheme.onSurfaceVariant,
+      ),
+    );
+  }
+
+  Widget _navItem(BuildContext context, IconData icon, String label, bool isActive,
+      {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive
+              ? FursafyTheme.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive ? FursafyTheme.primary : FursafyTheme.outline,
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: FursafyTheme.labelStyle.copyWith(
+                color: isActive ? FursafyTheme.primary : FursafyTheme.outline,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(BuildContext context) {
+    final name = _userData?['displayName'] ?? 'Youth Worker';
+    final avatarUrl = _userData?['avatarUrl'] as String?;
+    final rating = _profileData?['averageRating'] ?? 0.0;
+    final ratingVal =
+        rating is num ? rating.toDouble() : double.tryParse('$rating') ?? 0.0;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Large portrait image
+        Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AspectRatio(
+              aspectRatio: 4 / 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: FursafyTheme.surfaceContainerHigh,
+                ),
+                child: avatarUrl != null && avatarUrl.isNotEmpty
+                    ? Image.network(
+                        avatarUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _buildAvatarPlaceholder(),
+                      )
+                    : _buildAvatarPlaceholder(),
+              ),
+            ),
+          ),
+        ),
+        // Gradient overlay
+        Positioned(
+          left: 24,
+          right: 24,
+          bottom: 0,
+          child: ClipRRect(
+            borderRadius:
+                const BorderRadius.vertical(bottom: Radius.circular(16)),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.6),
+                  ],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: FursafyTheme.headlineStyle.copyWith(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Star Rating
+                  Row(
+                    children: [
+                      ...List.generate(
+                          5,
+                          (i) => Icon(
+                                Icons.star,
+                                size: 20,
+                                color: i < ratingVal.round()
+                                    ? FursafyTheme.secondaryContainer
+                                    : Colors.white.withValues(alpha: 0.3),
+                              )),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${ratingVal.toStringAsFixed(1)} Rating',
+                        style: FursafyTheme.bodyStyle.copyWith(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        // Floating Edit Profile Button
+        Positioned(
+          bottom: -24,
+          right: 32,
+          child: GestureDetector(
+            onTap: () => context.push(AppRoutes.editProfile),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: FursafyTheme.primary,
+                borderRadius: BorderRadius.circular(100),
+                boxShadow: FursafyTheme.floatingShadow,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.edit, color: FursafyTheme.onPrimary, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Edit Profile',
+                    style: FursafyTheme.bodyStyle.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: FursafyTheme.onPrimary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildExperienceCard(String role, String company, String date, bool isCurrent) {
+  Widget _buildAvatarPlaceholder() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: FursafyTheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.1)),
+      color: FursafyTheme.surfaceContainerHigh,
+      child: Center(
+        child: Icon(
+          Icons.person,
+          size: 80,
+          color: FursafyTheme.outlineVariant,
+        ),
       ),
-      child: Row(
-        children: [
-          Expanded(
+    );
+  }
+
+  Widget _buildStatsGrid() {
+    final jobsCompleted = _profileData?['completedJobsCount'] ?? 0;
+    final clientRating = _profileData?['averageRating'] ?? 0.0;
+    final ratingStr = clientRating is num
+        ? clientRating.toDouble().toStringAsFixed(2)
+        : '$clientRating';
+
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            decoration: BoxDecoration(
+              color: FursafyTheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+              ),
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  role,
-                  style: FursafyTheme.headlineStyle.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+                  '$jobsCompleted',
+                  style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: FursafyTheme.primary,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  company,
-                  style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.onSurfaceVariant, fontSize: 13),
+                  'JOBS COMPLETED',
+                  style: FursafyTheme.labelStyle.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.5,
+                    color: FursafyTheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (isCurrent)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: FursafyTheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'CURRENT',
-                    style: FursafyTheme.labelStyle.copyWith(fontSize: 8, color: FursafyTheme.primary, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            decoration: BoxDecoration(
+              color: FursafyTheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  ratingStr,
+                  style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: FursafyTheme.secondary,
                   ),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  'CLIENT RATING',
+                  style: FursafyTheme.labelStyle.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.5,
+                    color: FursafyTheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSkillsSection() {
+    final skills = (_profileData?['skills'] as List?)
+            ?.map((s) => s.toString())
+            .toList() ??
+        [];
+
+    // Material icon mapping for common skills
+    IconData _skillIcon(String skill) {
+      final lower = skill.toLowerCase();
+      if (lower.contains('plumb')) return Icons.plumbing;
+      if (lower.contains('clean')) return Icons.cleaning_services;
+      if (lower.contains('electric')) return Icons.electrical_services;
+      if (lower.contains('carpen')) return Icons.carpenter;
+      if (lower.contains('cook')) return Icons.restaurant;
+      if (lower.contains('driv')) return Icons.local_shipping;
+      if (lower.contains('paint')) return Icons.format_paint;
+      if (lower.contains('manage') || lower.contains('project'))
+        return Icons.trending_up;
+      if (lower.contains('tutor') || lower.contains('teach'))
+        return Icons.school;
+      if (lower.contains('design')) return Icons.design_services;
+      if (lower.contains('photo')) return Icons.camera_alt;
+      return Icons.build;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'My Skills',
+                  style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: FursafyTheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Verified professional capabilities',
+                  style: FursafyTheme.bodyStyle.copyWith(
+                    fontSize: 13,
+                    color: FursafyTheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => _openSkillPicker(skills),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: FursafyTheme.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.edit,
+                      color: FursafyTheme.primary,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.verified, color: FursafyTheme.primary, size: 24),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (skills.isEmpty)
+          GestureDetector(
+            onTap: () => _openSkillPicker(skills),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: FursafyTheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: FursafyTheme.outlineVariant.withValues(alpha: 0.3),
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.add_circle_outline_rounded,
+                    size: 32,
+                    color: FursafyTheme.primary,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'No skills added yet. Tap here to add your skills.',
+                    style: FursafyTheme.bodyStyle.copyWith(
+                      color: FursafyTheme.onSurfaceVariant,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          GestureDetector(
+            onTap: () => _openSkillPicker(skills),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: skills.asMap().entries.map((entry) {
+                final index = entry.key;
+                final skill = entry.value;
+                // Alternate between primary-fixed and secondary-fixed-dim
+                final isPrimaryStyle = index % 4 != 3;
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isPrimaryStyle
+                        ? FursafyTheme.primaryFixed
+                        : FursafyTheme.secondaryFixedDim,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _skillIcon(skill),
+                        size: 16,
+                        color: isPrimaryStyle
+                            ? const Color(0xFF00513A)
+                            : const Color(0xFF653E00),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        skill,
+                        style: FursafyTheme.bodyStyle.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isPrimaryStyle
+                              ? const Color(0xFF00513A)
+                              : const Color(0xFF653E00),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+      ],
+    );
+  }
+
+
+  Widget _buildBioSection() {
+    final bio = _profileData?['bio'] ??
+        'Dedicated worker passionate about delivering premium quality and ensuring satisfaction in every project.';
+
+    return Container(
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: FursafyTheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Stack(
+        children: [
+          // Decorative quote icon
+          Positioned(
+            top: -4,
+            right: -4,
+            child: Icon(
+              Icons.format_quote,
+              size: 48,
+              color: FursafyTheme.onSurface.withValues(alpha: 0.06),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
-                date,
-                style: FursafyTheme.labelStyle.copyWith(color: FursafyTheme.outline, fontSize: 11),
+                'PROFESSIONAL BIO',
+                style: FursafyTheme.labelStyle.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 3.0,
+                  color: FursafyTheme.primary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                bio,
+                style: FursafyTheme.bodyStyle.copyWith(
+                  fontSize: 15,
+                  color: FursafyTheme.onSurface,
+                  height: 1.6,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLocationCard() {
+    final location = _userData?['locationName'] ?? 'Dar es Salaam, TZ';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: FursafyTheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: FursafyTheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.map,
+                color: FursafyTheme.onPrimaryContainer, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                location,
+                style: FursafyTheme.bodyStyle.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: FursafyTheme.onSurface,
+                  fontSize: 15,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Available for service within 20km',
+                style: FursafyTheme.bodyStyle.copyWith(
+                  fontSize: 13,
+                  color: FursafyTheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSignOutButton(BuildContext context) {
+    return Center(
+      child: TextButton.icon(
+        onPressed: () async {
+          await FirebaseAuth.instance.signOut();
+          if (!context.mounted) return;
+          context.go(AppRoutes.login);
+        },
+        icon: Icon(Icons.logout, size: 18, color: Colors.redAccent),
+        label: Text(
+          'Sign Out',
+          style: FursafyTheme.bodyStyle.copyWith(
+            fontWeight: FontWeight.w600,
+            color: Colors.redAccent,
+          ),
+        ),
       ),
     );
   }
