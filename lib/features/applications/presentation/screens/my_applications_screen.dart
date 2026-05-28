@@ -76,13 +76,15 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
       backgroundColor: FursafyTheme.surface,
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: FursafyTheme.primary))
+              child: CircularProgressIndicator(color: FursafyTheme.primary),
+            )
           : CustomScrollView(
               slivers: [
                 // Invisible status bar padding
                 SliverToBoxAdapter(
                   child: SizedBox(
-                      height: MediaQuery.of(context).padding.top + 16),
+                    height: MediaQuery.of(context).padding.top + 16,
+                  ),
                 ),
 
                 // Editorial Header
@@ -125,7 +127,9 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                     child: Container(
                       color: FursafyTheme.surface.withValues(alpha: 0.9),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 8),
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
@@ -146,8 +150,10 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
 
                 // Applications List
                 SliverPadding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   sliver: _buildApplicationsList(),
                 ),
 
@@ -177,15 +183,35 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _navItem(context, Icons.home_max_rounded, 'HOME', false,
-                  onTap: () => context.go(AppRoutes.home)),
-              _navItem(context, Icons.search_rounded, 'SEARCH', false,
-                  onTap: () => context.push(AppRoutes.search)),
+              _navItem(
+                context,
+                Icons.home_max_rounded,
+                'HOME',
+                false,
+                onTap: () => context.go(AppRoutes.home),
+              ),
+              _navItem(
+                context,
+                Icons.search_rounded,
+                'SEARCH',
+                false,
+                onTap: () => context.push(AppRoutes.search),
+              ),
               _navItem(context, Icons.description_outlined, 'APPLIED', true),
-              _navItem(context, Icons.notifications_none_rounded, 'ALERTS', false,
-                  onTap: () => context.go(AppRoutes.notifications)),
-              _navItem(context, Icons.person_outline_rounded, 'PROFILE', false,
-                  onTap: () => context.go(AppRoutes.profile)),
+              _navItem(
+                context,
+                Icons.notifications_none_rounded,
+                'ALERTS',
+                false,
+                onTap: () => context.go(AppRoutes.notifications),
+              ),
+              _navItem(
+                context,
+                Icons.person_outline_rounded,
+                'PROFILE',
+                false,
+                onTap: () => context.go(AppRoutes.profile),
+              ),
             ],
           ),
         ),
@@ -193,8 +219,13 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
     );
   }
 
-  Widget _navItem(BuildContext context, IconData icon, String label, bool isActive,
-      {VoidCallback? onTap}) {
+  Widget _navItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -283,7 +314,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
               ),
               child: Column(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.history_edu,
                     size: 40,
                     color: FursafyTheme.outlineVariant,
@@ -307,46 +338,45 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
     }
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          if (index < apps.length) {
-            return _buildApplicationCard(apps[index], index);
-          }
-          // Footer motivational card
-          return Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 80),
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
-              decoration: BoxDecoration(
-                color: FursafyTheme.surfaceContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: FursafyTheme.outlineVariant.withValues(alpha: 0.3),
-                  width: 2,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Icon(Icons.history_edu,
-                      size: 40, color: FursafyTheme.outlineVariant),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Keep applying to increase your chances!\nNew opportunities added daily.',
-                    textAlign: TextAlign.center,
-                    style: FursafyTheme.bodyStyle.copyWith(
-                      color: FursafyTheme.onSurfaceVariant,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+      delegate: SliverChildBuilderDelegate((context, index) {
+        if (index < apps.length) {
+          return _buildApplicationCard(apps[index], index);
+        }
+        // Footer motivational card
+        return Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 80),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
+            decoration: BoxDecoration(
+              color: FursafyTheme.surfaceContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: FursafyTheme.outlineVariant.withValues(alpha: 0.3),
+                width: 2,
               ),
             ),
-          );
-        },
-        childCount: apps.length + 1,
-      ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.history_edu,
+                  size: 40,
+                  color: FursafyTheme.outlineVariant,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Keep applying to increase your chances!\nNew opportunities added daily.',
+                  textAlign: TextAlign.center,
+                  style: FursafyTheme.bodyStyle.copyWith(
+                    color: FursafyTheme.onSurfaceVariant,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }, childCount: apps.length + 1),
     );
   }
 
@@ -402,7 +432,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                       color: FursafyTheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.work_outline,
                       color: FursafyTheme.primary,
                       size: 28,
@@ -427,9 +457,11 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                           // Location + Date row
                           Row(
                             children: [
-                              Icon(Icons.calendar_today,
-                                  size: 14,
-                                  color: FursafyTheme.onSurfaceVariant),
+                              const Icon(
+                                Icons.calendar_today,
+                                size: 14,
+                                color: FursafyTheme.onSurfaceVariant,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 'Applied ${timeago.format(app.appliedAt)}',
@@ -453,8 +485,10 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                 top: 0,
                 right: 0,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: badgeColor,
                     borderRadius: BorderRadius.circular(100),
@@ -488,7 +522,8 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       foregroundColor: FursafyTheme.onSurfaceVariant,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: Text(
                       'VIEW JOB',
@@ -502,7 +537,8 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                   ),
                 ),
               ),
-              if (app.status == ApplicationStatus.pending || app.status == ApplicationStatus.accepted) ...[
+              if (app.status == ApplicationStatus.pending ||
+                  app.status == ApplicationStatus.accepted) ...[
                 const SizedBox(width: 12),
                 Expanded(
                   child: Container(
@@ -522,10 +558,13 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         foregroundColor: FursafyTheme.onPrimary,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Text(
-                        app.status == ApplicationStatus.accepted ? 'NEXT STEPS' : 'WITHDRAW',
+                        app.status == ApplicationStatus.accepted
+                            ? 'NEXT STEPS'
+                            : 'WITHDRAW',
                         style: FursafyTheme.labelStyle.copyWith(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -557,7 +596,10 @@ class _StickyTabDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 

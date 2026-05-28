@@ -32,14 +32,19 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
 
   Future<void> _loadJobs() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) { setState(() => _loading = false); return; }
+    if (uid == null) {
+      setState(() => _loading = false);
+      return;
+    }
     try {
       final snap = await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs)
           .where('providerId', isEqualTo: uid)
           .orderBy('createdAt', descending: true)
           .get();
-      final jobs = snap.docs.map((d) => JobEntity.fromMap(d.id, d.data())).toList();
+      final jobs = snap.docs
+          .map((d) => JobEntity.fromMap(d.id, d.data()))
+          .toList();
 
       // Fetch applicant counts
       for (final job in jobs) {
@@ -51,12 +56,21 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         _applicantCounts[job.id] = countSnap.count ?? 0;
       }
 
-      setState(() { _jobs = jobs; _loading = false; });
-    } catch (_) { setState(() => _loading = false); }
+      setState(() {
+        _jobs = jobs;
+        _loading = false;
+      });
+    } catch (_) {
+      setState(() => _loading = false);
+    }
   }
 
   List<JobEntity> get _filtered {
-    final statusStr = _activeTab == 0 ? 'open' : _activeTab == 1 ? 'closed' : 'closed';
+    final statusStr = _activeTab == 0
+        ? 'open'
+        : _activeTab == 1
+        ? 'closed'
+        : 'closed';
     return _jobs.where((j) => j.status.name == statusStr).toList();
   }
 
@@ -66,81 +80,126 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
       backgroundColor: FursafyTheme.surface,
       body: SafeArea(
         child: _loading
-            ? const Center(child: CircularProgressIndicator(color: FursafyTheme.primary))
+            ? const Center(
+                child: CircularProgressIndicator(color: FursafyTheme.primary),
+              )
             : CustomScrollView(
                 slivers: [
                   // Editorial Header
-                  SliverToBoxAdapter(child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('My Jobs', style: FursafyTheme.headlineStyle.copyWith(
-                          fontSize: 36, fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5)),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Managing your active opportunities and growing the future of Tanzania.',
-                          style: FursafyTheme.bodyStyle.copyWith(
-                            color: FursafyTheme.onSurfaceVariant, height: 1.5),
-                        ),
-                      ],
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'My Jobs',
+                            style: FursafyTheme.headlineStyle.copyWith(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Managing your active opportunities and growing the future of Tanzania.',
+                            style: FursafyTheme.bodyStyle.copyWith(
+                              color: FursafyTheme.onSurfaceVariant,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
 
                   // Tabs
-                  SliverToBoxAdapter(child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-                    child: Row(children: List.generate(_tabs.length, (i) {
-                      final active = i == _activeTab;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: GestureDetector(
-                           onTap: () => setState(() => _activeTab = i),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: active ? FursafyTheme.primary : FursafyTheme.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(100),
-                              boxShadow: active ? [BoxShadow(
-                                color: FursafyTheme.primary.withValues(alpha: 0.2),
-                                blurRadius: 12, offset: const Offset(0, 4),
-                              )] : null,
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                      child: Row(
+                        children: List.generate(_tabs.length, (i) {
+                          final active = i == _activeTab;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: GestureDetector(
+                              onTap: () => setState(() => _activeTab = i),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: active
+                                      ? FursafyTheme.primary
+                                      : FursafyTheme.surfaceContainerHigh,
+                                  borderRadius: BorderRadius.circular(100),
+                                  boxShadow: active
+                                      ? [
+                                          BoxShadow(
+                                            color: FursafyTheme.primary
+                                                .withValues(alpha: 0.2),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: Text(
+                                  _tabs[i],
+                                  style: FursafyTheme.bodyStyle.copyWith(
+                                    color: active
+                                        ? FursafyTheme.onPrimary
+                                        : FursafyTheme.onSurfaceVariant,
+                                    fontWeight: active
+                                        ? FontWeight.w700
+                                        : FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: Text(_tabs[i], style: FursafyTheme.bodyStyle.copyWith(
-                              color: active ? FursafyTheme.onPrimary : FursafyTheme.onSurfaceVariant,
-                              fontWeight: active ? FontWeight.w700 : FontWeight.w600,
-                              fontSize: 14,
-                            )),
-                          ),
-                        ),
-                      );
-                    })),
-                  )),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
 
                   // Job Cards
                   if (_filtered.isEmpty)
-                    SliverFillRemaining(child: Center(child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.work_off_outlined, size: 56,
-                            color: FursafyTheme.outlineVariant),
-                        const SizedBox(height: 16),
-                        Text('No ${_tabs[_activeTab].toLowerCase()} jobs',
-                            style: FursafyTheme.headlineStyle.copyWith(
-                              fontSize: 18, color: FursafyTheme.onSurfaceVariant)),
-                      ],
-                    )))
+                    SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.work_off_outlined,
+                              size: 56,
+                              color: FursafyTheme.outlineVariant,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No ${_tabs[_activeTab].toLowerCase()} jobs',
+                              style: FursafyTheme.headlineStyle.copyWith(
+                                fontSize: 18,
+                                color: FursafyTheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   else
                     SliverPadding(
                       padding: const EdgeInsets.all(24),
                       sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 1,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 200,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 1,
+                              mainAxisSpacing: 16,
+                              mainAxisExtent: 200,
+                            ),
                         delegate: SliverChildBuilderDelegate(
                           (ctx, i) => _jobCard(_filtered[i]),
                           childCount: _filtered.length,
@@ -149,10 +208,12 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                     ),
 
                   // Post New Job Card
-                  SliverToBoxAdapter(child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-                    child: _postNewCard(),
-                  )),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                      child: _postNewCard(),
+                    ),
+                  ),
 
                   const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
@@ -181,11 +242,31 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.home_max, 'HOME', false, onTap: () => context.go(AppRoutes.providerDashboard)),
+              _buildNavItem(
+                Icons.home_max,
+                'HOME',
+                false,
+                onTap: () => context.go(AppRoutes.providerDashboard),
+              ),
               _buildNavItem(Icons.work, 'WORK', true),
-              _buildNavItem(Icons.add_circle_outline, 'ADD', false, onTap: () => context.push(AppRoutes.postJob)),
-              _buildNavItem(Icons.mail_outline, 'INBOX', false, onTap: () => context.go(AppRoutes.notifications)),
-              _buildNavItem(Icons.person_outline, 'PROFILE', false, onTap: () => context.go(AppRoutes.profile)),
+              _buildNavItem(
+                Icons.add_circle_outline,
+                'ADD',
+                false,
+                onTap: () => context.push(AppRoutes.postJob),
+              ),
+              _buildNavItem(
+                Icons.mail_outline,
+                'INBOX',
+                false,
+                onTap: () => context.go(AppRoutes.notifications),
+              ),
+              _buildNavItem(
+                Icons.person_outline,
+                'PROFILE',
+                false,
+                onTap: () => context.go(AppRoutes.profile),
+              ),
             ],
           ),
         ),
@@ -193,13 +274,20 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive, {VoidCallback? onTap}) {
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? FursafyTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive
+              ? FursafyTheme.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -249,7 +337,10 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isClosed
                         ? FursafyTheme.surfaceContainerHighest
@@ -259,53 +350,84 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   child: Text(
                     isClosed ? 'CLOSED' : 'ACTIVE',
                     style: FursafyTheme.labelStyle.copyWith(
-                      fontSize: 10, fontWeight: FontWeight.w700,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
-                      color: isClosed ? FursafyTheme.onSurfaceVariant : FursafyTheme.onPrimaryFixed,
+                      color: isClosed
+                          ? FursafyTheme.onSurfaceVariant
+                          : FursafyTheme.onPrimaryFixed,
                     ),
                   ),
                 ),
-                if (count > 0) Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: FursafyTheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Text('+$count',
+                if (count > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: FursafyTheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      '+$count',
                       style: FursafyTheme.labelStyle.copyWith(
-                        fontSize: 10, fontWeight: FontWeight.w700,
-                        color: FursafyTheme.onPrimaryContainer)),
-                ),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: FursafyTheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
               ],
             ),
             const SizedBox(height: 16),
 
             // Title
-            Text(job.title, style: FursafyTheme.headlineStyle.copyWith(
-              fontSize: 20, fontWeight: FontWeight.w700,
-              color: isClosed
-                  ? FursafyTheme.onSurface.withValues(alpha: 0.6)
-                  : FursafyTheme.onSurface,
-            )),
+            Text(
+              job.title,
+              style: FursafyTheme.headlineStyle.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: isClosed
+                    ? FursafyTheme.onSurface.withValues(alpha: 0.6)
+                    : FursafyTheme.onSurface,
+              ),
+            ),
             const SizedBox(height: 8),
 
             // Meta row
-            Row(children: [
-              Icon(Icons.location_on_outlined, size: 16,
-                  color: FursafyTheme.onSurfaceVariant),
-              const SizedBox(width: 4),
-              Text(job.locationName ?? 'Remote',
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on_outlined,
+                  size: 16,
+                  color: FursafyTheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  job.locationName ?? 'Remote',
                   style: FursafyTheme.labelStyle.copyWith(
-                    fontSize: 13, color: FursafyTheme.onSurfaceVariant)),
-              const SizedBox(width: 16),
-              Icon(Icons.group_outlined, size: 16,
-                  color: FursafyTheme.primary),
-              const SizedBox(width: 4),
-              Text('$count Applicants',
+                    fontSize: 13,
+                    color: FursafyTheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Icon(
+                  Icons.group_outlined,
+                  size: 16,
+                  color: FursafyTheme.primary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '$count Applicants',
                   style: FursafyTheme.labelStyle.copyWith(
-                    fontSize: 13, fontWeight: FontWeight.w700,
-                    color: FursafyTheme.primary)),
-            ]),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: FursafyTheme.primary,
+                  ),
+                ),
+              ],
+            ),
             const Spacer(),
 
             // Progress bar
@@ -323,14 +445,24 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Posted ${timeago.format(job.createdAt)}',
-                      style: FursafyTheme.labelStyle.copyWith(
-                        fontSize: 10, color: FursafyTheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500, letterSpacing: -0.2)),
-                  Text('${((count / 40) * 100).clamp(0, 100).toInt()}% Reach',
-                      style: FursafyTheme.labelStyle.copyWith(
-                        fontSize: 10, color: FursafyTheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500, letterSpacing: -0.2)),
+                  Text(
+                    'Posted ${timeago.format(job.createdAt)}',
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 10,
+                      color: FursafyTheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  Text(
+                    '${((count / 40) * 100).clamp(0, 100).toInt()}% Reach',
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 10,
+                      color: FursafyTheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -349,24 +481,33 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         decoration: BoxDecoration(
           color: FursafyTheme.primary,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(
-            color: FursafyTheme.primary.withValues(alpha: 0.3),
-            blurRadius: 20, offset: const Offset(0, 8),
-          )],
+          boxShadow: [
+            BoxShadow(
+              color: FursafyTheme.primary.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Stack(
           children: [
             // Decorative bg icon
-            Positioned(top: -16, right: -16,
-              child: Icon(Icons.add_circle, size: 140,
-                  color: Colors.white.withValues(alpha: 0.08)),
+            Positioned(
+              top: -16,
+              right: -16,
+              child: Icon(
+                Icons.add_circle,
+                size: 140,
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  width: 48, height: 48,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(100),
@@ -374,16 +515,25 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   child: const Icon(Icons.add, color: FursafyTheme.onPrimary),
                 ),
                 const SizedBox(height: 16),
-                Text('Post a new\nOpportunity',
-                    style: FursafyTheme.headlineStyle.copyWith(
-                      fontSize: 24, fontWeight: FontWeight.w900,
-                      color: FursafyTheme.onPrimary, height: 1.2)),
+                Text(
+                  'Post a new\nOpportunity',
+                  style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: FursafyTheme.onPrimary,
+                    height: 1.2,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                Text('CONNECT WITH LOCAL TALENT',
-                    style: FursafyTheme.labelStyle.copyWith(
-                      fontSize: 10, fontWeight: FontWeight.w700,
-                      color: FursafyTheme.primaryFixed,
-                      letterSpacing: 2.0)),
+                Text(
+                  'CONNECT WITH LOCAL TALENT',
+                  style: FursafyTheme.labelStyle.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: FursafyTheme.primaryFixed,
+                    letterSpacing: 2.0,
+                  ),
+                ),
               ],
             ),
           ],
