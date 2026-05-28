@@ -99,11 +99,14 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: FursafyTheme.surfaceContainerHighest,
               ),
-              child: const Icon(Icons.person, color: FursafyTheme.onSurfaceVariant),
+              child: const Icon(
+                Icons.person,
+                color: FursafyTheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -126,10 +129,12 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: FursafyTheme.primary))
+              child: CircularProgressIndicator(color: FursafyTheme.primary),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).padding.bottom + 100),
+                bottom: MediaQuery.of(context).padding.bottom + 100,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -138,8 +143,10 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
 
                   // Stats Grid
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 24,
+                    ),
                     child: _buildStatsGrid(),
                   ),
 
@@ -188,10 +195,30 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.home_max, 'HOME', false, onTap: () => context.go(AppRoutes.providerDashboard)),
-              _buildNavItem(Icons.work_outline, 'WORK', false, onTap: () => context.go(AppRoutes.myJobs)),
-              _buildNavItem(Icons.add_circle_outline, 'ADD', false, onTap: () => context.push(AppRoutes.postJob)),
-              _buildNavItem(Icons.mail_outline, 'INBOX', false, onTap: () => context.go(AppRoutes.notifications)),
+              _buildNavItem(
+                Icons.home_max,
+                'HOME',
+                false,
+                onTap: () => context.go(AppRoutes.providerDashboard),
+              ),
+              _buildNavItem(
+                Icons.work_outline,
+                'WORK',
+                false,
+                onTap: () => context.go(AppRoutes.myJobs),
+              ),
+              _buildNavItem(
+                Icons.add_circle_outline,
+                'ADD',
+                false,
+                onTap: () => context.push(AppRoutes.postJob),
+              ),
+              _buildNavItem(
+                Icons.mail_outline,
+                'INBOX',
+                false,
+                onTap: () => context.go(AppRoutes.notifications),
+              ),
               _buildNavItem(Icons.person, 'PROFILE', true),
             ],
           ),
@@ -200,13 +227,20 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive, {VoidCallback? onTap}) {
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? FursafyTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive
+              ? FursafyTheme.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -235,7 +269,8 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
   Widget _buildCoverHero(BuildContext context) {
     final name = _userData?['displayName'] ?? 'Company Name';
     final avatarUrl = _userData?['avatarUrl'] as String?;
-    final industry = _userData?['industry'] as String? ?? 'Opportunity Provider';
+    final industry =
+        _userData?['industry'] as String? ?? 'Opportunity Provider';
     final location = _userData?['locationName'] ?? 'Dar es Salaam, Tanzania';
 
     return Column(
@@ -252,10 +287,15 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               child: avatarUrl != null && avatarUrl.isNotEmpty
                   ? Opacity(
                       opacity: 0.8,
-                      child: Image.network(avatarUrl, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) {
-                        return Container(color: FursafyTheme.primaryContainer);
-                      }),
+                      child: Image.network(
+                        avatarUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) {
+                          return Container(
+                            color: FursafyTheme.primaryContainer,
+                          );
+                        },
+                      ),
                     )
                   : null,
             ),
@@ -274,14 +314,23 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 ),
                 child: avatarUrl != null && avatarUrl.isNotEmpty
                     ? ClipOval(
-                        child: Image.network(avatarUrl, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) {
-                          return Icon(Icons.business,
-                              size: 40, color: FursafyTheme.primary);
-                        }),
+                        child: Image.network(
+                          avatarUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) {
+                            return const Icon(
+                              Icons.business,
+                              size: 40,
+                              color: FursafyTheme.primary,
+                            );
+                          },
+                        ),
                       )
-                    : Icon(Icons.business,
-                        size: 40, color: FursafyTheme.primary),
+                    : const Icon(
+                        Icons.business,
+                        size: 40,
+                        color: FursafyTheme.primary,
+                      ),
               ),
             ),
             // Edit Profile Button — top right over cover
@@ -291,8 +340,10 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               child: GestureDetector(
                 onTap: () => context.push(AppRoutes.editProfile),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: FursafyTheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(100),
@@ -332,8 +383,11 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Icon(Icons.verified,
-                      color: FursafyTheme.primary, size: 22),
+                  const Icon(
+                    Icons.verified,
+                    color: FursafyTheme.primary,
+                    size: 22,
+                  ),
                 ],
               ),
               const SizedBox(height: 4),
@@ -348,8 +402,11 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               const SizedBox(height: 6),
               Row(
                 children: [
-                  Icon(Icons.location_on,
-                      size: 14, color: FursafyTheme.outline),
+                  const Icon(
+                    Icons.location_on,
+                    size: 14,
+                    color: FursafyTheme.outline,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     location.toUpperCase(),
@@ -397,7 +454,11 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
   }
 
   Widget _buildStatCard(
-      String value, String label, Color bgColor, Color textColor) {
+    String value,
+    String label,
+    Color bgColor,
+    Color textColor,
+  ) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -434,7 +495,8 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
   }
 
   Widget _buildAboutSection() {
-    final bio = _userData?['bio'] ??
+    final bio =
+        _userData?['bio'] ??
         'A leading opportunity provider committed to empowering youth through meaningful short-term opportunities and professional apprenticeships.';
 
     return Column(
@@ -461,9 +523,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 offset: const Offset(0, 4),
               ),
             ],
-            border: Border.all(
-              color: FursafyTheme.surfaceContainer,
-            ),
+            border: Border.all(color: FursafyTheme.surfaceContainer),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,8 +542,9 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(
-                      color: FursafyTheme.surfaceContainerHigh
-                          .withValues(alpha: 0.5),
+                      color: FursafyTheme.surfaceContainerHigh.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                   ),
                 ),
@@ -504,9 +565,9 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                 shape: BoxShape.circle,
                                 color: FursafyTheme.primaryFixedDim,
                                 border: Border.all(
-                                    color:
-                                        FursafyTheme.surfaceContainerLowest,
-                                    width: 2),
+                                  color: FursafyTheme.surfaceContainerLowest,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
@@ -519,9 +580,9 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                 shape: BoxShape.circle,
                                 color: FursafyTheme.secondaryFixedDim,
                                 border: Border.all(
-                                    color:
-                                        FursafyTheme.surfaceContainerLowest,
-                                    width: 2),
+                                  color: FursafyTheme.surfaceContainerLowest,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
@@ -534,9 +595,9 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                 shape: BoxShape.circle,
                                 color: FursafyTheme.tertiaryFixedDim,
                                 border: Border.all(
-                                    color:
-                                        FursafyTheme.surfaceContainerLowest,
-                                    width: 2),
+                                  color: FursafyTheme.surfaceContainerLowest,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
@@ -671,7 +732,9 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 3),
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: FursafyTheme.primaryFixed,
                                 borderRadius: BorderRadius.circular(100),
@@ -701,8 +764,11 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                   ),
                   GestureDetector(
                     onTap: () {},
-                    child: Icon(Icons.more_vert,
-                        color: FursafyTheme.outline, size: 22),
+                    child: const Icon(
+                      Icons.more_vert,
+                      color: FursafyTheme.outline,
+                      size: 22,
+                    ),
                   ),
                 ],
               ),
@@ -747,11 +813,13 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     ],
                   ),
                   GestureDetector(
-                    onTap: () => context.push(
-                        '/provider/jobs/${job.id}/applicants'),
+                    onTap: () =>
+                        context.push('/provider/jobs/${job.id}/applicants'),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: FursafyTheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(16),
@@ -759,8 +827,11 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.groups,
-                              size: 16, color: FursafyTheme.primary),
+                          const Icon(
+                            Icons.groups,
+                            size: 16,
+                            color: FursafyTheme.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             '${_applicantCounts[job.id] ?? 0} Applicants',
@@ -794,25 +865,26 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               foregroundColor: FursafyTheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 20),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100)),
+                borderRadius: BorderRadius.circular(100),
+              ),
               elevation: 0,
             ),
             child: Text(
               'Post a Job',
-              style: FursafyTheme.bodyStyle
-                  .copyWith(fontWeight: FontWeight.bold),
+              style: FursafyTheme.bodyStyle.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
         const SizedBox(width: 12),
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: FursafyTheme.surfaceContainerHighest,
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon:
-                const Icon(Icons.logout, color: Colors.redAccent, size: 22),
+            icon: const Icon(Icons.logout, color: Colors.redAccent, size: 22),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               if (!context.mounted) return;

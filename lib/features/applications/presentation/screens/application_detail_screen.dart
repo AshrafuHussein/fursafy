@@ -233,8 +233,10 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100))),
                   child: Text(_app!.arrived ? 'Rate Provider' : 'Confirm Arrival for Onboarding',
-                    style: FursafyTheme.headlineStyle.copyWith(
-                      fontWeight: FontWeight.w700, fontSize: 16)),
+                    style: const TextStyle(
+                      fontFamily: 'PlusJakartaSans',
+                      fontWeight: FontWeight.w700, fontSize: 16,
+                      color: Colors.white)),
                 ),
               ),
             )
@@ -369,12 +371,17 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                   );
                 },
                 icon: const Icon(Icons.chat, size: 18),
-                label: Text('Message', style: FursafyTheme.bodyStyle.copyWith(
-                  fontWeight: FontWeight.w700)),
+                label: const Text('Message'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FursafyTheme.primary,
-                  foregroundColor: FursafyTheme.onPrimary,
+                  foregroundColor: Colors.white,
                   elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  textStyle: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100))),
               ),
@@ -388,12 +395,17 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                   );
                 },
                 icon: const Icon(Icons.call, size: 18),
-                label: Text('Call', style: FursafyTheme.bodyStyle.copyWith(
-                  fontWeight: FontWeight.w700)),
+                label: const Text('Call'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FursafyTheme.surfaceContainerHigh,
                   foregroundColor: FursafyTheme.onSurface,
                   elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  textStyle: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100))),
               ),

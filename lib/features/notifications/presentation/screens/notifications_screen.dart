@@ -137,7 +137,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
-    final isProvider = authState is AuthAuthenticated && authState.user.role.name == 'provider';
+    final isProvider =
+        authState is AuthAuthenticated &&
+        authState.user.role.name == 'provider';
 
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
@@ -151,11 +153,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: FursafyTheme.surfaceContainerHighest,
               ),
-              child: const Icon(Icons.person, color: FursafyTheme.onSurfaceVariant),
+              child: const Icon(
+                Icons.person,
+                color: FursafyTheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -178,17 +183,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: FursafyTheme.primary))
+              child: CircularProgressIndicator(color: FursafyTheme.primary),
+            )
           : RefreshIndicator(
               onRefresh: _loadNotifications,
               color: FursafyTheme.primary,
               child: CustomScrollView(
                 slivers: [
                   // Status bar padding
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                        height: 16),
-                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
                   // Editorial Header
                   SliverToBoxAdapter(
@@ -230,17 +233,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       : SliverPadding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                // Insert "Yesterday" section header if applicable
-                                if (index < _notifications.length) {
-                                  return _buildNotificationCard(
-                                      _notifications[index]);
-                                }
-                                return null;
-                              },
-                              childCount: _notifications.length,
-                            ),
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              // Insert "Yesterday" section header if applicable
+                              if (index < _notifications.length) {
+                                return _buildNotificationCard(
+                                  _notifications[index],
+                                );
+                              }
+                              return null;
+                            }, childCount: _notifications.length),
                           ),
                         ),
 
@@ -278,11 +282,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home_max, 'HOME', false, onTap: () => context.go(AppRoutes.providerDashboard)),
-                _buildNavItem(Icons.work_outline, 'WORK', false, onTap: () => context.go(AppRoutes.myJobs)),
-                _buildNavItem(Icons.add_circle_outline, 'ADD', false, onTap: () => context.push(AppRoutes.postJob)),
+                _buildNavItem(
+                  Icons.home_max,
+                  'HOME',
+                  false,
+                  onTap: () => context.go(AppRoutes.providerDashboard),
+                ),
+                _buildNavItem(
+                  Icons.work_outline,
+                  'WORK',
+                  false,
+                  onTap: () => context.go(AppRoutes.myJobs),
+                ),
+                _buildNavItem(
+                  Icons.add_circle_outline,
+                  'ADD',
+                  false,
+                  onTap: () => context.push(AppRoutes.postJob),
+                ),
                 _buildNavItem(Icons.mail, 'INBOX', true),
-                _buildNavItem(Icons.person_outline, 'PROFILE', false, onTap: () => context.go(AppRoutes.profile)),
+                _buildNavItem(
+                  Icons.person_outline,
+                  'PROFILE',
+                  false,
+                  onTap: () => context.go(AppRoutes.profile),
+                ),
               ],
             ),
           ),
@@ -307,15 +331,35 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _navItem(context, Icons.home_max_rounded, 'HOME', false,
-                    onTap: () => context.go(AppRoutes.home)),
-                _navItem(context, Icons.search_rounded, 'SEARCH', false,
-                    onTap: () => context.push(AppRoutes.search)),
-                _navItem(context, Icons.description_outlined, 'APPLIED', false,
-                    onTap: () => context.go(AppRoutes.myApplications)),
+                _navItem(
+                  context,
+                  Icons.home_max_rounded,
+                  'HOME',
+                  false,
+                  onTap: () => context.go(AppRoutes.home),
+                ),
+                _navItem(
+                  context,
+                  Icons.search_rounded,
+                  'SEARCH',
+                  false,
+                  onTap: () => context.push(AppRoutes.search),
+                ),
+                _navItem(
+                  context,
+                  Icons.description_outlined,
+                  'APPLIED',
+                  false,
+                  onTap: () => context.go(AppRoutes.myApplications),
+                ),
                 _navItem(context, Icons.notifications_active, 'ALERTS', true),
-                _navItem(context, Icons.person_outline_rounded, 'PROFILE', false,
-                    onTap: () => context.go(AppRoutes.profile)),
+                _navItem(
+                  context,
+                  Icons.person_outline_rounded,
+                  'PROFILE',
+                  false,
+                  onTap: () => context.go(AppRoutes.profile),
+                ),
               ],
             ),
           ),
@@ -324,13 +368,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive, {VoidCallback? onTap}) {
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? FursafyTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive
+              ? FursafyTheme.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -356,8 +407,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _navItem(BuildContext context, IconData icon, String label, bool isActive,
-      {VoidCallback? onTap}) {
+  Widget _navItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -398,8 +454,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Column(
         children: [
           const SizedBox(height: 60),
-          Icon(Icons.notifications_off_outlined,
-              size: 56, color: FursafyTheme.outlineVariant),
+          const Icon(
+            Icons.notifications_off_outlined,
+            size: 56,
+            color: FursafyTheme.outlineVariant,
+          ),
           const SizedBox(height: 16),
           Text(
             'No notifications yet',
@@ -473,7 +532,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
         } else if (type == 'job_match' && jobId != null && jobId.isNotEmpty) {
           context.push('/jobs/$jobId');
-        } else if ((type == 'application_received' || type == 'new_application') && jobId != null && jobId.isNotEmpty) {
+        } else if ((type == 'application_received' ||
+                type == 'new_application') &&
+            jobId != null &&
+            jobId.isNotEmpty) {
           context.push('/provider/jobs/$jobId/applicants');
         } else if (type == 'rating_received') {
           context.go(AppRoutes.profile);
@@ -486,15 +548,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           color: isFeatured
               ? FursafyTheme.surfaceContainerLowest
               : isRead
-                  ? FursafyTheme.surfaceContainerLow
-                  : FursafyTheme.surfaceContainerLowest,
+              ? FursafyTheme.surfaceContainerLow
+              : FursafyTheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(16),
           border: isFeatured
               ? null
               : Border(
                   left: type == 'rating_received'
-                      ? BorderSide(
-                          color: FursafyTheme.secondaryContainer, width: 4)
+                      ? const BorderSide(
+                          color: FursafyTheme.secondaryContainer,
+                          width: 4,
+                        )
                       : BorderSide.none,
                 ),
           boxShadow: isFeatured
@@ -575,8 +639,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   if (isFeatured) ...[
                     const SizedBox(height: 16),
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: FursafyTheme.primary,
                         borderRadius: BorderRadius.circular(100),
@@ -603,7 +669,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   /// The green CTA card at the bottom: "Stay Ahead"
   Widget _buildStayAheadCard() {
     final authState = context.read<AuthBloc>().state;
-    final isProvider = authState is AuthAuthenticated && authState.user.role.name == 'provider';
+    final isProvider =
+        authState is AuthAuthenticated &&
+        authState.user.role.name == 'provider';
 
     return Container(
       padding: const EdgeInsets.all(32),

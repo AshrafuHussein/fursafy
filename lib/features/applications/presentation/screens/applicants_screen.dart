@@ -132,11 +132,12 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                 backgroundColor: isAccept ? FursafyTheme.primary : FursafyTheme.error,
                 foregroundColor: Colors.white,
                 elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100)),
               ),
               child: Text(isAccept ? 'Confirm' : 'Reject',
-                style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.w700)),
+                style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
           const SizedBox(height: 8),
@@ -271,8 +272,8 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
         foregroundColor: FursafyTheme.onSecondary,
         elevation: 8,
         icon: const Icon(Icons.edit),
-        label: Text('Edit Job', style: FursafyTheme.bodyStyle.copyWith(
-          fontWeight: FontWeight.w700)),
+        label: const Text('Edit Job', style: TextStyle(
+          fontFamily: 'Manrope', fontWeight: FontWeight.w700, color: Colors.white)),
       ),
     );
   }
@@ -361,11 +362,12 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                         backgroundColor: FursafyTheme.primary,
                         foregroundColor: FursafyTheme.onPrimary,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100)),
                       ),
-                      child: Text('Accept', style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: const Text('Accept', style: TextStyle(
+                        fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white)),
                     ),
                   )),
                   const SizedBox(width: 12),
@@ -376,11 +378,12 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                         backgroundColor: FursafyTheme.surfaceContainerHigh,
                         foregroundColor: FursafyTheme.onSurfaceVariant,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100)),
                       ),
-                      child: Text('Reject', style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: const Text('Reject', style: TextStyle(
+                        fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 14, color: FursafyTheme.onSurfaceVariant)),
                     ),
                   )),
                 ])
@@ -391,13 +394,14 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                       onPressed: () => context.push('/provider/rate/${app.jobId}'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: FursafyTheme.secondary,
-                        foregroundColor: FursafyTheme.onSecondary,
+                        foregroundColor: Colors.white,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100)),
                       ),
-                      child: Text('Rate Worker', style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: const Text('Rate Worker', style: TextStyle(
+                        fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white)),
                     ),
                   )),
                 ]),
@@ -523,10 +527,11 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                         backgroundColor: FursafyTheme.primary,
                         foregroundColor: FursafyTheme.onPrimary,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(100))),
-                      child: Text('Accept Applicant', style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700, fontSize: 16)),
+                      child: const Text('Accept Applicant', style: TextStyle(
+                        fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white)),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -536,10 +541,11 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: FursafyTheme.error,
                         side: BorderSide(color: FursafyTheme.error.withValues(alpha: 0.3)),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(100))),
-                      child: Text('Reject', style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700, fontSize: 16, color: FursafyTheme.error)),
+                      child: const Text('Reject', style: TextStyle(
+                        fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 16, color: FursafyTheme.error)),
                     ),
                   ),
                 ] else if (app.status == ApplicationStatus.accepted) ...[
@@ -548,12 +554,13 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                       onPressed: () { Navigator.pop(ctx); context.push('/provider/rate/${app.jobId}'); },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: FursafyTheme.secondary,
-                        foregroundColor: FursafyTheme.onSecondary,
+                        foregroundColor: Colors.white,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(100))),
-                      child: Text('Rate Worker', style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700, fontSize: 16)),
+                      child: const Text('Rate Worker', style: TextStyle(
+                        fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white)),
                     ),
                   ),
                 ],

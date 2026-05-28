@@ -7,7 +7,6 @@ import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/profile/presentation/widgets/skill_picker_dialog.dart';
 
-
 /// S12 — Youth Profile screen — Editorial hero design.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -56,7 +55,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _openSkillPicker(List<String> currentSkills) async {
     final result = await Navigator.of(context).push<List<String>>(
       MaterialPageRoute(
-        builder: (context) => SkillPickerDialog(initialSelectedSkills: currentSkills),
+        builder: (context) =>
+            SkillPickerDialog(initialSelectedSkills: currentSkills),
         fullscreenDialog: true,
       ),
     );
@@ -70,9 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await FirebaseFirestore.instance
             .collection(FirestorePaths.youthProfiles)
             .doc(uid)
-            .set({
-          'skills': result,
-        }, SetOptions(merge: true));
+            .set({'skills': result}, SetOptions(merge: true));
 
         await _loadProfile();
       } catch (e) {
@@ -87,7 +85,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -107,11 +104,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: FursafyTheme.surfaceContainerHighest,
               ),
-              child: const Icon(Icons.person, color: FursafyTheme.onSurfaceVariant),
+              child: const Icon(
+                Icons.person,
+                color: FursafyTheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -134,10 +134,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: FursafyTheme.primary))
+              child: CircularProgressIndicator(color: FursafyTheme.primary),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).padding.bottom + 100),
+                bottom: MediaQuery.of(context).padding.bottom + 100,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -204,14 +206,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _navItem(context, Icons.home_max_rounded, 'HOME', false,
-                  onTap: () => context.go(AppRoutes.home)),
-              _navItem(context, Icons.search_rounded, 'SEARCH', false,
-                  onTap: () => context.push(AppRoutes.search)),
-              _navItem(context, Icons.description_outlined, 'APPLIED', false,
-                  onTap: () => context.go(AppRoutes.myApplications)),
-              _navItem(context, Icons.notifications_none_rounded, 'ALERTS', false,
-                  onTap: () => context.go(AppRoutes.notifications)),
+              _navItem(
+                context,
+                Icons.home_max_rounded,
+                'HOME',
+                false,
+                onTap: () => context.go(AppRoutes.home),
+              ),
+              _navItem(
+                context,
+                Icons.search_rounded,
+                'SEARCH',
+                false,
+                onTap: () => context.push(AppRoutes.search),
+              ),
+              _navItem(
+                context,
+                Icons.description_outlined,
+                'APPLIED',
+                false,
+                onTap: () => context.go(AppRoutes.myApplications),
+              ),
+              _navItem(
+                context,
+                Icons.notifications_none_rounded,
+                'ALERTS',
+                false,
+                onTap: () => context.go(AppRoutes.notifications),
+              ),
               _navItem(context, Icons.person_outline_rounded, 'PROFILE', true),
             ],
           ),
@@ -220,8 +242,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _navItem(BuildContext context, IconData icon, String label, bool isActive,
-      {VoidCallback? onTap}) {
+  Widget _navItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -260,8 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final name = _userData?['displayName'] ?? 'Youth Worker';
     final avatarUrl = _userData?['avatarUrl'] as String?;
     final rating = _profileData?['averageRating'] ?? 0.0;
-    final ratingVal =
-        rating is num ? rating.toDouble() : double.tryParse('$rating') ?? 0.0;
+    final ratingVal = rating is num
+        ? rating.toDouble()
+        : double.tryParse('$rating') ?? 0.0;
 
     return Stack(
       clipBehavior: Clip.none,
@@ -275,14 +303,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: AspectRatio(
               aspectRatio: 4 / 5,
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: FursafyTheme.surfaceContainerHigh,
                 ),
                 child: avatarUrl != null && avatarUrl.isNotEmpty
                     ? Image.network(
                         avatarUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _buildAvatarPlaceholder(),
+                        errorBuilder: (_, _, _) => _buildAvatarPlaceholder(),
                       )
                     : _buildAvatarPlaceholder(),
               ),
@@ -295,8 +323,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           right: 24,
           bottom: 0,
           child: ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(bottom: Radius.circular(16)),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(16),
+            ),
             child: Container(
               padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
               decoration: BoxDecoration(
@@ -326,14 +355,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     children: [
                       ...List.generate(
-                          5,
-                          (i) => Icon(
-                                Icons.star,
-                                size: 20,
-                                color: i < ratingVal.round()
-                                    ? FursafyTheme.secondaryContainer
-                                    : Colors.white.withValues(alpha: 0.3),
-                              )),
+                        5,
+                        (i) => Icon(
+                          Icons.star,
+                          size: 20,
+                          color: i < ratingVal.round()
+                              ? FursafyTheme.secondaryContainer
+                              : Colors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         '${ratingVal.toStringAsFixed(1)} Rating',
@@ -366,7 +396,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.edit, color: FursafyTheme.onPrimary, size: 20),
+                  const Icon(
+                    Icons.edit,
+                    color: FursafyTheme.onPrimary,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Edit Profile',
@@ -388,12 +422,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildAvatarPlaceholder() {
     return Container(
       color: FursafyTheme.surfaceContainerHigh,
-      child: Center(
-        child: Icon(
-          Icons.person,
-          size: 80,
-          color: FursafyTheme.outlineVariant,
-        ),
+      child: const Center(
+        child: Icon(Icons.person, size: 80, color: FursafyTheme.outlineVariant),
       ),
     );
   }
@@ -481,13 +511,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildSkillsSection() {
-    final skills = (_profileData?['skills'] as List?)
-            ?.map((s) => s.toString())
-            .toList() ??
+    final skills =
+        (_profileData?['skills'] as List?)?.map((s) => s.toString()).toList() ??
         [];
 
     // Material icon mapping for common skills
-    IconData _skillIcon(String skill) {
+    IconData skillIcon(String skill) {
       final lower = skill.toLowerCase();
       if (lower.contains('plumb')) return Icons.plumbing;
       if (lower.contains('clean')) return Icons.cleaning_services;
@@ -496,10 +525,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (lower.contains('cook')) return Icons.restaurant;
       if (lower.contains('driv')) return Icons.local_shipping;
       if (lower.contains('paint')) return Icons.format_paint;
-      if (lower.contains('manage') || lower.contains('project'))
+      if (lower.contains('manage') || lower.contains('project')) {
         return Icons.trending_up;
-      if (lower.contains('tutor') || lower.contains('teach'))
+      }
+      if (lower.contains('tutor') || lower.contains('teach')) {
         return Icons.school;
+      }
       if (lower.contains('design')) return Icons.design_services;
       if (lower.contains('photo')) return Icons.camera_alt;
       return Icons.build;
@@ -552,7 +583,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.verified, color: FursafyTheme.primary, size: 24),
+                const Icon(
+                  Icons.verified,
+                  color: FursafyTheme.primary,
+                  size: 24,
+                ),
               ],
             ),
           ],
@@ -604,8 +639,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // Alternate between primary-fixed and secondary-fixed-dim
                 final isPrimaryStyle = index % 4 != 3;
                 return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: isPrimaryStyle
                         ? FursafyTheme.primaryFixed
@@ -616,7 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        _skillIcon(skill),
+                        skillIcon(skill),
                         size: 16,
                         color: isPrimaryStyle
                             ? const Color(0xFF00513A)
@@ -643,9 +680,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
   Widget _buildBioSection() {
-    final bio = _profileData?['bio'] ??
+    final bio =
+        _profileData?['bio'] ??
         'Dedicated worker passionate about delivering premium quality and ensuring satisfaction in every project.';
 
     return Container(
@@ -713,8 +750,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: FursafyTheme.primaryContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.map,
-                color: FursafyTheme.onPrimaryContainer, size: 24),
+            child: const Icon(
+              Icons.map,
+              color: FursafyTheme.onPrimaryContainer,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 16),
           Column(
@@ -751,7 +791,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (!context.mounted) return;
           context.go(AppRoutes.login);
         },
-        icon: Icon(Icons.logout, size: 18, color: Colors.redAccent),
+        icon: const Icon(Icons.logout, size: 18, color: Colors.redAccent),
         label: Text(
           'Sign Out',
           style: FursafyTheme.bodyStyle.copyWith(
