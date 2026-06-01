@@ -8,7 +8,7 @@ class JobRepositoryImpl implements JobRepository {
   final FirebaseFirestore _firestore;
 
   JobRepositoryImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Future<({List<JobEntity> jobs, Failure? failure})> getJobs({
@@ -39,16 +39,17 @@ class JobRepositoryImpl implements JobRepository {
 
       final snapshot = await query.get();
       final List<JobEntity> jobs = snapshot.docs
-          .map((doc) => JobEntity.fromMap(
-              doc.id, doc.data()! as Map<String, dynamic>))
+          .map(
+            (doc) =>
+                JobEntity.fromMap(doc.id, doc.data()! as Map<String, dynamic>),
+          )
           .toList();
 
       return (jobs: jobs, failure: null);
     } catch (e) {
-      print('JobRepositoryImpl.getJobs error: $e');
       return (
         jobs: <JobEntity>[],
-        failure: ServerFailure(message: e.toString())
+        failure: ServerFailure(message: e.toString()),
       );
     }
   }
@@ -56,12 +57,14 @@ class JobRepositoryImpl implements JobRepository {
   @override
   Future<({JobEntity? job, Failure? failure})> getJobById(String jobId) async {
     try {
-      final doc =
-          await _firestore.collection(FirestorePaths.jobs).doc(jobId).get();
+      final doc = await _firestore
+          .collection(FirestorePaths.jobs)
+          .doc(jobId)
+          .get();
       if (!doc.exists || doc.data() == null) {
         return (
           job: null,
-          failure: const ServerFailure(message: 'Job not found')
+          failure: const ServerFailure(message: 'Job not found'),
         );
       }
       return (job: JobEntity.fromMap(doc.id, doc.data()!), failure: null);
@@ -98,10 +101,9 @@ class JobRepositoryImpl implements JobRepository {
   @override
   Future<Failure?> closeJob(String jobId) async {
     try {
-      await _firestore
-          .collection(FirestorePaths.jobs)
-          .doc(jobId)
-          .update({'status': JobStatus.closed.name});
+      await _firestore.collection(FirestorePaths.jobs).doc(jobId).update({
+        'status': JobStatus.closed.name,
+      });
       return null;
     } catch (e) {
       return ServerFailure(message: e.toString());
@@ -110,7 +112,8 @@ class JobRepositoryImpl implements JobRepository {
 
   @override
   Future<({List<JobEntity> jobs, Failure? failure})> searchJobs(
-      String queryText) async {
+    String queryText,
+  ) async {
     try {
       final lowercaseQuery = queryText.toLowerCase();
       final snapshot = await _firestore
@@ -129,14 +132,15 @@ class JobRepositoryImpl implements JobRepository {
     } catch (e) {
       return (
         jobs: <JobEntity>[],
-        failure: ServerFailure(message: e.toString())
+        failure: ServerFailure(message: e.toString()),
       );
     }
   }
 
   @override
   Future<({List<JobEntity> jobs, Failure? failure})> getProviderJobs(
-      String providerId) async {
+    String providerId,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection(FirestorePaths.jobs)
@@ -151,7 +155,7 @@ class JobRepositoryImpl implements JobRepository {
     } catch (e) {
       return (
         jobs: <JobEntity>[],
-        failure: ServerFailure(message: e.toString())
+        failure: ServerFailure(message: e.toString()),
       );
     }
   }
