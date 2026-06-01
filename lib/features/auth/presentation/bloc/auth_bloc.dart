@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
+import 'package:fursafy/core/services/notification_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -37,6 +38,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final user = await _authRepository.getCurrentUser();
     if (user != null) {
       emit(AuthAuthenticated(user));
+      // Save/refresh FCM token for push notifications
+      NotificationService.instance.refreshTokenForUser(user.uid);
     } else {
       emit(AuthUnauthenticated());
     }
@@ -55,6 +58,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthError(result.failure!.message));
     } else {
       emit(AuthAuthenticated(result.user));
+      // Save/refresh FCM token for push notifications
+      NotificationService.instance.refreshTokenForUser(result.user.uid);
     }
   }
 
