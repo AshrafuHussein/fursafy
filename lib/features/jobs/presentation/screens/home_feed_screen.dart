@@ -8,6 +8,7 @@ import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_bloc.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_event.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_state.dart';
+import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 /// S07 — Worker Home Feed (Stitch Exact Match).
@@ -81,24 +82,45 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                 Row(
                   children: [
                     IconButton(
-                      icon: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          const Icon(Icons.notifications_none_rounded,
-                              color: FursafyTheme.onSurface),
-                          Positioned(
-                            top: -4,
-                            right: -4,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: const BoxDecoration(
-                                color: FursafyTheme.secondary,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
+                      icon: BlocBuilder<NotificationBloc, NotificationState>(
+                        buildWhen: (prev, curr) =>
+                            prev.unreadCount != curr.unreadCount,
+                        builder: (context, notifState) {
+                          return Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              const Icon(Icons.notifications_none_rounded,
+                                  color: FursafyTheme.onSurface),
+                              if (notifState.unreadCount > 0)
+                                Positioned(
+                                  top: -4,
+                                  right: -4,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 16,
+                                      minHeight: 16,
+                                    ),
+                                    decoration: const BoxDecoration(
+                                      color: FursafyTheme.error,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Text(
+                                      notifState.unreadCount > 9
+                                          ? '9+'
+                                          : '${notifState.unreadCount}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
                       onPressed: () => context.push(AppRoutes.notifications),
                     ),
@@ -690,8 +712,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                   onTap: () => context.push(AppRoutes.search)),
               _navItem(Icons.description_outlined, 'APPLIED', false,
                   onTap: () => context.push(AppRoutes.myApplications)),
-              _navItem(Icons.notifications_none_rounded, 'ALERTS', false,
-                  onTap: () => context.push(AppRoutes.notifications)),
+              _navItemWithBadge(
+                Icons.notifications_none_rounded,
+                'ALERTS',
+                false,
+                onTap: () => context.push(AppRoutes.notifications),
+              ),
               _navItem(Icons.person_outline_rounded, 'PROFILE', false,
                   onTap: () => context.push(AppRoutes.profile)),
             ],
@@ -733,6 +759,83 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Nav item with a reactive unread notification badge.
+  Widget _navItemWithBadge(IconData icon, String label, bool isActive,
+      {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: BlocBuilder<NotificationBloc, NotificationState>(
+        buildWhen: (prev, curr) => prev.unreadCount != curr.unreadCount,
+        builder: (context, notifState) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? FursafyTheme.primary.withValues(alpha: 0.1)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Icon(
+                      icon,
+                      color: isActive
+                          ? FursafyTheme.primary
+                          : FursafyTheme.outline,
+                      size: 24,
+                    ),
+                    if (notifState.unreadCount > 0)
+                      Positioned(
+                        top: -4,
+                        right: -6,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          constraints: const BoxConstraints(
+                            minWidth: 14,
+                            minHeight: 14,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: FursafyTheme.error,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            notifState.unreadCount > 9
+                                ? '9+'
+                                : '${notifState.unreadCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: FursafyTheme.labelStyle.copyWith(
+                    color:
+                        isActive ? FursafyTheme.primary : FursafyTheme.outline,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

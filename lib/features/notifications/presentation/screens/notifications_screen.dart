@@ -5,11 +5,14 @@ import 'package:fursafy/app/theme.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:fursafy/features/notifications/domain/entities/notification_entity.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/router.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 
 /// S11 — Notifications screen — Editorial "Daily Curation" design.
+/// Powered by NotificationBloc for reactive state management.
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
@@ -18,66 +21,11 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  List<Map<String, dynamic>> _notifications = [];
-  bool _loading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadNotifications();
-  }
-
-  Future<void> _loadNotifications() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    debugPrint('[Notifications] Loading for uid=$uid');
-    if (uid == null) {
-      setState(() => _loading = false);
-      return;
-    }
-    try {
-      final ref = FirebaseFirestore.instance
-          .collection('notifications')
-          .doc(uid)
-          .collection('items');
-
-      debugPrint('[Notifications] Query path: ${ref.path}');
-
-      // Simple get without orderBy — avoids index requirements on sub-collections
-      final snap = await ref
-          .limit(30)
-          .get()
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint('[Notifications] Got ${snap.docs.length} docs');
-      for (final d in snap.docs) {
-        debugPrint('[Notifications]  -> ${d.id}: ${d.data()}');
-      }
-
-      final items = snap.docs.map((d) {
-        final data = d.data();
-        data['id'] = d.id;
-        return data;
-      }).toList();
-
-      // Sort client-side: newest first
-      items.sort((a, b) {
-        final aTime = a['createdAt'] as Timestamp?;
-        final bTime = b['createdAt'] as Timestamp?;
-        if (aTime == null && bTime == null) return 0;
-        if (aTime == null) return 1;
-        if (bTime == null) return -1;
-        return bTime.compareTo(aTime);
-      });
-
-      setState(() {
-        _notifications = items;
-        _loading = false;
-      });
-    } catch (e, stack) {
-      debugPrint('[Notifications] ERROR: $e');
-      debugPrint('[Notifications] Stack: $stack');
-      setState(() => _loading = false);
-    }
+    // Load notifications via BLoC
+    context.read<NotificationBloc>().add(const NotificationLoadRequested());
   }
 
   IconData _iconForType(String? type) {
@@ -174,6 +122,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ],
         ),
         actions: [
+          // Mark all as read button
+          BlocBuilder<NotificationBloc, NotificationState>(
+            buildWhen: (prev, curr) => prev.unreadCount != curr.unreadCount,
+            builder: (context, state) {
+              if (state.unreadCount == 0) return const SizedBox.shrink();
+              return IconButton(
+                icon: const Icon(Icons.done_all, color: FursafyTheme.primary),
+                tooltip: 'Mark all as read',
+                onPressed: () {
+                  context
+                      .read<NotificationBloc>()
+                      .add(const NotificationMarkAllAsRead());
+                },
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.notifications, color: FursafyTheme.primary),
             onPressed: () {},
@@ -181,83 +145,95 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: _loading
-          ? const Center(
+      body: BlocBuilder<NotificationBloc, NotificationState>(
+        builder: (context, state) {
+          if (state.status == NotificationStatus.loading &&
+              state.notifications.isEmpty) {
+            return const Center(
               child: CircularProgressIndicator(color: FursafyTheme.primary),
-            )
-          : RefreshIndicator(
-              onRefresh: _loadNotifications,
-              color: FursafyTheme.primary,
-              child: CustomScrollView(
-                slivers: [
-                  // Status bar padding
-                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            );
+          }
 
-                  // Editorial Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 16),
-                          Text(
-                            isProvider ? 'Inbox' : 'Daily Curation',
-                            style: FursafyTheme.headlineStyle.copyWith(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w800,
-                              color: FursafyTheme.onSurface,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            isProvider
-                                ? 'Manage communications and hiring activities.'
-                                : 'Your personalized updates and career milestones.',
-                            style: FursafyTheme.bodyStyle.copyWith(
-                              color: FursafyTheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                        ],
-                      ),
-                    ),
-                  ),
+          return RefreshIndicator(
+            onRefresh: () async {
+              context
+                  .read<NotificationBloc>()
+                  .add(const NotificationLoadRequested());
+              // Wait briefly for the bloc to process
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            color: FursafyTheme.primary,
+            child: CustomScrollView(
+              slivers: [
+                // Status bar padding
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-                  // Notifications List
-                  _notifications.isEmpty
-                      ? SliverToBoxAdapter(child: _buildEmptyState())
-                      : SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate((
-                              context,
-                              index,
-                            ) {
-                              // Insert "Yesterday" section header if applicable
-                              if (index < _notifications.length) {
-                                return _buildNotificationCard(
-                                  _notifications[index],
-                                );
-                              }
-                              return null;
-                            }, childCount: _notifications.length),
+                // Editorial Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        Text(
+                          isProvider ? 'Inbox' : 'Daily Curation',
+                          style: FursafyTheme.headlineStyle.copyWith(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: FursafyTheme.onSurface,
+                            letterSpacing: -0.5,
                           ),
                         ),
-
-                  // Stay Ahead CTA Card
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 120),
-                      child: _buildStayAheadCard(),
+                        const SizedBox(height: 8),
+                        Text(
+                          isProvider
+                              ? 'Manage communications and hiring activities.'
+                              : 'Your personalized updates and career milestones.',
+                          style: FursafyTheme.bodyStyle.copyWith(
+                            color: FursafyTheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                // Notifications List
+                state.notifications.isEmpty
+                    ? SliverToBoxAdapter(child: _buildEmptyState())
+                    : SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            if (index < state.notifications.length) {
+                              return _buildNotificationCard(
+                                state.notifications[index],
+                              );
+                            }
+                            return null;
+                          }, childCount: state.notifications.length),
+                        ),
+                      ),
+
+                // Stay Ahead CTA Card
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 120),
+                    child: _buildStayAheadCard(),
+                  ),
+                ),
+              ],
             ),
+          );
+        },
+      ),
       bottomNavigationBar: _buildBottomNav(context, isProvider),
     );
   }
@@ -480,44 +456,33 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _buildNotificationCard(Map<String, dynamic> notification) {
-    final type = notification['type'] as String?;
-    final isRead = notification['isRead'] == true;
-    final createdAt = (notification['createdAt'] as Timestamp?)?.toDate();
-    final message = notification['message'] as String? ?? 'Notification';
-    final title = notification['title'] as String?;
+  Widget _buildNotificationCard(NotificationEntity notification) {
+    final type = notification.type.firestoreValue;
+    final isRead = notification.isRead;
+    final createdAt = notification.createdAt;
+    final message = notification.message;
     final color = _colorForType(type);
     final icon = _iconForType(type);
     final label = _labelForType(type);
 
-    final appId = notification['applicationId'] as String?;
-    final jobId = notification['jobId'] as String?;
+    final jobId = notification.jobId;
 
-    // Determine if it's a "featured" notification (job_match or accepted)
+    // Determine if it's a "featured" notification (job_match)
     final isFeatured = type == 'job_match';
 
     return GestureDetector(
       onTap: () async {
-        final uid = FirebaseAuth.instance.currentUser?.uid;
-        if (uid != null && notification['id'] != null) {
-          try {
-            await FirebaseFirestore.instance
-                .collection('notifications')
-                .doc(uid)
-                .collection('items')
-                .doc(notification['id'] as String)
-                .update({'isRead': true});
-            // Refresh list
-            _loadNotifications();
-          } catch (_) {}
-        }
+        // Mark as read via BLoC
+        context
+            .read<NotificationBloc>()
+            .add(NotificationMarkAsRead(notification.id));
 
         if (!mounted) return;
 
+        final uid = FirebaseAuth.instance.currentUser?.uid;
+
         if (type == 'application_accepted' || type == 'application_rejected') {
-          if (appId != null && appId.isNotEmpty) {
-            context.push('/applications/$appId');
-          } else if (jobId != null && jobId.isNotEmpty) {
+          if (jobId != null && jobId.isNotEmpty) {
             try {
               final snap = await FirebaseFirestore.instance
                   .collection(FirestorePaths.applications)
@@ -602,30 +567,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           color: color,
                         ),
                       ),
-                      if (createdAt != null)
-                        Text(
-                          timeago.format(createdAt, locale: 'en_short'),
-                          style: FursafyTheme.labelStyle.copyWith(
-                            fontSize: 11,
-                            color: FursafyTheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Text(
+                        timeago.format(createdAt, locale: 'en_short'),
+                        style: FursafyTheme.labelStyle.copyWith(
+                          fontSize: 11,
+                          color: FursafyTheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
                         ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  // Title
-                  if (title != null)
-                    Text(
-                      title,
-                      style: FursafyTheme.headlineStyle.copyWith(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: FursafyTheme.onSurface,
-                        height: 1.3,
-                      ),
-                    ),
-                  if (title != null) const SizedBox(height: 4),
                   // Message
                   Text(
                     message,

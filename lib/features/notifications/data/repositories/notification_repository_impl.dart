@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/core/error/failures.dart';
 import 'package:fursafy/features/notifications/domain/entities/notification_entity.dart';
 import 'package:fursafy/features/notifications/domain/repositories/notification_repository.dart';
 
 /// Firestore implementation of [NotificationRepository].
+///
+/// Canonical path: notifications/{uid}/items/{notifId}
+/// (top-level `notifications` collection, per-user doc, `items` sub-collection)
 class NotificationRepositoryImpl implements NotificationRepository {
   final FirebaseFirestore _db;
   NotificationRepositoryImpl({FirebaseFirestore? db})
       : _db = db ?? FirebaseFirestore.instance;
 
+  /// Returns the items sub-collection for a given user.
   CollectionReference<Map<String, dynamic>> _col(String uid) =>
-      _db.collection(FirestorePaths.users).doc(uid)
-          .collection('notifications');
+      _db.collection('notifications').doc(uid).collection('items');
 
   @override
   Future<({List<NotificationEntity> notifications, Failure? failure})>
@@ -37,7 +39,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Stream<int> getUnreadCount(String uid) {
     return _col(uid)
-        .where('read', isEqualTo: false)
+        .where('isRead', isEqualTo: false)
         .snapshots()
         .map((snap) => snap.docs.length);
   }
@@ -45,7 +47,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<Failure?> markAsRead(String uid, String notificationId) async {
     try {
-      await _col(uid).doc(notificationId).update({'read': true});
+      await _col(uid).doc(notificationId).update({'isRead': true});
       return null;
     } catch (e) {
       return ServerFailure(message: 'Failed to mark as read: $e');
@@ -55,10 +57,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<Failure?> markAllAsRead(String uid) async {
     try {
-      final snap = await _col(uid).where('read', isEqualTo: false).get();
+      final snap = await _col(uid).where('isRead', isEqualTo: false).get();
       final batch = _db.batch();
       for (final doc in snap.docs) {
-        batch.update(doc.reference, {'read': true});
+        batch.update(doc.reference, {'isRead': true});
       }
       await batch.commit();
       return null;

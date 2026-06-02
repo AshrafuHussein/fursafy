@@ -65,19 +65,21 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
         _loading = false;
       });
     } catch (e) {
-      print('ProviderDashboardScreen._loadDashboard error: $e');
       setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userName = FirebaseAuth.instance.currentUser?.displayName ?? 'Provider';
+    final userName =
+        FirebaseAuth.instance.currentUser?.displayName ?? 'Provider';
 
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
       appBar: AppBar(
-        backgroundColor: FursafyTheme.surfaceContainerLow.withValues(alpha: 0.8),
+        backgroundColor: FursafyTheme.surfaceContainerLow.withValues(
+          alpha: 0.8,
+        ),
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: const Padding(
@@ -98,13 +100,18 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
         actions: [
           IconButton(
             onPressed: () => context.push(AppRoutes.notifications),
-            icon: const Icon(Icons.notifications_none_rounded, color: FursafyTheme.primary),
+            icon: const Icon(
+              Icons.notifications_none_rounded,
+              color: FursafyTheme.primary,
+            ),
           ),
           const SizedBox(width: 8),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: FursafyTheme.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: FursafyTheme.primary),
+            )
           : RefreshIndicator(
               onRefresh: _loadDashboard,
               color: FursafyTheme.primary,
@@ -165,7 +172,8 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                                       icon: Icons.group_outlined,
                                       label: 'APPLICANTS',
                                       value: _totalApplications.toString(),
-                                      bgColor: FursafyTheme.surfaceContainerLowest,
+                                      bgColor:
+                                          FursafyTheme.surfaceContainerLowest,
                                       textColor: FursafyTheme.onSurface,
                                       labelColor: FursafyTheme.onSurfaceVariant,
                                       isSmall: true,
@@ -231,8 +239,11 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                               child: const LinearProgressIndicator(
                                 value: 0.8,
                                 minHeight: 12,
-                                backgroundColor: FursafyTheme.surfaceContainerHighest,
-                                valueColor: AlwaysStoppedAnimation<Color>(FursafyTheme.primary),
+                                backgroundColor:
+                                    FursafyTheme.surfaceContainerHighest,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  FursafyTheme.primary,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -253,7 +264,10 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                   // Recent Jobs Header
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -277,7 +291,11 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.arrow_forward, size: 14, color: FursafyTheme.primary),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  size: 14,
+                                  color: FursafyTheme.primary,
+                                ),
                               ],
                             ),
                           ),
@@ -294,7 +312,9 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                         child: Center(
                           child: Text(
                             'No jobs posted yet.',
-                            style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.onSurfaceVariant),
+                            style: FursafyTheme.bodyStyle.copyWith(
+                              color: FursafyTheme.onSurfaceVariant,
+                            ),
                           ),
                         ),
                       ),
@@ -303,12 +323,9 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return _buildEditorialJobCard(_recentJobs[index]);
-                          },
-                          childCount: _recentJobs.length,
-                        ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return _buildEditorialJobCard(_recentJobs[index]);
+                        }, childCount: _recentJobs.length),
                       ),
                     ),
 
@@ -345,14 +362,22 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
         border: bgColor == FursafyTheme.surfaceContainerLowest
-            ? Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.1))
+            ? Border.all(
+                color: FursafyTheme.outlineVariant.withValues(alpha: 0.1),
+              )
             : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: textColor.withValues(alpha: bgColor == FursafyTheme.primary ? 1.0 : 0.8), size: isSmall ? 28 : 40),
+          Icon(
+            icon,
+            color: textColor.withValues(
+              alpha: bgColor == FursafyTheme.primary ? 1.0 : 0.8,
+            ),
+            size: isSmall ? 28 : 40,
+          ),
           if (!isSmall) const SizedBox(height: 32),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,7 +433,9 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=200&q=80'),
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=200&q=80',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -428,7 +455,11 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 12, color: FursafyTheme.onSurfaceVariant),
+                      const Icon(
+                        Icons.location_on,
+                        size: 12,
+                        color: FursafyTheme.onSurfaceVariant,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         job.locationName ?? 'Tanzania',
@@ -439,27 +470,36 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                       ),
                       const SizedBox(width: 12),
                       if (job.payAmount > 100000)
-                         Container(
-                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                           decoration: BoxDecoration(
-                             color: FursafyTheme.secondary.withValues(alpha: 0.1),
-                             borderRadius: BorderRadius.circular(100),
-                           ),
-                           child: Row(
-                             children: [
-                               const Icon(Icons.bolt, size: 12, color: FursafyTheme.secondary),
-                               const SizedBox(width: 2),
-                               Text(
-                                 'URGENT',
-                                 style: FursafyTheme.labelStyle.copyWith(
-                                   color: FursafyTheme.secondary,
-                                   fontSize: 9,
-                                   fontWeight: FontWeight.w900,
-                                 ),
-                               ),
-                             ],
-                           ),
-                         ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: FursafyTheme.secondary.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.bolt,
+                                size: 12,
+                                color: FursafyTheme.secondary,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                'URGENT',
+                                style: FursafyTheme.labelStyle.copyWith(
+                                  color: FursafyTheme.secondary,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ],
@@ -513,10 +553,30 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(Icons.home_max, 'HOME', true),
-              _buildNavItem(Icons.work_outline, 'WORK', false, onTap: () => context.push(AppRoutes.myJobs)),
-              _buildNavItem(Icons.add_circle_outline, 'ADD', false, onTap: () => context.push(AppRoutes.postJob)),
-              _buildNavItem(Icons.mail_outline, 'INBOX', false, onTap: () => context.push(AppRoutes.notifications)),
-              _buildNavItem(Icons.person_outline, 'PROFILE', false, onTap: () => context.push(AppRoutes.profile)),
+              _buildNavItem(
+                Icons.work_outline,
+                'WORK',
+                false,
+                onTap: () => context.push(AppRoutes.myJobs),
+              ),
+              _buildNavItem(
+                Icons.add_circle_outline,
+                'ADD',
+                false,
+                onTap: () => context.push(AppRoutes.postJob),
+              ),
+              _buildNavItem(
+                Icons.mail_outline,
+                'INBOX',
+                false,
+                onTap: () => context.push(AppRoutes.notifications),
+              ),
+              _buildNavItem(
+                Icons.person_outline,
+                'PROFILE',
+                false,
+                onTap: () => context.push(AppRoutes.profile),
+              ),
             ],
           ),
         ),
@@ -524,13 +584,20 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive, {VoidCallback? onTap}) {
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    bool isActive, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? FursafyTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive
+              ? FursafyTheme.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(

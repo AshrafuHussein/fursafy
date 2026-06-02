@@ -15,6 +15,9 @@ import 'package:fursafy/features/ratings/data/repositories/rating_repository_imp
 import 'package:fursafy/features/ratings/presentation/bloc/rating_bloc.dart';
 import 'package:fursafy/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:fursafy/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:fursafy/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:fursafy/core/services/notification_service.dart';
 import 'firebase_options.dart';
 import 'package:fursafy/core/config/env_config.dart';
 
@@ -53,6 +56,9 @@ void main() async {
     debugPrint('Firebase initialization failed: $e');
   }
 
+  // Initialize FCM push notifications
+  await NotificationService.instance.initialize();
+
   runApp(
     MultiBlocProvider(
       providers: [
@@ -85,6 +91,11 @@ void main() async {
           create: (context) => ProfileBloc(
             profileRepository: ProfileRepositoryImpl(),
           ),
+        ),
+        BlocProvider<NotificationBloc>(
+          create: (context) => NotificationBloc(
+            repository: NotificationRepositoryImpl(),
+          )..add(const UnreadCountSubscriptionRequested()),
         ),
       ],
       child: const FursafyApp(),

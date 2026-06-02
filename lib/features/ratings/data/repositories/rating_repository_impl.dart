@@ -8,7 +8,7 @@ import 'package:fursafy/features/ratings/domain/repositories/rating_repository.d
 class RatingRepositoryImpl implements RatingRepository {
   final FirebaseFirestore _db;
   RatingRepositoryImpl({FirebaseFirestore? db})
-      : _db = db ?? FirebaseFirestore.instance;
+    : _db = db ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _col =>
       _db.collection(FirestorePaths.ratings);
@@ -34,7 +34,8 @@ class RatingRepositoryImpl implements RatingRepository {
         return (
           ratingId: null,
           failure: const ValidationFailure(
-              message: 'You have already rated this job'),
+            message: 'You have already rated this job',
+          ),
         );
       }
 
@@ -80,14 +81,16 @@ class RatingRepositoryImpl implements RatingRepository {
 
   @override
   Future<({List<RatingEntity> ratings, Failure? failure})> getUserRatings(
-      String userId) async {
+    String userId,
+  ) async {
     try {
       final snap = await _col
           .where('rateeId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
-      final ratings =
-          snap.docs.map((d) => RatingEntity.fromMap(d.id, d.data())).toList();
+      final ratings = snap.docs
+          .map((d) => RatingEntity.fromMap(d.id, d.data()))
+          .toList();
       return (ratings: ratings, failure: null);
     } catch (e) {
       return (
@@ -100,15 +103,15 @@ class RatingRepositoryImpl implements RatingRepository {
   /// Recalculates and stores the average rating on the user's document.
   Future<void> _updateAverageScore(String userId) async {
     try {
-      final snap = await _col
-          .where('rateeId', isEqualTo: userId)
-          .get();
+      final snap = await _col.where('rateeId', isEqualTo: userId).get();
       if (snap.docs.isEmpty) return;
 
       final total = snap.docs.fold<int>(
-          0, (acc, d) => acc + (d.data()['score'] as int? ?? 0));
+        0,
+        (acc, d) => acc + (d.data()['score'] as int? ?? 0),
+      );
       final avg = total / snap.docs.length;
-      
+
       final ratingAvg = double.parse(avg.toStringAsFixed(1));
       final ratingCount = snap.docs.length;
 
@@ -116,10 +119,11 @@ class RatingRepositoryImpl implements RatingRepository {
       await _db.collection(FirestorePaths.users).doc(userId).update({
         'ratingAvg': ratingAvg,
         'ratingCount': ratingCount,
-        'averageRating': ratingAvg, // Keep for backward compatibility with profile screen
+        'averageRating':
+            ratingAvg, // Keep for backward compatibility with profile screen
         'totalRatings': ratingCount,
       });
-      
+
       // Also attempt to update youth_profiles if it exists
       try {
         await _db.collection(FirestorePaths.youthProfiles).doc(userId).update({
@@ -135,23 +139,18 @@ class RatingRepositoryImpl implements RatingRepository {
             .collection(FirestorePaths.jobs)
             .where('providerId', isEqualTo: userId)
             .get();
-            
+
         if (jobsSnap.docs.isNotEmpty) {
           final batch = _db.batch();
           for (final doc in jobsSnap.docs) {
-            batch.update(doc.reference, {
-              'providerRating': ratingAvg,
-            });
+            batch.update(doc.reference, {'providerRating': ratingAvg});
           }
           await batch.commit();
         }
-      } catch (e) {
-        print('[RatingRepository] Error updating jobs rating: $e');
-      }
-      
-    } catch (e, stack) {
-      print('[RatingRepository] _updateAverageScore error: $e');
-      print('[RatingRepository] Stack: $stack');
-    }
+        // ignore: empty_catches
+      } catch (e) {}
+
+      // ignore: empty_catches
+    } catch (e) {}
   }
 }

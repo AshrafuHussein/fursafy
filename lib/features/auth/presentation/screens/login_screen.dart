@@ -56,11 +56,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          
+
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 48.0,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -69,18 +72,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'Fursafy',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(
                             color: FursafyTheme.primary,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -0.5,
                           ),
                     ),
                     const SizedBox(height: 48),
-                    
+
                     // Header
                     Text(
                       'Welcome Back',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: FursafyTheme.onSurface,
                           ),
@@ -89,9 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'Log in to your curated dashboard',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: FursafyTheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        color: FursafyTheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 40),
 
@@ -99,9 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'PHONE NUMBER',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: FursafyTheme.onSurfaceVariant,
-                          ),
+                        fontWeight: FontWeight.w700,
+                        color: FursafyTheme.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
@@ -132,7 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Text(
                           'PASSWORD',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: FursafyTheme.onSurfaceVariant,
                               ),
@@ -143,7 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           child: Text(
                             'Forgot Password?',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: FursafyTheme.primary,
                                 ),
@@ -167,7 +174,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: FursafyTheme.onSurfaceVariant,
                           ),
                           onPressed: () {
@@ -208,7 +217,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   final input = _phoneController.text.trim();
                                   final pass = _passwordController.text;
                                   if (input.isNotEmpty && pass.isNotEmpty) {
-                                    final loginEmail = input.contains('@') ? input : '$input@fursafy.temp';
+                                    final loginEmail = input.contains('@')
+                                        ? input
+                                        : '$input@fursafy.temp';
                                     context.read<AuthBloc>().add(
                                       AuthSignInRequested(
                                         email: loginEmail,
@@ -219,7 +230,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 20),
-                            shadowColor: FursafyTheme.primary.withValues(alpha: 0.1),
+                            shadowColor: FursafyTheme.primary.withValues(
+                              alpha: 0.1,
+                            ),
                             elevation: 4,
                           ),
                           child: state is AuthLoading
@@ -229,7 +242,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: CircularProgressIndicator(
                                     color: Colors.white,
                                     strokeWidth: 2,
-                                  ))
+                                  ),
+                                )
                               : const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -247,13 +261,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       children: [
                         const Expanded(
-                          child: Divider(color: FursafyTheme.surfaceContainerHigh),
+                          child: Divider(
+                            color: FursafyTheme.surfaceContainerHigh,
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'NEW TO FURSAFY?',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: FursafyTheme.outline,
                                   letterSpacing: 1.0,
@@ -261,7 +278,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const Expanded(
-                          child: Divider(color: FursafyTheme.surfaceContainerHigh),
+                          child: Divider(
+                            color: FursafyTheme.surfaceContainerHigh,
+                          ),
                         ),
                       ],
                     ),
@@ -272,7 +291,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () => context.push(AppRoutes.registerRole),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        side: const BorderSide(color: FursafyTheme.primary, width: 2),
+                        side: const BorderSide(
+                          color: FursafyTheme.primary,
+                          width: 2,
+                        ),
                       ),
                       child: const Text('Register Account'),
                     ),
@@ -280,12 +302,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     // Footer
                     Text(
-                      '© 2024 Fursafy. Curating opportunities with intent.',
+                      '© 2026 Fursafy. Curating opportunities with intent.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: FursafyTheme.onSurfaceVariant.withValues(alpha: 0.6),
-                            fontWeight: FontWeight.w500,
-                          ),
+                        color: FursafyTheme.onSurfaceVariant.withValues(
+                          alpha: 0.6,
+                        ),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
