@@ -93,7 +93,7 @@ export const matchingEngine = onDocumentCreated(
 
         const ratingAvg: number = data.ratingAvg ?? 0;
 
-        // Scoring formula from SRS §7.1
+        // Scoring formula from Fursafy SRS §7.1
         const score =
           matchingSkillCount * 3 +
           (distance > 0 ? (1 / distance) * 2 : 2) +
