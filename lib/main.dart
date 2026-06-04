@@ -18,8 +18,6 @@ import 'package:fursafy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:fursafy/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:fursafy/core/services/notification_service.dart';
-import 'firebase_options.dart';
-import 'package:fursafy/core/config/env_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,20 +38,12 @@ void main() async {
     ),
   );
 
-  // Validate environment configuration before initializing Firebase
-  final missing = EnvConfig.missingVariables;
-  if (missing.isNotEmpty) {
-    debugPrint('Missing env variables: ${missing.join(', ')}');
-    debugPrint('Pass them with --dart-define or use --dart-define-from-file');
-  }
-
-  // Initialize Firebase with error handling
+  // Initialize Firebase — google-services.json + Gradle plugin handle native config.
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await Firebase.initializeApp();
   } catch (e) {
-    debugPrint('Firebase initialization failed: $e');
+    // Already initialized by native plugin — safe to continue.
+    debugPrint('Firebase init: $e');
   }
 
   // Initialize FCM push notifications
