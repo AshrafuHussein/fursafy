@@ -1,8 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for Android 13+ to show system tray notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
         android:label="fursafy"
         android:name="${applicationName}"
-        android:icon="@mipmap/fursafy">
+        android:icon="@mipmap/fursafy"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -52,4 +56,5 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 </manifest>

@@ -18,8 +18,6 @@ import 'package:fursafy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:fursafy/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:fursafy/core/services/notification_service.dart';
-import 'firebase_options.dart';
-import 'package:fursafy/core/config/env_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,19 +39,15 @@ void main() async {
   );
 
   // Initialize Firebase — google-services.json + Gradle plugin handle native config.
-  // Call initializeApp() without options to connect to the native-initialized app.
   try {
     await Firebase.initializeApp();
-    print('========== FIREBASE INITIALIZED ==========');
   } catch (e) {
-    // If already initialized by native plugin, that's fine — just continue.
-    print('========== FIREBASE INIT NOTE: $e ==========');
+    // Already initialized by native plugin — safe to continue.
+    debugPrint('Firebase init: $e');
   }
 
   // Initialize FCM push notifications
-  print('========== STARTING FCM INIT ==========');
   await NotificationService.instance.initialize();
-  print('========== FCM INIT DONE ==========');
 
   runApp(
     MultiBlocProvider(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fursafy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:fursafy/app/router.dart';
 
@@ -26,6 +27,8 @@ class NotificationService {
   static final NotificationService instance = NotificationService._();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   StreamSubscription<RemoteMessage>? _foregroundSub;
   StreamSubscription<String>? _tokenRefreshSub;
 
@@ -39,6 +42,9 @@ class NotificationService {
 
   /// Initialize FCM — call once after Firebase.initializeApp().
   Future<void> initialize() async {
+    // 0. Initialize local notifications for foreground system tray display
+    await _initLocalNotifications();
+
     // 1. Register background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -59,33 +65,23 @@ class NotificationService {
     // 3. Get initial FCM token and save to Firestore
     //    FIS may not be ready on cold start — retry once after a short delay.
     try {
-      print('========== FCM: REQUESTING TOKEN ==========');
       final token = await _messaging.getToken();
       if (token != null) {
-        print('========================================');
-        print('FCM TOKEN:');
-        print(token);
-        print('========================================');
+        debugPrint('[FCM] Token acquired');
         await _saveToken(token);
-      } else {
-        print('========== FCM: TOKEN IS NULL ==========');
       }
     } catch (e) {
-      print('========== FCM: TOKEN ERROR: $e ==========');
+      debugPrint('[FCM] Token error: $e');
       // Retry after 3 seconds — gives FIS time to initialize
       Future.delayed(const Duration(seconds: 3), () async {
         try {
-          print('========== FCM: RETRYING TOKEN ==========');
           final token = await _messaging.getToken();
           if (token != null) {
-            print('========================================');
-            print('FCM TOKEN (retry):');
-            print(token);
-            print('========================================');
+            debugPrint('[FCM] Token acquired (retry)');
             await _saveToken(token);
           }
         } catch (e2) {
-          print('========== FCM: RETRY ALSO FAILED: $e2 ==========');
+          debugPrint('[FCM] Token retry failed: $e2');
         }
       });
     }
@@ -138,9 +134,74 @@ class NotificationService {
     }
   }
 
-  /// Handle foreground message — show in-app overlay banner.
+  /// Initialize flutter_local_notifications for foreground system tray display.
+  Future<void> _initLocalNotifications() async {
+    const androidSettings = AndroidInitializationSettings('@mipmap/fursafy');
+    const initSettings = InitializationSettings(android: androidSettings);
+
+    await _localNotifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        // Handle notification tap from system tray
+        final screen = response.payload;
+        if (screen != null && screen.isNotEmpty) {
+          try {
+            appRouter.push(screen);
+          } catch (e) {
+            debugPrint('[LocalNotif] Navigation failed: $e');
+          }
+        }
+      },
+    );
+
+    // Create the notification channel for Android 8+
+    const channel = AndroidNotificationChannel(
+      'fursafy_jobs', // must match AndroidManifest meta-data value
+      'Fursafy Jobs',
+      description: 'Notifications for job matches, applications, and updates',
+      importance: Importance.high,
+      playSound: true,
+    );
+
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+
+  /// Show a system tray notification using flutter_local_notifications.
+  Future<void> _showSystemNotification(RemoteMessage message) async {
+    final notification = message.notification;
+    if (notification == null) return;
+
+    const androidDetails = AndroidNotificationDetails(
+      'fursafy_jobs', // channel ID — matches the channel created above
+      'Fursafy Jobs',
+      channelDescription:
+          'Notifications for job matches, applications, and updates',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/fursafy',
+      playSound: true,
+    );
+
+    const details = NotificationDetails(android: androidDetails);
+
+    await _localNotifications.show(
+      notification.hashCode, // unique ID per notification
+      notification.title ?? 'Fursafy',
+      notification.body ?? '',
+      details,
+      payload: message.data['screen'] as String?, // for tap navigation
+    );
+  }
+
+  /// Handle foreground message — show system notification + in-app overlay banner.
   void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('[FCM] Foreground message: ${message.notification?.title}');
+
+    // Show system tray notification
+    _showSystemNotification(message);
 
     // Notify the bloc so it can add the notification to state
     onForegroundMessage?.call(message);
