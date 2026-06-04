@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import '../core/services/notification_service.dart';
 
 // Placeholder screens — will be replaced with Stitch-generated UI
 import '../features/auth/presentation/screens/splash_screen.dart';
@@ -59,6 +60,7 @@ class AppRoutes {
 
 /// GoRouter configuration.
 final GoRouter appRouter = GoRouter(
+  navigatorKey: NotificationService.navigatorKey,
   initialLocation: AppRoutes.splash,
   debugLogDiagnostics: true,
   routes: [
