@@ -40,24 +40,20 @@ void main() async {
     ),
   );
 
-  // Validate environment configuration before initializing Firebase
-  final missing = EnvConfig.missingVariables;
-  if (missing.isNotEmpty) {
-    debugPrint('Missing env variables: ${missing.join(', ')}');
-    debugPrint('Pass them with --dart-define or use --dart-define-from-file');
-  }
-
-  // Initialize Firebase with error handling
+  // Initialize Firebase — google-services.json + Gradle plugin handle native config.
+  // Call initializeApp() without options to connect to the native-initialized app.
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await Firebase.initializeApp();
+    print('========== FIREBASE INITIALIZED ==========');
   } catch (e) {
-    debugPrint('Firebase initialization failed: $e');
+    // If already initialized by native plugin, that's fine — just continue.
+    print('========== FIREBASE INIT NOTE: $e ==========');
   }
 
   // Initialize FCM push notifications
+  print('========== STARTING FCM INIT ==========');
   await NotificationService.instance.initialize();
+  print('========== FCM INIT DONE ==========');
 
   runApp(
     MultiBlocProvider(

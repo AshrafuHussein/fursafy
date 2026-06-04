@@ -57,14 +57,37 @@ class NotificationService {
     }
 
     // 3. Get initial FCM token and save to Firestore
+    //    FIS may not be ready on cold start — retry once after a short delay.
     try {
+      print('========== FCM: REQUESTING TOKEN ==========');
       final token = await _messaging.getToken();
       if (token != null) {
-        debugPrint('[FCM] Token: ${token.substring(0, 20)}...');
+        print('========================================');
+        print('FCM TOKEN:');
+        print(token);
+        print('========================================');
         await _saveToken(token);
+      } else {
+        print('========== FCM: TOKEN IS NULL ==========');
       }
     } catch (e) {
-      debugPrint('[FCM] Failed to get token: $e');
+      print('========== FCM: TOKEN ERROR: $e ==========');
+      // Retry after 3 seconds — gives FIS time to initialize
+      Future.delayed(const Duration(seconds: 3), () async {
+        try {
+          print('========== FCM: RETRYING TOKEN ==========');
+          final token = await _messaging.getToken();
+          if (token != null) {
+            print('========================================');
+            print('FCM TOKEN (retry):');
+            print(token);
+            print('========================================');
+            await _saveToken(token);
+          }
+        } catch (e2) {
+          print('========== FCM: RETRY ALSO FAILED: $e2 ==========');
+        }
+      });
     }
 
     // 4. Listen for token refresh
