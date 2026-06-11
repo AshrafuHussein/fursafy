@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. Users collection rules
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      
+      // Allow creation only if the user sets their own UID
+      // and sets a valid role (youth or provider) and status (active)
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.role in ['youth', 'provider']
+        && request.resource.data.status == 'active';
+
+      // Allow updates only by the owner, preventing them from changing their role or uid
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.role == resource.data.role;
+        
+      allow delete: if false; // Users cannot be deleted directly
+    }
+
+    // 2. Youth Profiles collection rules
+    match /youth_profiles/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    // 3. Jobs collection rules
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated();
+      
+      // Allow creation if the provider ID matches the authenticated user ID
+      allow create: if isAuthenticated() 
+        && request.resource.data.providerId == request.auth.uid;
+
+      // Allow updates only by the provider who created the job
+      allow update: if isAuthenticated() 
+        && resource.data.providerId == request.auth.uid;
+        
+      allow delete: if isAuthenticated()
+        && resource.data.providerId == request.auth.uid;
+    }
+
+    // 4. Applications collection rules
+    match /applications/{applicationId} {
+      // Allowed to read if the user is the youth who applied or the provider who posted the job
+      allow read: if isAuthenticated() && (
+        resource.data.youthId == request.auth.uid ||
+        resource.data.providerId == request.auth.uid
+      );
+
+      // Allowed to apply (create) if the youth ID matches the authenticated user ID
+      allow create: if isAuthenticated()
+        && request.resource.data.youthId == request.auth.uid;
+
+      // Allowed to update status (accept/reject) if provider, or withdraw (delete) if youth
+      allow update: if isAuthenticated() && (
+        resource.data.youthId == request.auth.uid ||
+        resource.data.providerId == request.auth.uid
+      );
+
+      allow delete: if isAuthenticated() && resource.data.youthId == request.auth.uid;
+    }
+
+    // 5. Ratings collection rules
+    match /ratings/{ratingId} {
+      allow read: if isAuthenticated();
+      
+      // Allow creation if the rater ID matches the authenticated user ID
+      allow create: if isAuthenticated()
+        && request.resource.data.raterId == request.auth.uid;
+        
+      allow update, delete: if false; // Ratings cannot be modified or deleted
+    }
+
+    // 6. User Notifications sub-collection rules
+    match /notifications/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      match /items/{notificationId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}
