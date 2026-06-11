@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
+import 'package:fursafy/core/services/notification_service.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 
 /// S01 — Splash screen. Checks auth and routes accordingly.
@@ -39,9 +40,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate after animation
+    // Navigate after animation — but skip if the app was launched
+    // from a notification tap (the notification handler already navigated).
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
+      if (NotificationService.instance.launchedFromNotification) {
+        debugPrint('[Splash] Skipping redirect — launched from notification');
+        return;
+      }
       final state = context.read<AuthBloc>().state;
       if (state is AuthAuthenticated) {
         final role = state.user.role.name;

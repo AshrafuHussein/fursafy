@@ -39,20 +39,40 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     Emitter<NotificationState> emit,
   ) async {
     final uid = _uid;
-    if (uid == null) return;
+    debugPrint('[NotifBloc] _onLoadRequested — uid=$uid');
+    if (uid == null) {
+      debugPrint('[NotifBloc] No authenticated user — skipping load');
+      return;
+    }
 
     emit(state.copyWith(status: NotificationStatus.loading));
 
     final result = await _repository.getNotifications(uid);
     if (result.failure != null) {
+      debugPrint('[NotifBloc] Load FAILED: ${result.failure!.message}');
       emit(state.copyWith(
         status: NotificationStatus.error,
         errorMessage: result.failure!.message,
       ));
     } else {
+      debugPrint('[NotifBloc] Loaded ${result.notifications.length} notifications from Firestore');
+
+      // Merge: preserve FCM-originated notifications (id starts with 'fcm_')
+      // that don't yet have a matching Firestore document.
+      // Match by message content + type to detect duplicates.
+      final firestoreNotifs = result.notifications;
+      final fcmOnly = state.notifications
+          .where((n) => n.id.startsWith('fcm_'))
+          .where((n) => !firestoreNotifs.any(
+              (f) => f.message == n.message && f.type == n.type))
+          .toList();
+
+      debugPrint('[NotifBloc] Keeping ${fcmOnly.length} FCM-only notifications');
+      final merged = [...fcmOnly, ...firestoreNotifs];
+
       emit(state.copyWith(
         status: NotificationStatus.loaded,
-        notifications: result.notifications,
+        notifications: merged,
       ));
     }
   }
@@ -62,12 +82,19 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     Emitter<NotificationState> emit,
   ) async {
     final uid = _uid;
+    debugPrint('[NotifBloc] UnreadCountSubscriptionRequested — uid=$uid');
     if (uid == null) return;
 
     _unreadSub?.cancel();
-  _unreadSub = _repository.getUnreadCount(uid).listen(
-          (unreadCount) => add(_UnreadCountUpdated(unreadCount)),
-        );
+    _unreadSub = _repository.getUnreadCount(uid).listen(
+      (unreadCount) {
+        debugPrint('[NotifBloc] Unread count stream → $unreadCount');
+        add(_UnreadCountUpdated(unreadCount));
+      },
+      onError: (e) {
+        debugPrint('[NotifBloc] Unread count stream ERROR: $e');
+      },
+    );
   }
 
   void _onUnreadCountUpdated(
@@ -113,16 +140,28 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     emit(state.copyWith(notifications: updated, unreadCount: 0));
   }
 
-  /// Handle FCM foreground message → reload notifications from Firestore.
-  ///
-  /// The Cloud Function already writes the notification document to Firestore,
-  /// so we reload from the canonical source instead of creating a synthetic
-  /// in-memory entry (which would get wiped on the next Firestore load).
+  /// Handle FCM foreground message — add it to state immediately for
+  /// instant UI feedback, then reload from Firestore to reconcile.
   void _handleFcmMessage(RemoteMessage message) {
-    debugPrint('[FCM] Foreground message received — reloading notifications');
+    final data = message.data;
+    final notification = message.notification;
+    debugPrint('[FCM] Foreground message received — adding to state');
 
-    // Small delay to allow the Cloud Function Firestore write to propagate
-    Future.delayed(const Duration(milliseconds: 800), () {
+    // 1. Show immediately (synthetic entry with 'fcm_' prefix)
+    add(NotificationReceived({
+      'type': data['type'] ?? 'job_match',
+      'message': notification?.body ?? data['message'] ?? '',
+      'title': notification?.title ?? '',
+      'jobId': data['jobId'],
+      'applicationId': data['applicationId'],
+      'isRead': false,
+    }));
+
+    // 2. Reload from Firestore after a delay so the Cloud Function's
+    //    write has time to propagate. The merge logic in _onLoadRequested
+    //    will replace the synthetic entry with the real Firestore doc
+    //    (matched by message + type), or keep it if no match exists.
+    Future.delayed(const Duration(seconds: 2), () {
       add(const NotificationLoadRequested());
     });
   }
@@ -132,7 +171,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     Emitter<NotificationState> emit,
   ) {
     final newNotification = NotificationEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: 'fcm_${DateTime.now().millisecondsSinceEpoch}',
       type: _parseType(event.data['type'] as String?),
       message: event.data['message'] as String? ?? '',
       jobId: event.data['jobId'] as String?,
@@ -140,6 +179,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       createdAt: DateTime.now(),
     );
 
+    debugPrint('[NotifBloc] Added FCM notification: ${newNotification.id}');
     final updated = [newNotification, ...state.notifications];
     emit(state.copyWith(
       notifications: updated,

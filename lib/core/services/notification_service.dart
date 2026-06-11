@@ -36,6 +36,11 @@ class NotificationService {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
+  /// True when the app was launched by tapping a push notification
+  /// (from a terminated state). The splash screen checks this to
+  /// skip its delayed redirect so the notification navigation isn't overridden.
+  bool launchedFromNotification = false;
+
   /// Callback invoked when a foreground message arrives.
   /// Set by NotificationBloc to inject new notifications reactively.
   void Function(RemoteMessage message)? onForegroundMessage;
@@ -102,9 +107,10 @@ class NotificationService {
     // 7. Handle terminated-state launch from notification tap
     final initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
+      launchedFromNotification = true;
       // Delay slightly to let the router initialize
       Future.delayed(const Duration(milliseconds: 500), () {
-        _handleMessageTap(initialMessage);
+        _handleMessageTap(initialMessage, fromTerminated: true);
       });
     }
   }
@@ -219,16 +225,26 @@ class NotificationService {
   }
 
   /// Handle notification tap → deep-link to the correct screen.
-  void _handleMessageTap(RemoteMessage message) {
+  ///
+  /// [fromTerminated] — true when the app was launched from a terminated
+  /// state by tapping a notification. Uses `go()` instead of `push()` to
+  /// replace the splash route entirely (preventing the splash redirect
+  /// from overriding the navigation later).
+  void _handleMessageTap(RemoteMessage message, {bool fromTerminated = false}) {
     final screen = message.data['screen'] as String?;
-    debugPrint('[FCM] Message tap → navigate to: $screen');
+    debugPrint('[FCM] Message tap → navigate to: $screen (fromTerminated=$fromTerminated)');
 
     if (screen != null && screen.isNotEmpty) {
       try {
-        appRouter.push(screen);
+        // From terminated state: use go() to replace splash route
+        // From background: use push() to stack on current route
+        if (fromTerminated) {
+          appRouter.go(screen);
+        } else {
+          appRouter.push(screen);
+        }
       } catch (e) {
         debugPrint('[FCM] Navigation failed for "$screen": $e');
-        // Fall back to the notifications page
         appRouter.go('/notifications');
       }
     } else {
