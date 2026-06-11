@@ -149,7 +149,12 @@ class NotificationService {
             appRouter.push(screen);
           } catch (e) {
             debugPrint('[LocalNotif] Navigation failed: $e');
+            // Fall back to notifications screen
+            appRouter.go('/notifications');
           }
+        } else {
+          // No specific screen — open the notifications page
+          appRouter.go('/notifications');
         }
       },
     );
@@ -222,8 +227,13 @@ class NotificationService {
       try {
         appRouter.push(screen);
       } catch (e) {
-        debugPrint('[FCM] Navigation failed: $e');
+        debugPrint('[FCM] Navigation failed for "$screen": $e');
+        // Fall back to the notifications page
+        appRouter.go('/notifications');
       }
+    } else {
+      // No screen specified — navigate to the notifications page
+      appRouter.go('/notifications');
     }
   }
 

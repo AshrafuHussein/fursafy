@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/features/notifications/domain/entities/notification_entity.dart';
 import 'package:fursafy/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:fursafy/core/services/notification_service.dart';
@@ -113,20 +113,18 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     emit(state.copyWith(notifications: updated, unreadCount: 0));
   }
 
-  /// Handle FCM foreground message → create a NotificationEntity and prepend.
+  /// Handle FCM foreground message → reload notifications from Firestore.
+  ///
+  /// The Cloud Function already writes the notification document to Firestore,
+  /// so we reload from the canonical source instead of creating a synthetic
+  /// in-memory entry (which would get wiped on the next Firestore load).
   void _handleFcmMessage(RemoteMessage message) {
-    final data = message.data;
-    final notification = message.notification;
+    debugPrint('[FCM] Foreground message received — reloading notifications');
 
-    add(NotificationReceived({
-      'type': data['type'] ?? 'job_match',
-      'message': notification?.body ?? data['message'] ?? '',
-      'title': notification?.title ?? '',
-      'jobId': data['jobId'],
-      'applicationId': data['applicationId'],
-      'isRead': false,
-      'createdAt': Timestamp.now(),
-    }));
+    // Small delay to allow the Cloud Function Firestore write to propagate
+    Future.delayed(const Duration(milliseconds: 800), () {
+      add(const NotificationLoadRequested());
+    });
   }
 
   void _onNotificationReceived(
