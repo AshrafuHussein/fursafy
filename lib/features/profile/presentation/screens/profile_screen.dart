@@ -6,6 +6,7 @@ import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/profile/presentation/widgets/skill_picker_dialog.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// S12 — Youth Profile screen — Editorial hero design.
 class ProfileScreen extends StatefulWidget {
@@ -307,10 +308,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: FursafyTheme.surfaceContainerHigh,
                 ),
                 child: avatarUrl != null && avatarUrl.isNotEmpty
-                    ? Image.network(
-                        avatarUrl,
+                    ? CachedNetworkImage(
+                        imageUrl: avatarUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _buildAvatarPlaceholder(),
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(
+                            color: FursafyTheme.primary,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            _buildAvatarPlaceholder(),
                       )
                     : _buildAvatarPlaceholder(),
               ),
@@ -385,7 +392,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           bottom: -24,
           right: 32,
           child: GestureDetector(
-            onTap: () => context.push(AppRoutes.editProfile),
+            onTap: () async {
+              final result = await context.push<bool>(AppRoutes.editProfile);
+              if (result == true) {
+                _loadProfile();
+              }
+            },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(

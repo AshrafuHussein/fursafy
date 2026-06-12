@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:fursafy/features/profile/data/repositories/profile_repository_impl.dart';
 
 /// S13 — Edit Profile Bottom Sheet (Stitch design).
 class EditProfileScreen extends StatefulWidget {
@@ -20,6 +23,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _loading = true;
   bool _saving = false;
   String? _avatarUrl;
+  File? _imageFile;
+  String? _role;
 
   @override
   void initState() {
@@ -40,11 +45,99 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         _nameCtrl.text = u['displayName'] as String? ?? '';
         _avatarUrl = u['avatarUrl'] as String?;
-        _bioCtrl.text = p['bio'] as String? ?? '';
         _locationCtrl.text = u['locationName'] as String? ?? '';
+        _role = u['role'] as String? ?? 'youth';
+        
+        // Handle role-specific bio loading
+        if (_role == 'provider') {
+          _bioCtrl.text = u['bio'] as String? ?? '';
+        } else {
+          _bioCtrl.text = p['bio'] as String? ?? '';
+        }
+        
         _loading = false;
       });
     } catch (_) { setState(() => _loading = false); }
+  }
+
+  Future<void> _pickImage() async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: FursafyTheme.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 48,
+              height: 6,
+              decoration: BoxDecoration(
+                color: FursafyTheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(100),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Select Profile Picture',
+              style: FursafyTheme.headlineStyle.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: FursafyTheme.primary),
+              title: Text(
+                'Take Photo',
+                style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.w600),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _getImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: FursafyTheme.primary),
+              title: Text(
+                'Choose from Gallery',
+                style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.w600),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _getImage(ImageSource.gallery);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _getImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: $e')),
+      );
+    }
   }
 
   Future<void> _save() async {
@@ -53,15 +146,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (uid == null) return;
     setState(() => _saving = true);
     try {
-      await FirebaseFirestore.instance
-          .collection(FirestorePaths.users).doc(uid).update({
+      // 1. Upload avatar if selected
+      if (_imageFile != null) {
+        final repo = ProfileRepositoryImpl();
+        final uploadResult = await repo.uploadAvatar(uid, _imageFile!.path);
+        if (uploadResult.failure != null) {
+          throw Exception(uploadResult.failure!.message);
+        }
+        _avatarUrl = uploadResult.url;
+      }
+
+      // 2. Update user info (including bio if provider)
+      final userUpdates = {
         'displayName': _nameCtrl.text.trim(),
         'locationName': _locationCtrl.text.trim(),
-      });
+      };
+      if (_role == 'provider') {
+        userUpdates['bio'] = _bioCtrl.text.trim();
+      }
+      
       await FirebaseFirestore.instance
-          .collection(FirestorePaths.youthProfiles).doc(uid).set({
-        'bio': _bioCtrl.text.trim(),
-      }, SetOptions(merge: true));
+          .collection(FirestorePaths.users).doc(uid).update(userUpdates);
+
+      // 3. Update youth profile bio if youth
+      if (_role != 'provider') {
+        await FirebaseFirestore.instance
+            .collection(FirestorePaths.youthProfiles).doc(uid).set({
+          'bio': _bioCtrl.text.trim(),
+        }, SetOptions(merge: true));
+      }
+
       await FirebaseAuth.instance.currentUser
           ?.updateDisplayName(_nameCtrl.text.trim());
       if (!mounted) return;
@@ -71,7 +185,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ));
-      Navigator.pop(context);
+      Navigator.pop(context, true); // Return true on success to trigger reload
     } catch (e) {
       setState(() => _saving = false);
       if (!mounted) return;
@@ -125,7 +239,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           const SizedBox(height: 40),
                           // Avatar
                           Center(child: GestureDetector(
-                            onTap: () { /* TODO: image picker */ },
+                            onTap: _pickImage,
                             child: Column(children: [
                               Container(
                                 width: 128, height: 128,
@@ -139,8 +253,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: CircleAvatar(
                                   radius: 60,
                                   backgroundColor: FursafyTheme.surfaceContainerHighest,
-                                  backgroundImage: _avatarUrl != null ? NetworkImage(_avatarUrl!) : null,
-                                  child: _avatarUrl == null
+                                  backgroundImage: _imageFile != null
+                                      ? FileImage(_imageFile!)
+                                      : (_avatarUrl != null && _avatarUrl!.isNotEmpty
+                                          ? NetworkImage(_avatarUrl!)
+                                          : null) as ImageProvider?,
+                                  child: (_imageFile == null && (_avatarUrl == null || _avatarUrl!.isEmpty))
                                       ? const Icon(Icons.person, size: 56, color: FursafyTheme.outline)
                                       : null,
                                 ),

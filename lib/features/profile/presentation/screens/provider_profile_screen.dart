@@ -6,6 +6,7 @@ import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// S12b — Provider Profile screen — Cover + logo editorial design.
 class ProviderProfileScreen extends StatefulWidget {
@@ -287,14 +288,20 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               child: avatarUrl != null && avatarUrl.isNotEmpty
                   ? Opacity(
                       opacity: 0.8,
-                      child: Image.network(
-                        avatarUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: avatarUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) {
-                          return Container(
-                            color: FursafyTheme.primaryContainer,
-                          );
-                        },
+                        placeholder: (context, url) => Container(
+                          color: FursafyTheme.primaryContainer,
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: FursafyTheme.primary,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: FursafyTheme.primaryContainer,
+                        ),
                       ),
                     )
                   : null,
@@ -314,16 +321,19 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 ),
                 child: avatarUrl != null && avatarUrl.isNotEmpty
                     ? ClipOval(
-                        child: Image.network(
-                          avatarUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: avatarUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) {
-                            return const Icon(
-                              Icons.business,
-                              size: 40,
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(
                               color: FursafyTheme.primary,
-                            );
-                          },
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.business,
+                            size: 40,
+                            color: FursafyTheme.primary,
+                          ),
                         ),
                       )
                     : const Icon(
@@ -338,7 +348,12 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               right: 24,
               bottom: -24,
               child: GestureDetector(
-                onTap: () => context.push(AppRoutes.editProfile),
+                onTap: () async {
+                  final result = await context.push<bool>(AppRoutes.editProfile);
+                  if (result == true) {
+                    _loadProfile();
+                  }
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
