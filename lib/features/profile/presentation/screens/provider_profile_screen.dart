@@ -6,6 +6,7 @@ import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// S12b — Provider Profile screen — Cover + logo editorial design.
 class ProviderProfileScreen extends StatefulWidget {
@@ -35,12 +36,24 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
       setState(() => _loading = false);
       return;
     }
+
+    // 1. Fetch user doc independently
     try {
       final userDoc = await FirebaseFirestore.instance
           .collection(FirestorePaths.users)
           .doc(uid)
           .get();
+      if (userDoc.exists) {
+        setState(() {
+          _userData = userDoc.data();
+        });
+      }
+    } catch (e) {
+      debugPrint('ProviderProfileScreen._loadProfile user doc error: $e');
+    }
 
+    // 2. Fetch jobs and counts
+    try {
       final allJobsSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs)
           .where('providerId', isEqualTo: uid)
@@ -72,21 +85,25 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
       }
 
       setState(() {
-        _userData = userDoc.data();
         _totalJobsPosted = allJobsSnap.docs.length;
         _jobsFilled = closedCount;
         _activeJobs = jobs;
         _applicantCounts = applicantCounts;
-        _loading = false;
       });
     } catch (e) {
-      debugPrint('ProviderProfileScreen._loadProfile error: $e');
-      setState(() => _loading = false);
+      debugPrint('ProviderProfileScreen._loadProfile jobs query error: $e');
     }
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = _userData?['avatarUrl'] as String?;
+    debugPrint('ProviderProfileScreen: build - avatarUrl = $avatarUrl');
+
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
       appBar: AppBar(
@@ -103,10 +120,28 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 shape: BoxShape.circle,
                 color: FursafyTheme.surfaceContainerHighest,
               ),
-              child: const Icon(
-                Icons.person,
-                color: FursafyTheme.onSurfaceVariant,
-              ),
+              child: avatarUrl != null && avatarUrl.isNotEmpty
+                  ? ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: avatarUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.person,
+                          color: FursafyTheme.onSurfaceVariant,
+                        ),
+                      ),
+                    )
+                  : const Icon(
+                      Icons.person,
+                      color: FursafyTheme.onSurfaceVariant,
+                    ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -287,14 +322,20 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               child: avatarUrl != null && avatarUrl.isNotEmpty
                   ? Opacity(
                       opacity: 0.8,
-                      child: Image.network(
-                        avatarUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: avatarUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) {
-                          return Container(
-                            color: FursafyTheme.primaryContainer,
-                          );
-                        },
+                        placeholder: (context, url) => Container(
+                          color: FursafyTheme.primaryContainer,
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: FursafyTheme.primary,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: FursafyTheme.primaryContainer,
+                        ),
                       ),
                     )
                   : null,
@@ -314,16 +355,19 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 ),
                 child: avatarUrl != null && avatarUrl.isNotEmpty
                     ? ClipOval(
-                        child: Image.network(
-                          avatarUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: avatarUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) {
-                            return const Icon(
-                              Icons.business,
-                              size: 40,
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(
                               color: FursafyTheme.primary,
-                            );
-                          },
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.business,
+                            size: 40,
+                            color: FursafyTheme.primary,
+                          ),
                         ),
                       )
                     : const Icon(
@@ -338,7 +382,12 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               right: 24,
               bottom: -24,
               child: GestureDetector(
-                onTap: () => context.push(AppRoutes.editProfile),
+                onTap: () async {
+                  final result = await context.push<bool>(AppRoutes.editProfile);
+                  if (result == true) {
+                    _loadProfile();
+                  }
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,

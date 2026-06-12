@@ -6,6 +6,7 @@ import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// S14 — Provider Home Dashboard (Stitch Exact Match).
 class ProviderDashboardScreen extends StatefulWidget {
@@ -21,7 +22,8 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
   bool _loading = true;
   int _activeJobCount = 0;
   int _totalApplications = 0;
-  final int _jobsFilledCount = 48; // Mocked for design parity
+  int _jobsFilledCount = 0;
+  Map<String, dynamic>? _userData;
 
   @override
   void initState() {
@@ -35,44 +37,73 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
       setState(() => _loading = false);
       return;
     }
+
+    // 1. Fetch user doc independently
     try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection(FirestorePaths.users)
+          .doc(uid)
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          _userData = userDoc.data();
+        });
+      }
+    } catch (e) {
+      debugPrint('ProviderDashboardScreen._loadDashboard user doc error: $e');
+    }
+
+    // 2. Fetch jobs and counts
+    try {
+      // Fetch all jobs to count status in-memory (avoids missing composite index failures)
       final jobSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs)
           .where('providerId', isEqualTo: uid)
-          .orderBy('createdAt', descending: true)
-          .limit(5)
           .get();
 
       final jobs = jobSnap.docs
           .map((d) => JobEntity.fromMap(d.id, d.data()))
           .toList();
-      final active = jobs.where((j) => j.status == JobStatus.open).length;
 
-      // Count total applications
-      int appCount = 0;
-      for (final job in jobs) {
-        final appSnap = await FirebaseFirestore.instance
-            .collection(FirestorePaths.applications)
-            .where('jobId', isEqualTo: job.id)
-            .get();
-        appCount += appSnap.docs.length;
-      }
+      // Sort in-memory descending
+      jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      final active = jobs.where((j) => j.status == JobStatus.open).length;
+      final filled = jobs.where((j) => j.status == JobStatus.closed).length;
+
+      // Fetch all applications for provider's jobs
+      final appSnap = await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .where('providerId', isEqualTo: uid)
+          .get();
+      final appCount = appSnap.docs.length;
 
       setState(() {
-        _recentJobs = jobs;
+        _recentJobs = jobs.take(5).toList();
         _activeJobCount = active;
+        _jobsFilledCount = filled;
         _totalApplications = appCount;
-        _loading = false;
       });
     } catch (e) {
-      setState(() => _loading = false);
+      debugPrint('ProviderDashboardScreen._loadDashboard jobs error: $e');
     }
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userName =
+    final userName = _userData?['displayName'] ??
         FirebaseAuth.instance.currentUser?.displayName ?? 'Provider';
+    final avatarUrl = _userData?['avatarUrl'] as String?;
+    
+    const int targetFilled = 10;
+    final double progress = targetFilled > 0
+        ? (_jobsFilledCount / targetFilled).clamp(0.0, 1.0)
+        : 0.0;
+    final int progressPercent = (progress * 100).round();
 
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
@@ -82,11 +113,16 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.all(8.0),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
             backgroundColor: FursafyTheme.primaryContainer,
-            child: Icon(Icons.person, color: FursafyTheme.onPrimary, size: 20),
+            backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+                ? CachedNetworkImageProvider(avatarUrl)
+                : null,
+            child: avatarUrl == null || avatarUrl.isEmpty
+                ? const Icon(Icons.person, color: FursafyTheme.onPrimary, size: 20)
+                : null,
           ),
         ),
         title: Text(
@@ -224,7 +260,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                                   ),
                                 ),
                                 Text(
-                                  'Target: 60 Filled',
+                                  'Target: $targetFilled Filled',
                                   style: FursafyTheme.bodyStyle.copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -236,19 +272,19 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                             const SizedBox(height: 20),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(100),
-                              child: const LinearProgressIndicator(
-                                value: 0.8,
+                              child: LinearProgressIndicator(
+                                value: progress,
                                 minHeight: 12,
                                 backgroundColor:
                                     FursafyTheme.surfaceContainerHighest,
-                                valueColor: AlwaysStoppedAnimation<Color>(
+                                valueColor: const AlwaysStoppedAnimation<Color>(
                                   FursafyTheme.primary,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Your profile is 80% towards your quarterly goal. Keep it up!',
+                              'Your profile is $progressPercent% towards your goal of $targetFilled filled jobs this quarter.',
                               style: FursafyTheme.bodyStyle.copyWith(
                                 fontSize: 13,
                                 color: FursafyTheme.onSurfaceVariant,

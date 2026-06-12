@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fursafy/core/error/failures.dart';
 import 'package:fursafy/features/notifications/domain/entities/notification_entity.dart';
 import 'package:fursafy/features/notifications/domain/repositories/notification_repository.dart';
@@ -20,15 +21,21 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<({List<NotificationEntity> notifications, Failure? failure})>
       getNotifications(String uid, {int limit = 50}) async {
     try {
+      debugPrint('[NotifRepo] Querying notifications/$uid/items (limit=$limit)');
       final snap = await _col(uid)
           .orderBy('createdAt', descending: true)
           .limit(limit)
           .get();
+      debugPrint('[NotifRepo] Query returned ${snap.docs.length} docs');
+      for (final doc in snap.docs) {
+        debugPrint('[NotifRepo]   doc=${doc.id} data=${doc.data()}');
+      }
       final items = snap.docs
           .map((d) => NotificationEntity.fromMap(d.id, d.data()))
           .toList();
       return (notifications: items, failure: null);
     } catch (e) {
+      debugPrint('[NotifRepo] Query FAILED: $e');
       return (
         notifications: <NotificationEntity>[],
         failure: ServerFailure(message: 'Failed to load notifications: $e'),
