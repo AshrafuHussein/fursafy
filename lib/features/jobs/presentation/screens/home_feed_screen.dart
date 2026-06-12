@@ -10,6 +10,7 @@ import 'package:fursafy/features/jobs/presentation/bloc/job_feed_event.dart';
 import 'package:fursafy/features/jobs/presentation/bloc/job_feed_state.dart';
 import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// S07 — Worker Home Feed (Stitch Exact Match).
 class HomeFeedScreen extends StatefulWidget {
@@ -50,9 +51,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
-    final userName = authState is AuthAuthenticated
-        ? (authState.user.displayName.split(' ').first)
+    final user = authState is AuthAuthenticated ? authState.user : null;
+    final userName = user != null
+        ? (user.displayName.split(' ').first)
         : 'there';
+    final avatarUrl = user?.avatarUrl;
 
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
@@ -126,11 +129,16 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                     ),
                     GestureDetector(
                       onTap: () => context.push(AppRoutes.profile),
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 18,
                         backgroundColor: FursafyTheme.primaryFixed,
-                        child: Icon(Icons.person,
-                            size: 20, color: FursafyTheme.onPrimaryFixed),
+                        backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+                            ? CachedNetworkImageProvider(avatarUrl)
+                            : null,
+                        child: avatarUrl == null || avatarUrl.isEmpty
+                            ? const Icon(Icons.person,
+                                size: 20, color: FursafyTheme.onPrimaryFixed)
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 4),

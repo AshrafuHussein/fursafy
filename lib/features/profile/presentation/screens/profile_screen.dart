@@ -93,6 +93,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return const Center(child: Text('Redirecting to Provider Profile...'));
     }
 
+    final avatarUrl = _userData?['avatarUrl'] as String?;
+
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
       appBar: AppBar(
@@ -109,10 +111,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 shape: BoxShape.circle,
                 color: FursafyTheme.surfaceContainerHighest,
               ),
-              child: const Icon(
-                Icons.person,
-                color: FursafyTheme.onSurfaceVariant,
-              ),
+              child: avatarUrl != null && avatarUrl.isNotEmpty
+                  ? ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: avatarUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.person,
+                          color: FursafyTheme.onSurfaceVariant,
+                        ),
+                      ),
+                    )
+                  : const Icon(
+                      Icons.person,
+                      color: FursafyTheme.onSurfaceVariant,
+                    ),
             ),
             const SizedBox(width: 12),
             Text(

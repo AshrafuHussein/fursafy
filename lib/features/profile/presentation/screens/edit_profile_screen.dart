@@ -46,7 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _nameCtrl.text = u['displayName'] as String? ?? '';
         _avatarUrl = u['avatarUrl'] as String?;
         _locationCtrl.text = u['locationName'] as String? ?? '';
-        _role = u['role'] as String? ?? 'youth';
+        _role = (u['role'] as String? ?? 'youth').toLowerCase();
         
         // Handle role-specific bio loading
         if (_role == 'provider') {

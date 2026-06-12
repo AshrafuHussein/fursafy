@@ -6,6 +6,7 @@ import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// S14 — Provider Home Dashboard (Stitch Exact Match).
 class ProviderDashboardScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
   int _activeJobCount = 0;
   int _totalApplications = 0;
   final int _jobsFilledCount = 48; // Mocked for design parity
+  Map<String, dynamic>? _userData;
 
   @override
   void initState() {
@@ -35,6 +37,23 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
       setState(() => _loading = false);
       return;
     }
+
+    // 1. Fetch user doc independently
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection(FirestorePaths.users)
+          .doc(uid)
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          _userData = userDoc.data();
+        });
+      }
+    } catch (e) {
+      debugPrint('ProviderDashboardScreen._loadDashboard user doc error: $e');
+    }
+
+    // 2. Fetch jobs and counts
     try {
       final jobSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs)
@@ -62,17 +81,21 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
         _recentJobs = jobs;
         _activeJobCount = active;
         _totalApplications = appCount;
-        _loading = false;
       });
     } catch (e) {
-      setState(() => _loading = false);
+      debugPrint('ProviderDashboardScreen._loadDashboard jobs error: $e');
     }
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userName =
+    final userName = _userData?['displayName'] ??
         FirebaseAuth.instance.currentUser?.displayName ?? 'Provider';
+    final avatarUrl = _userData?['avatarUrl'] as String?;
 
     return Scaffold(
       backgroundColor: FursafyTheme.surface,
@@ -82,11 +105,16 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.all(8.0),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
             backgroundColor: FursafyTheme.primaryContainer,
-            child: Icon(Icons.person, color: FursafyTheme.onPrimary, size: 20),
+            backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+                ? CachedNetworkImageProvider(avatarUrl)
+                : null,
+            child: avatarUrl == null || avatarUrl.isEmpty
+                ? const Icon(Icons.person, color: FursafyTheme.onPrimary, size: 20)
+                : null,
           ),
         ),
         title: Text(
