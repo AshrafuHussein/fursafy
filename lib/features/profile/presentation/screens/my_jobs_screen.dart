@@ -40,17 +40,20 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
       final snap = await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs)
           .where('providerId', isEqualTo: uid)
-          .orderBy('createdAt', descending: true)
           .get();
       final jobs = snap.docs
           .map((d) => JobEntity.fromMap(d.id, d.data()))
           .toList();
+
+      // Sort in-memory descending by createdAt
+      jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       // Fetch applicant counts
       for (final job in jobs) {
         final countSnap = await FirebaseFirestore.instance
             .collection(FirestorePaths.applications)
             .where('jobId', isEqualTo: job.id)
+            .where('providerId', isEqualTo: uid)
             .count()
             .get();
         _applicantCounts[job.id] = countSnap.count ?? 0;
@@ -60,7 +63,8 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         _jobs = jobs;
         _loading = false;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('MyJobsScreen._loadJobs error: $e');
       setState(() => _loading = false);
     }
   }

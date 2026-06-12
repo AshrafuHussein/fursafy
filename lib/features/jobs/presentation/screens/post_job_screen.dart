@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:fursafy/core/services/location_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// S15 — Post a Job screen (Provider) - Stitch Exact Match.
 class PostJobScreen extends StatefulWidget {
@@ -24,6 +26,95 @@ class _PostJobScreenState extends State<PostJobScreen> {
   String _selectedPayType = 'fixed';
   final List<String> _selectedSkills = [];
   bool _submitting = false;
+  GeoPoint? _selectedGeoPoint;
+
+  Future<void> _useCurrentLocation() async {
+    final serviceEnabled = await LocationService.instance.isServiceEnabled();
+    if (!serviceEnabled) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location services (GPS) are disabled. Opening settings...'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      await LocationService.instance.openLocationSettings();
+      return;
+    }
+
+    var permission = await LocationService.instance.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await LocationService.instance.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location permission denied.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location permission permanently denied. Opening settings...'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      await LocationService.instance.openAppSettings();
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 12),
+            Text('Determining location...'),
+          ],
+        ),
+        duration: Duration(seconds: 4),
+      ),
+    );
+
+    final result = await LocationService.instance.getLocationWithAddress();
+    if (result != null) {
+      setState(() {
+        _selectedGeoPoint = GeoPoint(result.latitude, result.longitude);
+        _locationCtrl.text = result.address;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Location updated: ${result.address}'),
+          backgroundColor: FursafyTheme.primary,
+        ),
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to get location. Make sure GPS is enabled and has a signal.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
 
   final List<String> _suggestedSkills = [
     'Graphic Design',
@@ -49,7 +140,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
       title: _titleCtrl.text.trim(),
       description: _descCtrl.text.trim(),
       skillsRequired: _selectedSkills,
-      location: const GeoPoint(-6.7924, 39.2083),
+      location: _selectedGeoPoint ?? const GeoPoint(-6.7924, 39.2083),
       locationName: _locationCtrl.text.trim().isEmpty
           ? 'Dar es Salaam, Tanzania'
           : _locationCtrl.text.trim(),
@@ -437,10 +528,29 @@ class _PostJobScreenState extends State<PostJobScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _buildLabel('Location'),
-                                _buildUnderlineInput(
-                                  controller: _locationCtrl,
-                                  hint: 'Dar es Salaam',
-                                  icon: Icons.location_on,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildUnderlineInput(
+                                        controller: _locationCtrl,
+                                        hint: 'Dar es Salaam',
+                                        icon: Icons.location_on,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      onPressed: _useCurrentLocation,
+                                      icon: const Icon(Icons.my_location),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: FursafyTheme.primary,
+                                        foregroundColor: FursafyTheme.onPrimary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        padding: const EdgeInsets.all(16),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

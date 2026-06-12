@@ -6,6 +6,8 @@ import 'package:fursafy/core/constants/app_constants.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:fursafy/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:fursafy/core/services/location_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// S13 — Edit Profile Bottom Sheet (Stitch design).
 class EditProfileScreen extends StatefulWidget {
@@ -25,6 +27,95 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _avatarUrl;
   File? _imageFile;
   String? _role;
+  GeoPoint? _selectedGeoPoint;
+
+  Future<void> _useCurrentLocation() async {
+    final serviceEnabled = await LocationService.instance.isServiceEnabled();
+    if (!serviceEnabled) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location services (GPS) are disabled. Opening settings...'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      await LocationService.instance.openLocationSettings();
+      return;
+    }
+
+    var permission = await LocationService.instance.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await LocationService.instance.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location permission denied.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location permission permanently denied. Opening settings...'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      await LocationService.instance.openAppSettings();
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 12),
+            Text('Determining location...'),
+          ],
+        ),
+        duration: Duration(seconds: 4),
+      ),
+    );
+
+    final result = await LocationService.instance.getLocationWithAddress();
+    if (result != null) {
+      setState(() {
+        _selectedGeoPoint = GeoPoint(result.latitude, result.longitude);
+        _locationCtrl.text = result.address;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Location updated: ${result.address}'),
+          backgroundColor: FursafyTheme.primary,
+        ),
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to get location. Make sure GPS is enabled and has a signal.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -46,6 +137,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _nameCtrl.text = u['displayName'] as String? ?? '';
         _avatarUrl = u['avatarUrl'] as String?;
         _locationCtrl.text = u['locationName'] as String? ?? '';
+        _selectedGeoPoint = u['location'] as GeoPoint?;
         _role = (u['role'] as String? ?? 'youth').toLowerCase();
         
         // Handle role-specific bio loading
@@ -160,6 +252,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final userUpdates = {
         'displayName': _nameCtrl.text.trim(),
         'locationName': _locationCtrl.text.trim(),
+        'location': _selectedGeoPoint,
       };
       if (_role == 'provider') {
         userUpdates['bio'] = _bioCtrl.text.trim();
@@ -173,6 +266,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         await FirebaseFirestore.instance
             .collection(FirestorePaths.youthProfiles).doc(uid).set({
           'bio': _bioCtrl.text.trim(),
+          'location': _selectedGeoPoint,
         }, SetOptions(merge: true));
       }
 
@@ -278,7 +372,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               maxLines: 3, maxLength: AppConstants.maxBioLength),
                           const SizedBox(height: 24),
                           _field('Location', _locationCtrl,
-                              prefixIcon: Icons.location_on),
+                              prefixIcon: Icons.location_on,
+                              suffix: IconButton(
+                                icon: const Icon(Icons.my_location, color: FursafyTheme.primary),
+                                onPressed: _useCurrentLocation,
+                              )),
                           const SizedBox(height: 32),
                           // Save
                           SizedBox(height: 56, width: double.infinity,
@@ -318,7 +416,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _field(String label, TextEditingController ctrl,
-      {int maxLines = 1, int? maxLength, IconData? prefixIcon,
+      {int maxLines = 1, int? maxLength, IconData? prefixIcon, Widget? suffix,
       String? Function(String?)? validator}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,6 +443,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               prefixIcon: prefixIcon != null
                   ? Icon(prefixIcon, color: FursafyTheme.primary, size: 22) : null,
+              suffixIcon: suffix,
               counterStyle: FursafyTheme.labelStyle.copyWith(
                 color: FursafyTheme.outline, fontSize: 10),
             ),

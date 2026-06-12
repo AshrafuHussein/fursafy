@@ -72,22 +72,42 @@ class JobFeedBloc extends Bloc<JobFeedEvent, JobFeedState> {
     JobFeedFilterLocationApplied event,
     Emitter<JobFeedState> emit,
   ) async {
-    if (state is! JobFeedLoaded) return;
-    final currentState = state as JobFeedLoaded;
-    
-    emit(JobFeedLoading(currentState.jobs, isFirstFetch: false));
+    emit(const JobFeedLoading([], isFirstFetch: true));
 
-    final filteredJobs = currentState.jobs.where((job) {
-      if (job.location == null) return false;
-      final distance = HaversineUtil.distanceKm(
-        lat1: event.latitude,
-        lon1: event.longitude,
-        lat2: job.location!.latitude,
-        lon2: job.location!.longitude,
-      );
-      return distance <= event.radiusKm;
-    }).toList();
+    final result = await _jobRepository.getJobs(category: null);
 
-    emit(JobFeedLoaded(filteredJobs, hasReachedMax: currentState.hasReachedMax));
+    if (result.failure != null) {
+      emit(JobFeedError(result.failure!.message, const []));
+    } else {
+      final filteredJobs = result.jobs.where((job) {
+        if (job.location == null) return false;
+        final distance = HaversineUtil.distanceKm(
+          lat1: event.latitude,
+          lon1: event.longitude,
+          lat2: job.location!.latitude,
+          lon2: job.location!.longitude,
+        );
+        return distance <= event.radiusKm;
+      }).toList();
+
+      // Sort by proximity: closest first
+      filteredJobs.sort((a, b) {
+        final distA = HaversineUtil.distanceKm(
+          lat1: event.latitude,
+          lon1: event.longitude,
+          lat2: a.location!.latitude,
+          lon2: a.location!.longitude,
+        );
+        final distB = HaversineUtil.distanceKm(
+          lat1: event.latitude,
+          lon1: event.longitude,
+          lat2: b.location!.latitude,
+          lon2: b.location!.longitude,
+        );
+        return distA.compareTo(distB);
+      });
+
+      emit(JobFeedLoaded(filteredJobs, hasReachedMax: true));
+    }
   }
 }

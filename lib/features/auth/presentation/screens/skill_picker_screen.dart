@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/features/auth/presentation/bloc/register_bloc.dart';
+import 'package:fursafy/core/location/location_bloc.dart';
+import 'package:fursafy/core/location/location_state.dart';
 
 /// S06 — Skills Selection Screen.
 class SkillPickerScreen extends StatefulWidget {
@@ -372,13 +374,18 @@ class _SkillPickerScreenState extends State<SkillPickerScreen> {
                             onPressed: state.status == RegisterStatus.loading
                                 ? null
                                 : () {
+                                    final locState = context.read<LocationBloc>().state;
+                                    double lat = -6.7924; // Dar es Salaam fallback
+                                    double lng = 39.2083;
+                                    if (locState is LocationLoaded) {
+                                      lat = locState.latitude;
+                                      lng = locState.longitude;
+                                    }
                                     context.read<RegisterBloc>().add(
                                       RegisterSkillsSubmitted(
                                         skills: _selectedSkills.toList(),
-                                        latitude:
-                                            -6.7924, // Mock Dar es Salaam latitude
-                                        longitude:
-                                            39.2083, // Mock Dar es Salaam longitude
+                                        latitude: lat,
+                                        longitude: lng,
                                         bio:
                                             'Excited to join Fursafy community!',
                                       ),

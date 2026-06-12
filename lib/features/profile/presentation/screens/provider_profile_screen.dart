@@ -79,6 +79,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
         final countSnap = await FirebaseFirestore.instance
             .collection(FirestorePaths.applications)
             .where('jobId', isEqualTo: job.id)
+            .where('providerId', isEqualTo: uid)
             .count()
             .get();
         applicantCounts[job.id] = countSnap.count ?? 0;

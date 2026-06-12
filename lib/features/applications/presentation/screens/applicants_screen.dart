@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
@@ -29,18 +30,28 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
     try {
       final jobDoc = await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs).doc(widget.jobId).get();
+      final uid = FirebaseAuth.instance.currentUser?.uid;
       final appSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.applications)
           .where('jobId', isEqualTo: widget.jobId)
-          .orderBy('appliedAt', descending: true)
+          .where('providerId', isEqualTo: uid)
           .get();
+
+      final applicants = appSnap.docs
+          .map((d) => ApplicationEntity.fromMap(d.id, d.data())).toList();
+
+      // Sort in-memory descending by appliedAt
+      applicants.sort((a, b) => b.appliedAt.compareTo(a.appliedAt));
+
       setState(() {
         _job = jobDoc.data();
-        _applicants = appSnap.docs
-            .map((d) => ApplicationEntity.fromMap(d.id, d.data())).toList();
+        _applicants = applicants;
         _loading = false;
       });
-    } catch (_) { setState(() => _loading = false); }
+    } catch (e) {
+      debugPrint('ApplicantsScreen._load error: $e');
+      setState(() => _loading = false);
+    }
   }
 
   Future<void> _updateStatus(ApplicationEntity app, ApplicationStatus status) async {

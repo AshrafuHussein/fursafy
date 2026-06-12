@@ -7,6 +7,7 @@ import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
 import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 /// S08 — Job Detail screen (Youth view) — Stitch editorial design.
@@ -942,84 +943,88 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               borderRadius: BorderRadius.circular(20),
               color: FursafyTheme.surfaceContainerHighest,
             ),
-            child: Stack(
-              children: [
-                // Placeholder map surface
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        FursafyTheme.surfaceContainerHigh,
-                        FursafyTheme.surfaceContainerHighest,
-                      ],
-                    ),
-                  ),
-                ),
-                // Dark gradient overlay
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.4),
-                        ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                children: [
+                  if (job.location != null)
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(job.location!.latitude, job.location!.longitude),
+                        zoom: 14.0,
+                      ),
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId('job_location'),
+                          position: LatLng(job.location!.latitude, job.location!.longitude),
+                        ),
+                      },
+                      myLocationEnabled: false,
+                      zoomControlsEnabled: false,
+                      mapToolbarEnabled: false,
+                      liteModeEnabled: true,
+                      onTap: (_) {
+                        context.push(AppRoutes.map);
+                      },
+                    )
+                  else
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            FursafyTheme.surfaceContainerHigh,
+                            FursafyTheme.surfaceContainerHighest,
+                          ],
+                        ),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.map,
+                          color: FursafyTheme.onSurfaceVariant,
+                          size: 32,
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                // Center pin
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: FursafyTheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-                // Bottom location label
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  right: 16,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
+                  // Bottom location label overlay
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: FursafyTheme.ambientShadow,
+                      ),
+                      child: Row(
                         children: [
                           const Icon(
                             Icons.location_on,
-                            color: Colors.white,
-                            size: 20,
+                            color: FursafyTheme.primary,
+                            size: 16,
                           ),
                           const SizedBox(width: 6),
-                          Text(
-                            job.locationName ?? 'Location TBD',
-                            style: FursafyTheme.bodyStyle.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                          Expanded(
+                            child: Text(
+                              job.locationName ?? 'Location TBD',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                color: FursafyTheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

@@ -18,6 +18,8 @@ import 'package:fursafy/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:fursafy/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:fursafy/core/services/notification_service.dart';
+import 'package:fursafy/core/location/location_bloc.dart';
+import 'package:fursafy/core/location/location_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -86,6 +88,11 @@ void main() async {
           create: (context) => NotificationBloc(
             repository: NotificationRepositoryImpl(),
           )..add(const UnreadCountSubscriptionRequested()),
+        ),
+        BlocProvider<LocationBloc>(
+          create: (context) => LocationBloc()
+            ..add(const LocationRequested())
+            ..add(const LocationBackgroundStarted()),
         ),
       ],
       child: const FursafyApp(),
