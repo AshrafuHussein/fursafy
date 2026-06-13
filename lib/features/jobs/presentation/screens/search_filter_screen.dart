@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fursafy/core/location/location_bloc.dart';
+import 'package:fursafy/core/location/location_state.dart';
+import 'package:fursafy/core/utils/haversine_util.dart';
 
 /// S23 — Search & Filter Jobs (Stitch editorial design).
 class SearchFilterScreen extends StatefulWidget {
@@ -20,6 +24,7 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
   List<JobEntity> _results = [];
   bool _loading = false;
   bool _hasSearched = false;
+  double? _selectedDistanceRadius;
 
   @override
   void dispose() {
@@ -40,11 +45,14 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
       if (_selectedCategory != null) {
         q = q.where('category', isEqualTo: _selectedCategory);
       }
-      q = q.orderBy('createdAt', descending: true).limit(20);
-      final snap = await q.get();
+      
+      final snap = await q.limit(100).get();
       var jobs = snap.docs
           .map((d) => JobEntity.fromMap(d.id, d.data()))
           .toList();
+
+      // Sort in-memory descending by createdAt
+      jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       // Client-side filters
       final query = _searchCtrl.text.trim().toLowerCase();
@@ -64,6 +72,22 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                 j.payAmount >= _payRange.start && j.payAmount <= _payRange.end,
           )
           .toList();
+
+      if (_selectedDistanceRadius != null) {
+        final locState = context.read<LocationBloc>().state;
+        if (locState is LocationLoaded) {
+          jobs = jobs.where((j) {
+            if (j.location == null) return false;
+            final distance = HaversineUtil.distanceKm(
+              lat1: locState.latitude,
+              lon1: locState.longitude,
+              lat2: j.location!.latitude,
+              lon2: j.location!.longitude,
+            );
+            return distance <= _selectedDistanceRadius!;
+          }).toList();
+        }
+      }
 
       setState(() {
         _results = jobs;
@@ -203,6 +227,60 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 24),
+
+                // Distance Radius
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'MAX DISTANCE',
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.0,
+                      color: FursafyTheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [null, 5.0, 10.0, 25.0, 50.0].map((dist) {
+                      final isSel = _selectedDistanceRadius == dist;
+                      final label = dist == null ? 'Any' : '${dist.toStringAsFixed(0)} km';
+                      return GestureDetector(
+                        onTap: () => setSheetState(
+                          () => _selectedDistanceRadius = dist,
+                        ),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSel
+                                ? FursafyTheme.primary
+                                : FursafyTheme.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            label,
+                            style: FursafyTheme.labelStyle.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: isSel
+                                  ? FursafyTheme.onPrimary
+                                  : FursafyTheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
                 const SizedBox(height: 32),
 
                 // Apply
@@ -216,6 +294,7 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                             setSheetState(() {
                               _selectedCategory = null;
                               _payRange = const RangeValues(0, 100000);
+                              _selectedDistanceRadius = null;
                             });
                           },
                           style: OutlinedButton.styleFrom(
@@ -509,6 +588,18 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
   }
 
   Widget _resultCard(JobEntity job) {
+    final locState = context.read<LocationBloc>().state;
+    String? distanceStr;
+    if (locState is LocationLoaded && job.location != null) {
+      final distance = HaversineUtil.distanceKm(
+        lat1: locState.latitude,
+        lon1: locState.longitude,
+        lat2: job.location!.latitude,
+        lon2: job.location!.longitude,
+      );
+      distanceStr = '${distance.toStringAsFixed(1)} km';
+    }
+
     return GestureDetector(
       onTap: () => context.push('/jobs/${job.id}'),
       child: Container(
@@ -564,6 +655,17 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                           color: FursafyTheme.onSurfaceVariant,
                         ),
                       ),
+                      if (distanceStr != null) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          '($distanceStr away)',
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: FursafyTheme.primary,
+                          ),
+                        ),
+                      ],
                       const SizedBox(width: 12),
                       Text(
                         '${(job.payAmount / 1000).toStringAsFixed(0)}k TZS',

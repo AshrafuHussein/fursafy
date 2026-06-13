@@ -24,6 +24,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
   int _totalApplications = 0;
   int _jobsFilledCount = 0;
   Map<String, dynamic>? _userData;
+  Map<String, int> _jobApplicantCounts = {};
 
   @override
   void initState() {
@@ -69,7 +70,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
       jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       final active = jobs.where((j) => j.status == JobStatus.open).length;
-      final filled = jobs.where((j) => j.status == JobStatus.closed).length;
+      final filled = jobs.where((j) => j.status == JobStatus.filled).length;
 
       // Fetch all applications for provider's jobs
       final appSnap = await FirebaseFirestore.instance
@@ -78,11 +79,21 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
           .get();
       final appCount = appSnap.docs.length;
 
+      final Map<String, int> jobApplicantCounts = {};
+      for (final doc in appSnap.docs) {
+        final data = doc.data();
+        final jobId = data['jobId'] as String?;
+        if (jobId != null) {
+          jobApplicantCounts[jobId] = (jobApplicantCounts[jobId] ?? 0) + 1;
+        }
+      }
+
       setState(() {
         _recentJobs = jobs.take(5).toList();
         _activeJobCount = active;
         _jobsFilledCount = filled;
         _totalApplications = appCount;
+        _jobApplicantCounts = jobApplicantCounts;
       });
     } catch (e) {
       debugPrint('ProviderDashboardScreen._loadDashboard jobs error: $e');
@@ -444,6 +455,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
   }
 
   Widget _buildEditorialJobCard(JobEntity job) {
+    final count = _jobApplicantCounts[job.id] ?? 0;
     return GestureDetector(
       onTap: () => context.push('/provider/jobs/${job.id}/applicants'),
       child: Container(
@@ -531,21 +543,21 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                                   color: FursafyTheme.secondary,
                                   fontSize: 9,
                                   fontWeight: FontWeight.w900,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '12', // Mocked count
+                  '$count',
                   style: FursafyTheme.headlineStyle.copyWith(
                     color: FursafyTheme.primary,
                     fontSize: 24,

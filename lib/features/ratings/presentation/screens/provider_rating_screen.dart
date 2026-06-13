@@ -51,11 +51,13 @@ class _ProviderRatingScreenState extends State<ProviderRatingScreen> {
         return;
       }
 
+      final uid = FirebaseAuth.instance.currentUser?.uid;
       // Find the accepted applicant for this job
       final appSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.applications)
           .where('jobId', isEqualTo: widget.jobId)
           .where('status', isEqualTo: 'accepted')
+          .where('providerId', isEqualTo: uid)
           .limit(1)
           .get();
 

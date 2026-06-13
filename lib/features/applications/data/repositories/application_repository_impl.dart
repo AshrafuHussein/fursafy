@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/core/error/failures.dart';
 import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
@@ -81,10 +83,19 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
     try {
       final snap = await _col
           .where('youthId', isEqualTo: youthId)
-          .orderBy('appliedAt', descending: true)
           .get();
-      final apps =
-          snap.docs.map((d) => ApplicationEntity.fromMap(d.id, d.data())).toList();
+      final List<ApplicationEntity> apps = [];
+      for (final d in snap.docs) {
+        try {
+          apps.add(ApplicationEntity.fromMap(d.id, d.data()));
+        } catch (e) {
+          debugPrint('[ApplicationRepositoryImpl] getYouthApplications error parsing ${d.id}: $e');
+        }
+      }
+      
+      // Sort in-memory descending by appliedAt
+      apps.sort((a, b) => b.appliedAt.compareTo(a.appliedAt));
+
       return (applications: apps, failure: null);
     } catch (e) {
       return (
@@ -98,12 +109,23 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   Future<({List<ApplicationEntity> applications, Failure? failure})>
       getJobApplicants(String jobId) async {
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
       final snap = await _col
           .where('jobId', isEqualTo: jobId)
-          .orderBy('appliedAt', descending: true)
+          .where('providerId', isEqualTo: uid)
           .get();
-      final apps =
-          snap.docs.map((d) => ApplicationEntity.fromMap(d.id, d.data())).toList();
+      final List<ApplicationEntity> apps = [];
+      for (final d in snap.docs) {
+        try {
+          apps.add(ApplicationEntity.fromMap(d.id, d.data()));
+        } catch (e) {
+          debugPrint('[ApplicationRepositoryImpl] getJobApplicants error parsing ${d.id}: $e');
+        }
+      }
+
+      // Sort in-memory descending by appliedAt
+      apps.sort((a, b) => b.appliedAt.compareTo(a.appliedAt));
+
       return (applications: apps, failure: null);
     } catch (e) {
       return (

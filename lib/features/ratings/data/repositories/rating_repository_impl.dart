@@ -86,11 +86,14 @@ class RatingRepositoryImpl implements RatingRepository {
     try {
       final snap = await _col
           .where('rateeId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
       final ratings = snap.docs
           .map((d) => RatingEntity.fromMap(d.id, d.data()))
           .toList();
+
+      // Sort in-memory descending by createdAt
+      ratings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
       return (ratings: ratings, failure: null);
     } catch (e) {
       return (

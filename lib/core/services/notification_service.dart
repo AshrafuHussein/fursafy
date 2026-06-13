@@ -62,9 +62,17 @@ class NotificationService {
     );
     debugPrint('[FCM] Permission status: ${settings.authorizationStatus}');
 
-    if (settings.authorizationStatus == AuthorizationStatus.denied) {
-      debugPrint('[FCM] Notifications denied by user — continuing without push');
-      return;
+    // Request runtime notification permission on Android 13+
+    try {
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      if (androidPlugin != null) {
+        final granted = await androidPlugin.requestNotificationsPermission();
+        debugPrint('[FCM] Android local notification permission requested: $granted');
+      }
+    } catch (e) {
+      debugPrint('[FCM] Error requesting Android permission: $e');
     }
 
     // 3. Get initial FCM token and save to Firestore
@@ -170,8 +178,9 @@ class NotificationService {
       'fursafy_jobs', // must match AndroidManifest meta-data value
       'Fursafy Jobs',
       description: 'Notifications for job matches, applications, and updates',
-      importance: Importance.high,
+      importance: Importance.max,
       playSound: true,
+      enableVibration: true,
     );
 
     await _localNotifications
@@ -190,10 +199,11 @@ class NotificationService {
       'Fursafy Jobs',
       channelDescription:
           'Notifications for job matches, applications, and updates',
-      importance: Importance.high,
+      importance: Importance.max,
       priority: Priority.high,
       icon: '@mipmap/fursafy',
       playSound: true,
+      enableVibration: true,
     );
 
     const details = NotificationDetails(android: androidDetails);

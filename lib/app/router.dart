@@ -27,6 +27,7 @@ import '../features/ratings/presentation/screens/rating_screen.dart';
 import '../features/ratings/presentation/screens/provider_rating_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../features/jobs/presentation/screens/map_view_screen.dart';
 
 /// App route names.
 class AppRoutes {
@@ -191,6 +192,10 @@ final GoRouter appRouter = GoRouter(
         final jobId = state.pathParameters['jobId']!;
         return ProviderRatingScreen(jobId: jobId);
       },
+    ),
+    GoRoute(
+      path: AppRoutes.map,
+      builder: (context, state) => const MapViewScreen(),
     ),
   ],
 );

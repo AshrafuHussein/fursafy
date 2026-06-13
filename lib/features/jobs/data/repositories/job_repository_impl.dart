@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/core/error/failures.dart';
 import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
@@ -25,27 +26,39 @@ class JobRepositoryImpl implements JobRepository {
         query = query.where('category', isEqualTo: category);
       }
 
-      query = query.orderBy('createdAt', descending: true).limit(limit);
-
-      if (lastJob != null) {
-        final lastDoc = await _firestore
-            .collection(FirestorePaths.jobs)
-            .doc(lastJob.id)
-            .get();
-        if (lastDoc.exists) {
-          query = query.startAfterDocument(lastDoc);
+      final snapshot = await query.get();
+      final List<JobEntity> jobs = [];
+      for (final doc in snapshot.docs) {
+        try {
+          final data = doc.data() as Map<String, dynamic>?;
+          if (data != null) {
+            jobs.add(JobEntity.fromMap(doc.id, data));
+          }
+        } catch (e) {
+          // Log parsing error per document to prevent crashing the whole list
+          debugPrint('[JobRepositoryImpl] Error parsing job ${doc.id}: $e');
         }
       }
 
-      final snapshot = await query.get();
-      final List<JobEntity> jobs = snapshot.docs
-          .map(
-            (doc) =>
-                JobEntity.fromMap(doc.id, doc.data()! as Map<String, dynamic>),
-          )
-          .toList();
+      // Sort in-memory descending by createdAt
+      jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      return (jobs: jobs, failure: null);
+      // Handle in-memory pagination
+      List<JobEntity> paginatedJobs = jobs;
+      if (lastJob != null) {
+        final lastIndex = jobs.indexWhere((j) => j.id == lastJob.id);
+        if (lastIndex != -1 && lastIndex + 1 < jobs.length) {
+          paginatedJobs = jobs.sublist(lastIndex + 1);
+        } else {
+          paginatedJobs = [];
+        }
+      }
+
+      if (paginatedJobs.length > limit) {
+        paginatedJobs = paginatedJobs.sublist(0, limit);
+      }
+
+      return (jobs: paginatedJobs, failure: null);
     } catch (e) {
       return (
         jobs: <JobEntity>[],
@@ -125,9 +138,14 @@ class JobRepositoryImpl implements JobRepository {
           .limit(20)
           .get();
 
-      final List<JobEntity> jobs = snapshot.docs
-          .map((doc) => JobEntity.fromMap(doc.id, doc.data()))
-          .toList();
+      final List<JobEntity> jobs = [];
+      for (final doc in snapshot.docs) {
+        try {
+          jobs.add(JobEntity.fromMap(doc.id, doc.data()));
+        } catch (e) {
+          debugPrint('[JobRepositoryImpl] searchJobs error parsing ${doc.id}: $e');
+        }
+      }
       return (jobs: jobs, failure: null);
     } catch (e) {
       return (
@@ -145,12 +163,20 @@ class JobRepositoryImpl implements JobRepository {
       final snapshot = await _firestore
           .collection(FirestorePaths.jobs)
           .where('providerId', isEqualTo: providerId)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      final List<JobEntity> jobs = snapshot.docs
-          .map((doc) => JobEntity.fromMap(doc.id, doc.data()))
-          .toList();
+      final List<JobEntity> jobs = [];
+      for (final doc in snapshot.docs) {
+        try {
+          jobs.add(JobEntity.fromMap(doc.id, doc.data()));
+        } catch (e) {
+          debugPrint('[JobRepositoryImpl] getProviderJobs error parsing ${doc.id}: $e');
+        }
+      }
+
+      // Sort in-memory descending by createdAt
+      jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
       return (jobs: jobs, failure: null);
     } catch (e) {
       return (

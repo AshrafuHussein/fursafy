@@ -4,6 +4,8 @@ import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:fursafy/app/router.dart';
 
 /// Application Detail — Accepted status view with provider contact,
 /// salary info, and next steps checklist (Stitch design).
@@ -418,6 +420,8 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
 
   Widget _locationOffice() {
     final locationName = _job?['locationName'] as String? ?? 'Arusha';
+    final geoPoint = _job?['location'] as GeoPoint?;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -428,11 +432,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
               style: FursafyTheme.headlineStyle.copyWith(
                 fontSize: 20, fontWeight: FontWeight.w700)),
             TextButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Opening Full Map...')),
-                );
-              },
+              onPressed: () => context.push(AppRoutes.map),
               icon: const Icon(Icons.open_in_new, size: 16, color: FursafyTheme.primary),
               label: Text('Full Map',
                 style: FursafyTheme.bodyStyle.copyWith(
@@ -452,13 +452,33 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
             borderRadius: BorderRadius.circular(16),
             child: Stack(
               children: [
-                // Map Background Image
-                Image.network(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuDcOphAbOCDauBa3erj3-fXuSybsj0Pu7CJovpscNNclpgqAhOweKYVU0TIYdkV_tQYjiZL74i2HnwPH4coIaZT-tL9lHXzfLiY9EU5tUDr8ty5DClZjZjEy8gow83KY-eoHiAtFBoeN0Dei53ycT_t-NNDgRwapL-Yj9MW4QdGG5EkaIaJaOr36Sj-80XtymrZ8quT_DlawkGyXsgfH733NwT9vVB6p7O9vw_-IxDSwKK7wA_daEI9g85VywnGtsNC0AgN5XTAlUmV',
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
+                if (geoPoint != null)
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(geoPoint.latitude, geoPoint.longitude),
+                      zoom: 14.0,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('job_location'),
+                        position: LatLng(geoPoint.latitude, geoPoint.longitude),
+                      ),
+                    },
+                    myLocationEnabled: false,
+                    zoomControlsEnabled: false,
+                    mapToolbarEnabled: false,
+                    liteModeEnabled: true,
+                    onTap: (_) {
+                      context.push(AppRoutes.map);
+                    },
+                  )
+                else
+                  Image.network(
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuDcOphAbOCDauBa3erj3-fXuSybsj0Pu7CJovpscNNclpgqAhOweKYVU0TIYdkV_tQYjiZL74i2HnwPH4coIaZT-tL9lHXzfLiY9EU5tUDr8ty5DClZjZjEy8gow83KY-eoHiAtFBoeN0Dei53ycT_t-NNDgRwapL-Yj9MW4QdGG5EkaIaJaOr36Sj-80XtymrZ8quT_DlawkGyXsgfH733NwT9vVB6p7O9vw_-IxDSwKK7wA_daEI9g85VywnGtsNC0AgN5XTAlUmV',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
                 // Gradient overlay
                 Positioned.fill(
                   child: Container(
@@ -469,24 +489,6 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                         colors: [Colors.transparent, Colors.black.withValues(alpha: 0.4)],
                       ),
                     ),
-                  ),
-                ),
-                // Pulse Center Pin
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: FursafyTheme.primary,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: FursafyTheme.primary.withValues(alpha: 0.4),
-                          blurRadius: 16,
-                          spreadRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.location_on, color: Colors.white, size: 24),
                   ),
                 ),
                 // Bottom banner on map

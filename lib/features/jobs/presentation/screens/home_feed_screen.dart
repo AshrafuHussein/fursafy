@@ -11,6 +11,10 @@ import 'package:fursafy/features/jobs/presentation/bloc/job_feed_state.dart';
 import 'package:fursafy/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fursafy/core/location/location_bloc.dart';
+import 'package:fursafy/core/location/location_event.dart';
+import 'package:fursafy/core/location/location_state.dart';
+import 'package:fursafy/core/utils/haversine_util.dart';
 
 /// S07 — Worker Home Feed (Stitch Exact Match).
 class HomeFeedScreen extends StatefulWidget {
@@ -23,6 +27,7 @@ class HomeFeedScreen extends StatefulWidget {
 class _HomeFeedScreenState extends State<HomeFeedScreen> {
   final List<String> _categories = [
     'All',
+    'Nearby 📍',
     'Construction',
     'Cleaning',
     'Delivery',
@@ -84,6 +89,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                 ),
                 Row(
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.map_outlined,
+                          color: FursafyTheme.onSurface),
+                      onPressed: () => context.push(AppRoutes.map),
+                    ),
                     IconButton(
                       icon: BlocBuilder<NotificationBloc, NotificationState>(
                         buildWhen: (prev, curr) =>
@@ -155,12 +165,38 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Hi, $userName 👋',
-                    style: FursafyTheme.bodyStyle.copyWith(
-                      color: FursafyTheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        'Hi, $userName 👋',
+                        style: FursafyTheme.bodyStyle.copyWith(
+                          color: FursafyTheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      BlocBuilder<LocationBloc, LocationState>(
+                        builder: (context, state) {
+                          if (state is LocationLoaded) {
+                            return Row(
+                              children: [
+                                const Icon(Icons.location_on_rounded,
+                                    size: 14, color: FursafyTheme.primary),
+                                const SizedBox(width: 4),
+                                Text(
+                                  state.address.split(',').first,
+                                  style: FursafyTheme.labelStyle.copyWith(
+                                    color: FursafyTheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text.rich(
@@ -327,10 +363,36 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() => _selectedCategory = cat);
-                        context.read<JobFeedBloc>().add(
-                              JobFeedLoadRequested(
-                                  category: cat, refresh: true),
+                        if (cat == 'Nearby 📍') {
+                          final locState = context.read<LocationBloc>().state;
+                          if (locState is LocationLoaded) {
+                            context.read<JobFeedBloc>().add(
+                                  JobFeedFilterLocationApplied(
+                                    latitude: locState.latitude,
+                                    longitude: locState.longitude,
+                                    radiusKm: 25.0,
+                                  ),
+                                );
+                          } else {
+                            context.read<LocationBloc>().add(const LocationRequested());
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Fetching location... please wait.'),
+                                duration: Duration(seconds: 2),
+                              ),
                             );
+                            setState(() => _selectedCategory = 'All');
+                            context.read<JobFeedBloc>().add(
+                                  const JobFeedLoadRequested(
+                                      category: 'All', refresh: true),
+                                );
+                          }
+                        } else {
+                          context.read<JobFeedBloc>().add(
+                                JobFeedLoadRequested(
+                                    category: cat, refresh: true),
+                              );
+                        }
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
@@ -545,6 +607,18 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         '${job.payAmount.toStringAsFixed(0)} TZS${job.payType.name == 'hourly' ? '/hr' : ''}';
     final skills = job.skillsRequired.take(3).toList();
 
+    final locState = context.read<LocationBloc>().state;
+    String? distanceStr;
+    if (locState is LocationLoaded && job.location != null) {
+      final distance = HaversineUtil.distanceKm(
+        lat1: locState.latitude,
+        lon1: locState.longitude,
+        lat2: job.location!.latitude,
+        lon2: job.location!.longitude,
+      );
+      distanceStr = '${distance.toStringAsFixed(1)} km away';
+    }
+
     return GestureDetector(
       onTap: () => context.push('/jobs/${job.id}'),
       child: Container(
@@ -645,6 +719,26 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                     fontSize: 13,
                   ),
                 ),
+                if (distanceStr != null) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    decoration: const BoxDecoration(
+                      color: FursafyTheme.outlineVariant,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    distanceStr,
+                    style: FursafyTheme.bodyStyle.copyWith(
+                      color: FursafyTheme.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 16),

@@ -12,6 +12,8 @@ class UserEntity extends Equatable {
   final UserRole role;
   final AccountStatus status;
   final String? fcmToken;
+  final GeoPoint? location;
+  final String? locationName;
   final DateTime createdAt;
 
   const UserEntity({
@@ -23,6 +25,8 @@ class UserEntity extends Equatable {
     required this.role,
     this.status = AccountStatus.active,
     this.fcmToken,
+    this.location,
+    this.locationName,
     required this.createdAt,
   });
 
@@ -36,6 +40,8 @@ class UserEntity extends Equatable {
         role,
         status,
         fcmToken,
+        location,
+        locationName,
         createdAt,
       ];
 
@@ -49,6 +55,8 @@ class UserEntity extends Equatable {
         'role': role.name,
         'status': status.name,
         'fcmToken': fcmToken,
+        'location': location,
+        'locationName': locationName,
         'createdAt': Timestamp.fromDate(createdAt),
       };
 
@@ -62,6 +70,8 @@ class UserEntity extends Equatable {
         status:
             AccountStatus.fromString(map['status'] as String? ?? 'active'),
         fcmToken: map['fcmToken'] as String?,
+        location: map['location'] as GeoPoint?,
+        locationName: map['locationName'] as String?,
         createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       );
 
@@ -74,6 +84,8 @@ class UserEntity extends Equatable {
     UserRole? role,
     AccountStatus? status,
     String? fcmToken,
+    GeoPoint? location,
+    String? locationName,
     DateTime? createdAt,
   }) =>
       UserEntity(
@@ -85,6 +97,8 @@ class UserEntity extends Equatable {
         role: role ?? this.role,
         status: status ?? this.status,
         fcmToken: fcmToken ?? this.fcmToken,
+        location: location ?? this.location,
+        locationName: locationName ?? this.locationName,
         createdAt: createdAt ?? this.createdAt,
       );
 }

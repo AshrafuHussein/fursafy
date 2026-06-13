@@ -37,16 +37,21 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
       final snap = await FirebaseFirestore.instance
           .collection(FirestorePaths.applications)
           .where('youthId', isEqualTo: uid)
-          .orderBy('appliedAt', descending: true)
           .get();
 
+      final applications = snap.docs
+          .map((d) => ApplicationEntity.fromMap(d.id, d.data()))
+          .toList();
+
+      // Sort in-memory descending by appliedAt
+      applications.sort((a, b) => b.appliedAt.compareTo(a.appliedAt));
+
       setState(() {
-        _applications = snap.docs
-            .map((d) => ApplicationEntity.fromMap(d.id, d.data()))
-            .toList();
+        _applications = applications;
         _loading = false;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('MyApplicationsScreen._loadApplications error: $e');
       setState(() => _loading = false);
     }
   }
