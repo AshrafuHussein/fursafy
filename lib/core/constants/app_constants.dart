@@ -134,6 +134,7 @@ enum ApplicationStatus {
 /// Job status.
 enum JobStatus {
   open,
+  filled,
   closed;
 
   static JobStatus fromString(String value) {

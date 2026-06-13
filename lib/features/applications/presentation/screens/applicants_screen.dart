@@ -190,15 +190,33 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
                   // Editorial Job Header
-                  Container(
+                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: FursafyTheme.secondaryFixed,
+                      color: _job?['status'] == 'closed'
+                          ? FursafyTheme.surfaceContainerHighest
+                          : _job?['status'] == 'filled'
+                              ? Colors.green.shade100
+                              : FursafyTheme.secondaryFixed,
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: Text('ACTIVE LISTING', style: FursafyTheme.labelStyle.copyWith(
-                      fontSize: 11, fontWeight: FontWeight.w700,
-                      letterSpacing: 2.0, color: FursafyTheme.onSecondaryFixed)),
+                    child: Text(
+                      _job?['status'] == 'closed'
+                          ? 'CLOSED LISTING'
+                          : _job?['status'] == 'filled'
+                              ? 'FILLED LISTING'
+                              : 'ACTIVE LISTING',
+                      style: FursafyTheme.labelStyle.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2.0,
+                        color: _job?['status'] == 'closed'
+                            ? FursafyTheme.onSurfaceVariant
+                            : _job?['status'] == 'filled'
+                                ? Colors.green.shade800
+                                : FursafyTheme.onSecondaryFixed,
+                      ),
+                    ),
                   ).wrapAlign(Alignment.centerLeft),
                   const SizedBox(height: 16),
                   Text(title, style: FursafyTheme.headlineStyle.copyWith(

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/app/app.dart';
+import 'package:fursafy/core/utils/db_seeder.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fursafy/features/auth/presentation/bloc/register_bloc.dart';
 import 'package:fursafy/features/auth/data/repositories/auth_repository_impl.dart';
@@ -43,6 +44,7 @@ void main() async {
   // Initialize Firebase — google-services.json + Gradle plugin handle native config.
   try {
     await Firebase.initializeApp();
+    await DatabaseSeeder.seedJobsIfNeeded();
   } catch (e) {
     // Already initialized by native plugin — safe to continue.
     debugPrint('Firebase init: $e');

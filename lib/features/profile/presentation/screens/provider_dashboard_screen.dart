@@ -70,7 +70,7 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
       jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       final active = jobs.where((j) => j.status == JobStatus.open).length;
-      final filled = jobs.where((j) => j.status == JobStatus.closed).length;
+      final filled = jobs.where((j) => j.status == JobStatus.filled).length;
 
       // Fetch all applications for provider's jobs
       final appSnap = await FirebaseFirestore.instance

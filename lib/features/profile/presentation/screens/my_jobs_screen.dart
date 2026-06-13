@@ -73,9 +73,37 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
     final statusStr = _activeTab == 0
         ? 'open'
         : _activeTab == 1
-        ? 'closed'
+        ? 'filled'
         : 'closed';
     return _jobs.where((j) => j.status.name == statusStr).toList();
+  }
+
+  Future<void> _updateJobStatus(String jobId, JobStatus status) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(FirestorePaths.jobs)
+          .doc(jobId)
+          .update({'status': status.name});
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Job status updated to ${status.name.toUpperCase()}'),
+        backgroundColor: FursafyTheme.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ));
+
+      _loadJobs();
+    } catch (e) {
+      debugPrint('MyJobsScreen._updateJobStatus error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: FursafyTheme.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ));
+    }
   }
 
   @override
@@ -320,6 +348,25 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
   Widget _jobCard(JobEntity job) {
     final count = _applicantCounts[job.id] ?? 0;
     final isClosed = job.status == JobStatus.closed;
+    final isFilled = job.status == JobStatus.filled;
+
+    final String statusLabel = isClosed
+        ? 'CLOSED'
+        : isFilled
+            ? 'FILLED'
+            : 'ACTIVE';
+
+    final Color badgeBg = isClosed
+        ? FursafyTheme.surfaceContainerHighest
+        : isFilled
+            ? Colors.green.shade100
+            : FursafyTheme.primaryFixed;
+
+    final Color badgeText = isClosed
+        ? FursafyTheme.onSurfaceVariant
+        : isFilled
+            ? Colors.green.shade800
+            : FursafyTheme.onPrimaryFixed;
 
     return GestureDetector(
       onTap: () => context.push('/provider/jobs/${job.id}/applicants'),
@@ -327,16 +374,16 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: isClosed
+          color: (isClosed || isFilled)
               ? FursafyTheme.surfaceContainerLow.withValues(alpha: 0.5)
               : FursafyTheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: isClosed ? null : FursafyTheme.ambientShadow,
+          boxShadow: (isClosed || isFilled) ? null : FursafyTheme.ambientShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row: badge + applicant avatars
+            // Top row: badge + applicant avatars + popup menu
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -346,42 +393,63 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: isClosed
-                        ? FursafyTheme.surfaceContainerHighest
-                        : FursafyTheme.primaryFixed,
+                    color: badgeBg,
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    isClosed ? 'CLOSED' : 'ACTIVE',
+                    statusLabel,
                     style: FursafyTheme.labelStyle.copyWith(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
-                      color: isClosed
-                          ? FursafyTheme.onSurfaceVariant
-                          : FursafyTheme.onPrimaryFixed,
+                      color: badgeText,
                     ),
                   ),
                 ),
-                if (count > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: FursafyTheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Text(
-                      '+$count',
-                      style: FursafyTheme.labelStyle.copyWith(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: FursafyTheme.onPrimaryContainer,
+                Row(
+                  children: [
+                    if (count > 0) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: FursafyTheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          '+$count',
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: FursafyTheme.onPrimaryContainer,
+                          ),
+                        ),
                       ),
+                      const SizedBox(width: 8),
+                    ],
+                    PopupMenuButton<JobStatus>(
+                      icon: const Icon(Icons.more_vert, color: FursafyTheme.onSurfaceVariant),
+                      tooltip: 'Change Status',
+                      onSelected: (JobStatus newStatus) => _updateJobStatus(job.id, newStatus),
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<JobStatus>>[
+                        const PopupMenuItem<JobStatus>(
+                          value: JobStatus.open,
+                          child: Text('Mark as Active'),
+                        ),
+                        const PopupMenuItem<JobStatus>(
+                          value: JobStatus.filled,
+                          child: Text('Mark as Filled'),
+                        ),
+                        const PopupMenuItem<JobStatus>(
+                          value: JobStatus.closed,
+                          child: Text('Mark as Closed'),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -392,7 +460,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
               style: FursafyTheme.headlineStyle.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: isClosed
+                color: (isClosed || isFilled)
                     ? FursafyTheme.onSurface.withValues(alpha: 0.6)
                     : FursafyTheme.onSurface,
               ),
@@ -435,7 +503,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
             const Spacer(),
 
             // Progress bar
-            if (!isClosed) ...[
+            if (!isClosed && !isFilled) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: LinearProgressIndicator(
@@ -468,6 +536,15 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                     ),
                   ),
                 ],
+              ),
+            ] else ...[
+              Text(
+                'Completed/Archived ${timeago.format(job.createdAt)}',
+                style: FursafyTheme.labelStyle.copyWith(
+                  fontSize: 10,
+                  color: FursafyTheme.outline,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ],
