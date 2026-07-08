@@ -67,7 +67,9 @@ class _SplashScreenState extends State<SplashScreen>
     if (state is AuthAuthenticated) {
       _navigated = true;
       final role = state.user.role.name;
-      if (role == 'provider') {
+      if (role == 'admin') {
+        context.go(AppRoutes.admin);
+      } else if (role == 'provider') {
         context.go(AppRoutes.providerDashboard);
       } else {
         context.go(AppRoutes.home);

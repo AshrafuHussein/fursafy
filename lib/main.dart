@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/app/app.dart';
+import 'package:fursafy/firebase_options.dart';
 import 'package:fursafy/core/utils/db_seeder.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fursafy/features/auth/presentation/bloc/register_bloc.dart';
@@ -43,18 +45,25 @@ void main() async {
     ),
   );
 
-  // Initialize Firebase — google-services.json + Gradle plugin handle native config.
+  // Initialize Firebase
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     await DatabaseSeeder.seedJobsIfNeeded();
     await DatabaseSeeder.seedSkillsTaxonomyIfNeeded();
   } catch (e) {
-    // Already initialized by native plugin — safe to continue.
-    debugPrint('Firebase init: $e');
+    debugPrint('Firebase init error: $e');
   }
 
-  // Initialize FCM push notifications
-  await NotificationService.instance.initialize();
+  // Initialize FCM push notifications (only on mobile)
+  if (!kIsWeb) {
+    try {
+      await NotificationService.instance.initialize();
+    } catch (e) {
+      debugPrint('[FCM] Notification initialization failed: $e');
+    }
+  }
 
   runApp(
     MultiBlocProvider(

@@ -492,219 +492,358 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildUserManagementView() {
-    return Container(
-      decoration: BoxDecoration(
-        color: FursafyTheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
-        ),
-      ),
-      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
-            .collection(FirestorePaths.users)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: FursafyTheme.primary));
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error loading users: ${snapshot.error}'));
-          }
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection(FirestorePaths.users)
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: FursafyTheme.primary));
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error loading users: ${snapshot.error}'));
+        }
 
-          final users = snapshot.data?.docs ?? [];
-          if (users.isEmpty) {
-            return const Center(child: Text('No users registered on the platform.'));
-          }
+        final users = snapshot.data?.docs ?? [];
+        if (users.isEmpty) {
+          return const Center(child: Text('No users registered on the platform.'));
+        }
 
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 24,
-                columns: [
-                  DataColumn(label: Text('Name', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Email', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Role', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Status', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Actions', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                ],
-                rows: users.map((doc) {
-                  final data = doc.data();
-                  final uid = doc.id;
-                  final name = data['displayName'] ?? 'No Name';
-                  final email = data['email'] ?? 'No Email';
-                  final role = data['role'] ?? 'youth';
-                  final status = data['status'] ?? 'active';
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final data = users[index].data();
+            final uid = users[index].id;
+            final name = data['displayName'] ?? 'No Name';
+            final email = data['email'] ?? 'No Email';
+            final role = data['role'] ?? 'youth';
+            final status = data['status'] ?? 'active';
 
-                  final isSuspended = status == 'suspended';
+            final isSuspended = status == 'suspended';
+            final initials = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : 'U';
 
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(name, style: FursafyTheme.bodyStyle)),
-                      DataCell(Text(email, style: FursafyTheme.bodyStyle)),
-                      DataCell(Text(role.toUpperCase(), style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.w600))),
-                      DataCell(
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isSuspended ? FursafyTheme.error.withValues(alpha: 0.1) : FursafyTheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            status.toUpperCase(),
-                            style: FursafyTheme.labelStyle.copyWith(
-                              color: isSuspended ? FursafyTheme.error : FursafyTheme.primary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        ElevatedButton(
-                          onPressed: () => _toggleUserStatus(uid, status),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isSuspended ? FursafyTheme.primary : FursafyTheme.error,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          ),
-                          child: Text(
-                            isSuspended ? 'Activate' : 'Suspend',
-                            style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: FursafyTheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildJobManagementView() {
-    return Container(
-      decoration: BoxDecoration(
-        color: FursafyTheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
-        ),
-      ),
-      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
-            .collection(FirestorePaths.jobs)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: FursafyTheme.primary));
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error loading jobs: ${snapshot.error}'));
-          }
-
-          final jobs = snapshot.data?.docs ?? [];
-          if (jobs.isEmpty) {
-            return const Center(child: Text('No jobs listed on the platform.'));
-          }
-
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 24,
-                columns: [
-                  DataColumn(label: Text('Title', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Provider', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Category', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Status', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Actions', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold))),
-                ],
-                rows: jobs.map((doc) {
-                  final data = doc.data();
-                  final jobId = doc.id;
-                  final title = data['title'] ?? 'No Title';
-                  final providerName = data['providerName'] ?? 'Unknown';
-                  final category = data['category'] ?? 'Other';
-                  final status = data['status'] ?? 'open';
-
-                  final isClosed = status == 'closed';
-
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(title, style: FursafyTheme.bodyStyle)),
-                      DataCell(Text(providerName, style: FursafyTheme.bodyStyle)),
-                      DataCell(Text(category, style: FursafyTheme.bodyStyle)),
-                      DataCell(
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isClosed ? FursafyTheme.outlineVariant.withValues(alpha: 0.15) : FursafyTheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            status.toUpperCase(),
-                            style: FursafyTheme.labelStyle.copyWith(
-                              color: isClosed ? FursafyTheme.outline : FursafyTheme.primary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSuspended ? FursafyTheme.error.withValues(alpha: 0.1) : FursafyTheme.primary.withValues(alpha: 0.1),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      initials,
+                      style: FursafyTheme.headlineStyle.copyWith(
+                        color: isSuspended ? FursafyTheme.error : FursafyTheme.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      DataCell(
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (!isClosed) ...[
-                              ElevatedButton(
-                                onPressed: () => _moderateJob(jobId, 'close'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: FursafyTheme.secondary,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                ),
-                                child: Text(
-                                  'Close',
-                                  style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
-                                ),
+                            Text(
+                              name,
+                              style: FursafyTheme.headlineStyle.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: FursafyTheme.onSurface,
                               ),
-                              const SizedBox(width: 8),
-                            ],
-                            ElevatedButton(
-                              onPressed: () => _moderateJob(jobId, 'delete'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: FursafyTheme.error,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            ),
+                            const SizedBox(width: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: FursafyTheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(100),
                               ),
                               child: Text(
-                                'Delete',
-                                style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+                                role.toUpperCase(),
+                                style: FursafyTheme.labelStyle.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: FursafyTheme.onSurfaceVariant,
+                                ),
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 6),
+                        Text(
+                          email,
+                          style: FursafyTheme.bodyStyle.copyWith(
+                            fontSize: 13,
+                            color: FursafyTheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isSuspended ? FursafyTheme.error.withValues(alpha: 0.1) : FursafyTheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      status.toUpperCase(),
+                      style: FursafyTheme.labelStyle.copyWith(
+                        color: isSuspended ? FursafyTheme.error : FursafyTheme.primary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: () => _toggleUserStatus(uid, status),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSuspended ? FursafyTheme.primary : FursafyTheme.error,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: Text(
+                      isSuspended ? 'Activate' : 'Suspend',
+                      style: FursafyTheme.bodyStyle.copyWith(fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildJobManagementView() {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection(FirestorePaths.jobs)
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: FursafyTheme.primary));
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error loading jobs: ${snapshot.error}'));
+        }
+
+        final jobs = snapshot.data?.docs ?? [];
+        if (jobs.isEmpty) {
+          return const Center(child: Text('No jobs listed on the platform.'));
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: jobs.length,
+          itemBuilder: (context, index) {
+            final data = jobs[index].data();
+            final jobId = jobs[index].id;
+            final title = data['title'] ?? 'No Title';
+            final providerName = data['providerName'] ?? 'Unknown';
+            final category = data['category'] ?? 'Other';
+            final status = data['status'] ?? 'open';
+            final payAmount = (data['payAmount'] ?? 0.0) as double;
+            final payType = data['payType'] ?? 'fixed';
+
+            final isClosed = status == 'closed';
+            final payLabel = '${payAmount.toStringAsFixed(0)} TZS${payType == 'hourly' ? '/hr' : ''}';
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: FursafyTheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isClosed ? FursafyTheme.outlineVariant.withValues(alpha: 0.15) : FursafyTheme.secondary.withValues(alpha: 0.1),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      _getCategoryIcon(category),
+                      color: isClosed ? FursafyTheme.outline : FursafyTheme.secondary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              title,
+                              style: FursafyTheme.headlineStyle.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: FursafyTheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: FursafyTheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Text(
+                                category.toUpperCase(),
+                                style: FursafyTheme.labelStyle.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: FursafyTheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Text(
+                              'Posted by $providerName',
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                fontSize: 13,
+                                color: FursafyTheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Container(
+                              width: 4,
+                              height: 4,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: FursafyTheme.outlineVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              payLabel,
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: FursafyTheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isClosed ? FursafyTheme.outlineVariant.withValues(alpha: 0.15) : FursafyTheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      status.toUpperCase(),
+                      style: FursafyTheme.labelStyle.copyWith(
+                        color: isClosed ? FursafyTheme.outline : FursafyTheme.primary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!isClosed) ...[
+                        ElevatedButton(
+                          onPressed: () => _moderateJob(jobId, 'close'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: FursafyTheme.secondary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                          ),
+                          child: Text(
+                            'Close',
+                            style: FursafyTheme.bodyStyle.copyWith(fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      ElevatedButton(
+                        onPressed: () => _moderateJob(jobId, 'delete'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: FursafyTheme.error,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                        ),
+                        child: Text(
+                          'Delete',
+                          style: FursafyTheme.bodyStyle.copyWith(fontSize: 13, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
+  }
+
+  IconData _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'tech':
+        return Icons.computer_outlined;
+      case 'cleaning':
+        return Icons.cleaning_services_outlined;
+      case 'construction':
+        return Icons.construction_outlined;
+      case 'tutoring':
+        return Icons.school_outlined;
+      case 'delivery':
+        return Icons.local_shipping_outlined;
+      case 'cooking':
+        return Icons.restaurant_outlined;
+      case 'repair':
+        return Icons.build_outlined;
+      default:
+        return Icons.work_outline;
+    }
   }
 }

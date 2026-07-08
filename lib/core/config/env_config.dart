@@ -49,6 +49,16 @@ class EnvConfig {
     'FIREBASE_STORAGE_BUCKET',
   );
 
+  /// Firebase Web API key.
+  static const String firebaseWebApiKey = String.fromEnvironment(
+    'FIREBASE_WEB_API_KEY',
+  );
+
+  /// Firebase Web application ID.
+  static const String firebaseWebAppId = String.fromEnvironment(
+    'FIREBASE_WEB_APP_ID',
+  );
+
   // ======================== GOOGLE MAPS ========================
 
   /// Google Maps Platform API key for map rendering and geocoding.
