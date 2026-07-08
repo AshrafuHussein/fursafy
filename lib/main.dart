@@ -21,9 +21,11 @@ import 'package:fursafy/features/notifications/presentation/bloc/notification_bl
 import 'package:fursafy/core/services/notification_service.dart';
 import 'package:fursafy/core/location/location_bloc.dart';
 import 'package:fursafy/core/location/location_event.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
 
   // Lock orientation to portrait
   await SystemChrome.setPreferredOrientations([
@@ -45,6 +47,7 @@ void main() async {
   try {
     await Firebase.initializeApp();
     await DatabaseSeeder.seedJobsIfNeeded();
+    await DatabaseSeeder.seedSkillsTaxonomyIfNeeded();
   } catch (e) {
     // Already initialized by native plugin — safe to continue.
     debugPrint('Firebase init: $e');

@@ -104,4 +104,37 @@ class DatabaseSeeder {
       debugPrint('[DatabaseSeeder] Error seeding jobs: $e');
     }
   }
+
+  /// Seeds the skills_taxonomy collection with the predefined skills from SRS §6.7.
+  /// Only runs once — checks if the collection already has documents.
+  static Future<void> seedSkillsTaxonomyIfNeeded() async {
+    try {
+      final col = FirebaseFirestore.instance.collection('skills_taxonomy');
+      final existing = await col.limit(1).get();
+      if (existing.docs.isNotEmpty) return; // Already seeded
+
+      const skills = [
+        {'id': 'plumbing', 'label_en': 'Plumbing', 'label_sw': 'Ufinyanzi wa Maji', 'category': 'technical_repair'},
+        {'id': 'electrical', 'label_en': 'Electrical Work', 'label_sw': 'Kazi ya Umeme', 'category': 'technical_repair'},
+        {'id': 'carpentry', 'label_en': 'Carpentry', 'label_sw': 'Useremala', 'category': 'construction'},
+        {'id': 'cleaning', 'label_en': 'Cleaning', 'label_sw': 'Usafi', 'category': 'cleaning'},
+        {'id': 'tutoring_math', 'label_en': 'Maths Tutoring', 'label_sw': 'Kufundisha Hisabati', 'category': 'tutoring'},
+        {'id': 'it_support', 'label_en': 'IT Support', 'label_sw': 'Msaada wa Teknolojia', 'category': 'technical_repair'},
+        {'id': 'driving', 'label_en': 'Driving', 'label_sw': 'Udereva', 'category': 'delivery'},
+        {'id': 'painting', 'label_en': 'Painting', 'label_sw': 'Upigaji Rangi', 'category': 'construction'},
+        {'id': 'cooking', 'label_en': 'Cooking / Catering', 'label_sw': 'Kupika / Upishi', 'category': 'other'},
+        {'id': 'garden', 'label_en': 'Gardening', 'label_sw': 'Bustani', 'category': 'cleaning'},
+      ];
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (final skill in skills) {
+        final docRef = col.doc(skill['id'] as String);
+        batch.set(docRef, skill);
+      }
+      await batch.commit();
+      debugPrint('[DatabaseSeeder] Successfully seeded ${skills.length} skills in skills_taxonomy.');
+    } catch (e) {
+      debugPrint('[DatabaseSeeder] Error seeding skills_taxonomy: $e');
+    }
+  }
 }

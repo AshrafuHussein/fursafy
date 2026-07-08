@@ -15,10 +15,15 @@ class JobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+    return Semantics(
+      label: 'Job post by ${job.providerName}: ${job.title}',
+      hint: 'Double tap to view job details and apply.',
+      button: true,
+      enabled: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: FursafyTheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(16),
@@ -138,6 +143,7 @@ class JobCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

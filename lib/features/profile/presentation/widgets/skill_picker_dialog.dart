@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fursafy/app/theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SkillCategory {
   final String id;
@@ -101,6 +102,9 @@ class _SkillPickerDialogState extends State<SkillPickerDialog> {
     ),
   ];
 
+  List<SkillCategory> _dbCategories = [];
+  bool _loadingSkills = true;
+
   @override
   void initState() {
     super.initState();
@@ -110,6 +114,59 @@ class _SkillPickerDialogState extends State<SkillPickerDialog> {
         _searchQuery = _searchCtrl.text.trim().toLowerCase();
       });
     });
+    _fetchSkillsFromDb();
+  }
+
+  Future<void> _fetchSkillsFromDb() async {
+    try {
+      final snap = await FirebaseFirestore.instance.collection('skills_taxonomy').get();
+      if (!mounted) return;
+      final isSw = Localizations.localeOf(context).languageCode == 'sw';
+      
+      final Map<String, List<String>> grouped = {};
+      for (final doc in snap.docs) {
+        final data = doc.data();
+        final cat = data['category'] as String? ?? 'other';
+        final label = isSw
+            ? (data['label_sw'] as String? ?? data['label_en'] as String? ?? doc.id)
+            : (data['label_en'] as String? ?? doc.id);
+        grouped.putIfAbsent(cat, () => []).add(label);
+      }
+
+      final catConfig = {
+        'technical_repair': (isSw ? 'Marekebisho ya Kiufundi' : 'Technical & Repairs', Icons.build, ['Technical', 'Trending']),
+        'construction': (isSw ? 'Ujenzi' : 'Construction', Icons.construction, ['Construction']),
+        'cleaning': (isSw ? 'Usafi' : 'Cleaning & Domestic', Icons.cleaning_services, ['Domestic']),
+        'tutoring': (isSw ? 'Mafunzo / Ualimu' : 'Tutoring', Icons.school, ['Technical']),
+        'delivery': (isSw ? 'Uwasilishaji' : 'Delivery & Logistics', Icons.local_shipping, ['Trending']),
+        'other': (isSw ? 'Nyingine' : 'Other Services', Icons.more_horiz, ['Domestic']),
+      };
+
+      final List<SkillCategory> dbCats = [];
+      grouped.forEach((catId, subSkillsList) {
+        final config = catConfig[catId] ?? (catId, Icons.build, <String>[]);
+        dbCats.add(SkillCategory(
+          id: catId,
+          title: config.$1,
+          description: isSw ? 'Kazi zinazohusiana na ${config.$1.toLowerCase()}.' : 'Services related to ${config.$1.toLowerCase()}.',
+          icon: config.$2,
+          subSkills: subSkillsList,
+          tags: config.$3,
+          isFeatured: catId == 'technical_repair',
+        ));
+      });
+
+      setState(() {
+        _dbCategories = dbCats;
+        _loadingSkills = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _dbCategories = _categories;
+        _loadingSkills = false;
+      });
+    }
   }
 
   @override
@@ -158,7 +215,7 @@ class _SkillPickerDialogState extends State<SkillPickerDialog> {
   }
 
   List<SkillCategory> get _filteredCategories {
-    List<SkillCategory> list = _categories;
+    List<SkillCategory> list = _loadingSkills ? const [] : _dbCategories;
 
     // Filter by tag
     if (_selectedTag != null) {
@@ -441,6 +498,14 @@ class _SkillPickerDialogState extends State<SkillPickerDialog> {
   }
 
   Widget _buildSkillGrid() {
+    if (_loadingSkills) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: CircularProgressIndicator(color: FursafyTheme.primary),
+        ),
+      );
+    }
     final categories = _filteredCategories;
 
     if (categories.isEmpty) {

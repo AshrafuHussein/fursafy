@@ -9,6 +9,7 @@ import 'package:fursafy/features/jobs/domain/entities/job_entity.dart';
 import 'package:fursafy/features/applications/domain/entities/application_entity.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:hive_flutter/hive_flutter.dart';
 
 /// S08 — Job Detail screen (Youth view) — Stitch editorial design.
 /// Flat appbar, trending badge, bento stats, provider card with verified badge,
@@ -57,9 +58,13 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           }
         }
 
+        final bookmarkBox = await Hive.openBox('saved_jobs');
+        final isBookmarked = bookmarkBox.get(job.id, defaultValue: false) as bool;
+
         setState(() {
           _job = job;
           _hasApplied = hasApplied;
+          _bookmarked = isBookmarked;
           _loading = false;
         });
       } else {
@@ -1040,7 +1045,14 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           children: [
             // Bookmark button
             GestureDetector(
-              onTap: () => setState(() => _bookmarked = !_bookmarked),
+              onTap: () async {
+                final newStatus = !_bookmarked;
+                setState(() => _bookmarked = newStatus);
+                try {
+                  final bookmarkBox = await Hive.openBox('saved_jobs');
+                  await bookmarkBox.put(widget.jobId, newStatus);
+                } catch (_) {}
+              },
               child: Container(
                 width: 56,
                 height: 56,

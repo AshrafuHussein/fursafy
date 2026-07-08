@@ -470,149 +470,155 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     // Determine if it's a "featured" notification (job_match)
     final isFeatured = type == 'job_match';
 
-    return GestureDetector(
-      onTap: () async {
-        // Mark as read via BLoC
-        context
-            .read<NotificationBloc>()
-            .add(NotificationMarkAsRead(notification.id));
-
-        if (!mounted) return;
-
-        final uid = FirebaseAuth.instance.currentUser?.uid;
-
-        if (type == 'application_accepted' || type == 'application_rejected') {
-          if (jobId != null && jobId.isNotEmpty) {
-            try {
-              final snap = await FirebaseFirestore.instance
-                  .collection(FirestorePaths.applications)
-                  .where('jobId', isEqualTo: jobId)
-                  .where('youthId', isEqualTo: uid)
-                  .limit(1)
-                  .get();
-              if (snap.docs.isNotEmpty && mounted) {
-                context.push('/applications/${snap.docs.first.id}');
-              }
-            } catch (_) {}
+    return Semantics(
+      label: '$label notification: $message',
+      hint: 'Double tap to view details.',
+      button: true,
+      enabled: true,
+      child: GestureDetector(
+        onTap: () async {
+          // Mark as read via BLoC
+          context
+              .read<NotificationBloc>()
+              .add(NotificationMarkAsRead(notification.id));
+  
+          if (!mounted) return;
+  
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+  
+          if (type == 'application_accepted' || type == 'application_rejected') {
+            if (jobId != null && jobId.isNotEmpty) {
+              try {
+                final snap = await FirebaseFirestore.instance
+                    .collection(FirestorePaths.applications)
+                    .where('jobId', isEqualTo: jobId)
+                    .where('youthId', isEqualTo: uid)
+                    .limit(1)
+                    .get();
+                if (snap.docs.isNotEmpty && mounted) {
+                  context.push('/applications/${snap.docs.first.id}');
+                }
+              } catch (_) {}
+            }
+          } else if (type == 'job_match' && jobId != null && jobId.isNotEmpty) {
+            context.push('/jobs/$jobId');
+          } else if ((type == 'application_received' ||
+                  type == 'new_application') &&
+              jobId != null &&
+              jobId.isNotEmpty) {
+            context.push('/provider/jobs/$jobId/applicants');
+          } else if (type == 'rating_received') {
+            context.go(AppRoutes.profile);
           }
-        } else if (type == 'job_match' && jobId != null && jobId.isNotEmpty) {
-          context.push('/jobs/$jobId');
-        } else if ((type == 'application_received' ||
-                type == 'new_application') &&
-            jobId != null &&
-            jobId.isNotEmpty) {
-          context.push('/provider/jobs/$jobId/applicants');
-        } else if (type == 'rating_received') {
-          context.go(AppRoutes.profile);
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isFeatured
-              ? FursafyTheme.surfaceContainerLowest
-              : isRead
-              ? FursafyTheme.surfaceContainerLow
-              : FursafyTheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(16),
-          border: isFeatured
-              ? null
-              : Border(
-                  left: type == 'rating_received'
-                      ? const BorderSide(
-                          color: FursafyTheme.secondaryContainer,
-                          width: 4,
-                        )
-                      : BorderSide.none,
-                ),
-          boxShadow: isFeatured
-              ? [
-                  BoxShadow(
-                    color: FursafyTheme.onSurface.withValues(alpha: 0.04),
-                    blurRadius: 30,
-                    offset: const Offset(0, 8),
+        },
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: isFeatured
+                ? FursafyTheme.surfaceContainerLowest
+                : isRead
+                ? FursafyTheme.surfaceContainerLow
+                : FursafyTheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            border: isFeatured
+                ? null
+                : Border(
+                    left: type == 'rating_received'
+                        ? const BorderSide(
+                            color: FursafyTheme.secondaryContainer,
+                            width: 4,
+                          )
+                        : BorderSide.none,
                   ),
-                ]
-              : null,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Icon Container
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
+            boxShadow: isFeatured
+                ? [
+                    BoxShadow(
+                      color: FursafyTheme.onSurface.withValues(alpha: 0.04),
+                      blurRadius: 30,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Icon Container
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: color, size: 22),
               ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 16),
-            // Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Label + Time
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        label,
-                        style: FursafyTheme.labelStyle.copyWith(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 2.0,
-                          color: color,
+              const SizedBox(width: 16),
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Label + Time
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          label,
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.0,
+                            color: color,
+                          ),
                         ),
+                        Text(
+                          timeago.format(createdAt, locale: 'en_short'),
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 11,
+                            color: FursafyTheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    // Message
+                    Text(
+                      message,
+                      style: FursafyTheme.bodyStyle.copyWith(
+                        fontSize: 13,
+                        color: FursafyTheme.onSurfaceVariant,
+                        height: 1.5,
                       ),
-                      Text(
-                        timeago.format(createdAt, locale: 'en_short'),
-                        style: FursafyTheme.labelStyle.copyWith(
-                          fontSize: 11,
-                          color: FursafyTheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
+                    ),
+                    // Action button for featured
+                    if (isFeatured) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: FursafyTheme.primary,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          'View Opportunity',
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: FursafyTheme.onPrimary,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 6),
-                  // Message
-                  Text(
-                    message,
-                    style: FursafyTheme.bodyStyle.copyWith(
-                      fontSize: 13,
-                      color: FursafyTheme.onSurfaceVariant,
-                      height: 1.5,
-                    ),
-                  ),
-                  // Action button for featured
-                  if (isFeatured) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: FursafyTheme.primary,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Text(
-                        'View Opportunity',
-                        style: FursafyTheme.labelStyle.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: FursafyTheme.onPrimary,
-                        ),
-                      ),
-                    ),
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

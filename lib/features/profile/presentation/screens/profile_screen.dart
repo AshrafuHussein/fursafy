@@ -7,6 +7,7 @@ import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/features/profile/presentation/widgets/skill_picker_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// S12 — Youth Profile screen — Editorial hero design.
 class ProfileScreen extends StatefulWidget {
@@ -166,7 +167,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   // Hero Image Section
                   _buildHeroSection(context),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
+
+                  // Availability Status Toggle (FR-11)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildAvailabilityToggle(),
+                  ),
+                  const SizedBox(height: 24),
 
                   // Stats Bento Grid
                   Padding(
@@ -196,6 +204,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 32),
 
+                  // Portfolio Section (SRS §6.3 / FR-07)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildPortfolioSection(),
+                  ),
+                  const SizedBox(height: 32),
+
                   // Sign Out
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -206,6 +221,114 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
       bottomNavigationBar: _buildBottomNav(context),
     );
+  }
+
+  Widget _buildAvailabilityToggle() {
+    final currentStatus = _profileData?['status'] as String? ?? 'available';
+    
+    final statuses = [
+      ('available', 'Available', Icons.check_circle_rounded, FursafyTheme.primary),
+      ('busy', 'Busy', Icons.pause_circle_rounded, FursafyTheme.secondary),
+      ('inactive', 'Inactive', Icons.cancel_rounded, FursafyTheme.outline),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 10),
+          child: Text(
+            'AVAILABILITY STATUS',
+            style: FursafyTheme.labelStyle.copyWith(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 2.0,
+              color: FursafyTheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: FursafyTheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: statuses.map((s) {
+              final isSelected = s.$1 == currentStatus;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => _updateAvailability(s.$1),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? FursafyTheme.surfaceContainerLowest
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(s.$3, size: 16, color: isSelected ? s.$4 : FursafyTheme.outline),
+                        const SizedBox(width: 4),
+                        Text(
+                          s.$2,
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 12,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            color: isSelected ? FursafyTheme.onSurface : FursafyTheme.outline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _updateAvailability(String status) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection(FirestorePaths.youthProfiles)
+          .doc(uid)
+          .set({'status': status}, SetOptions(merge: true));
+      setState(() {
+        _profileData ??= {};
+        _profileData!['status'] = status;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Status updated to ${status[0].toUpperCase()}${status.substring(1)}'),
+          backgroundColor: FursafyTheme.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: FursafyTheme.error),
+      );
+    }
   }
 
   Widget _buildBottomNav(BuildContext context) {
@@ -832,6 +955,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPortfolioSection() {
+    final urls = (_profileData?['portfolioURLs'] as List?)?.map((u) => u.toString()).toList() ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'PORTFOLIO LINKS',
+          style: FursafyTheme.labelStyle.copyWith(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 3.0,
+            color: FursafyTheme.primary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (urls.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: FursafyTheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.link_off, color: FursafyTheme.outline),
+                const SizedBox(width: 12),
+                Text(
+                  'No portfolio links added yet.',
+                  style: FursafyTheme.bodyStyle.copyWith(
+                    color: FursafyTheme.onSurfaceVariant,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Column(
+            children: urls.map((url) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: FursafyTheme.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.link, color: FursafyTheme.primary, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          final uri = Uri.parse(url);
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          } else {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Could not launch $url')),
+                              );
+                            }
+                          }
+                        },
+                        child: Text(
+                          url,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: FursafyTheme.bodyStyle.copyWith(
+                            color: FursafyTheme.primary,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+      ],
     );
   }
 }
