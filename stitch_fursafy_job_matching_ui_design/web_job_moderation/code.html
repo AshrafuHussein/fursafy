@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Job Moderation | Fursafy Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary": "#ffffff",
+                "surface-container-high": "#e9e8e3",
+                "primary-fixed": "#86f8c9",
+                "surface-container-highest": "#e3e3dd",
+                "on-tertiary-fixed-variant": "#7e2a27",
+                "surface-bright": "#faf9f4",
+                "on-secondary-container": "#6b4200",
+                "tertiary-container": "#b85751",
+                "on-tertiary": "#ffffff",
+                "error": "#ba1a1a",
+                "secondary-container": "#fcaa33",
+                "on-secondary-fixed-variant": "#653e00",
+                "surface-container": "#efeee9",
+                "on-tertiary-fixed": "#410003",
+                "on-primary-fixed": "#002115",
+                "secondary": "#855400",
+                "primary-fixed-dim": "#68dbae",
+                "secondary-fixed-dim": "#ffb95d",
+                "surface-tint": "#006c4e",
+                "tertiary": "#993f3a",
+                "on-error": "#ffffff",
+                "outline-variant": "#bccac1",
+                "primary": "#00694c",
+                "secondary-fixed": "#ffddb7",
+                "error-container": "#ffdad6",
+                "on-error-container": "#93000a",
+                "inverse-surface": "#2f312d",
+                "surface": "#faf9f4",
+                "background": "#faf9f4",
+                "outline": "#6d7a73",
+                "surface-dim": "#dbdad5",
+                "inverse-on-surface": "#f1f1eb",
+                "on-surface": "#1a1c19",
+                "surface-container-low": "#f4f4ee",
+                "on-secondary": "#ffffff",
+                "on-secondary-fixed": "#2a1700",
+                "surface-variant": "#e3e3dd",
+                "primary-container": "#008560",
+                "on-primary-container": "#f5fff7",
+                "on-tertiary-container": "#fffbff",
+                "tertiary-fixed-dim": "#ffb3ad",
+                "on-primary-fixed-variant": "#00513a",
+                "inverse-primary": "#68dbae",
+                "tertiary-fixed": "#ffdad6",
+                "on-background": "#1a1c19",
+                "surface-container-lowest": "#ffffff",
+                "on-surface-variant": "#3d4943"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-[#faf9f4] dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 p-4 gap-y-2 z-50">
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="work_outline">work_outline</span>
+</div>
+<div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-extrabold text-2xl text-[#00694c]">Fursafy</h1>
+<p class="text-xs font-medium text-slate-500">Growth Engine</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#00694c] dark:text-[#1D9E75] shadow-sm rounded-lg font-bold transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="work_outline">work_outline</span>
+<span class="font-['Manrope'] text-sm">Opportunities</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-['Manrope'] font-medium text-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-['Manrope'] font-medium text-sm">Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Financials</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-['Manrope'] font-medium text-sm">System Logs</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Manrope'] font-medium text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-['Manrope'] font-medium text-sm">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar (Authority: JSON) -->
+<header class="bg-[#faf9f4]/80 dark:bg-slate-900/80 backdrop-blur-xl docked full-width top-0 sticky z-40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-b border-slate-100 dark:border-slate-800 flex justify-between items-center w-full px-8 py-3">
+<div class="flex items-center gap-6 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" data-icon="search">search</span>
+<input class="w-full bg-surface-container-highest border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search job listings, providers, or IDs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-[#f2f1ea] rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-[#f2f1ea] rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-[#f2f1ea] rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<img alt="Administrator profile avatar" class="w-8 h-8 rounded-full border border-primary/20 object-cover" data-alt="professional headshot of a smiling male administrator with short hair wearing a clean white shirt in a bright office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3CUNNAa_DDsXjca2dvOxBGOLEbf7Yklr72VWFb-eHrtzIseOK028yynEQNr1e_JN7qfw6qO5dgWtGdtnQ9xM7_6jtcTBnKDfTy8feGK2wfLBnzXOuB_Ocwi4W3RbEMyj6TgQIfjymT22sp-kdT6SBh-3rbVIj_Tl2chaq8ODzsqRHuDe0a3MWLWUmhcyr2Wa5OkKwjpeE0BjIEbvjklxLJoWdehf_WL3mOQJlh6oxbLddyxzJKBEFIXxOSwcnhyuYHu7Eylk4tiEF"/>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-[#00694c]">Admin Admin</span>
+</div>
+</div>
+</header>
+<!-- Editorial Content Section -->
+<div class="p-8 max-w-7xl mx-auto">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Job Moderation</h2>
+<p class="text-on-surface-variant font-medium">Review and curate high-impact opportunities for the community.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-full text-sm hover:bg-surface-container-highest transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+<button class="px-5 py-2.5 bg-primary text-on-primary font-bold rounded-full text-sm hover:shadow-lg transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+                        Post Opportunity
+                    </button>
+</div>
+</div>
+<!-- Moderation Tabs -->
+<div class="flex gap-8 mb-6 border-b border-surface-container">
+<button class="pb-4 text-primary border-b-2 border-primary font-bold text-sm flex items-center gap-2">
+                    Pending Review
+                    <span class="bg-primary/10 px-2 py-0.5 rounded-full text-xs">12</span>
+</button>
+<button class="pb-4 text-on-surface-variant hover:text-on-surface font-medium text-sm flex items-center gap-2 transition-colors">
+                    Flagged Content
+                    <span class="bg-surface-container-high px-2 py-0.5 rounded-full text-xs">4</span>
+</button>
+<button class="pb-4 text-on-surface-variant hover:text-on-surface font-medium text-sm transition-colors">
+                    History
+                </button>
+</div>
+<!-- Editorial Table / Data Grid -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden">
+<table class="w-full text-left border-separate border-spacing-0">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant uppercase text-[10px] tracking-widest font-bold">
+<th class="px-6 py-4">Opportunity Details</th>
+<th class="px-6 py-4">Provider</th>
+<th class="px-6 py-4">Posted Date</th>
+<th class="px-6 py-4 text-right">Moderation Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="group hover:bg-surface-container-lowest transition-all">
+<td class="px-6 py-6 max-w-sm">
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-base group-hover:text-primary transition-colors">Senior Software Architect</span>
+<span class="text-on-surface-variant text-sm line-clamp-2 mt-1 leading-relaxed">
+                                        We are looking for a visionary architect to lead our next-generation fintech platform. Must have experience with high-concurrency systems...
+                                    </span>
+<div class="mt-2 flex gap-2">
+<span class="bg-secondary-fixed text-on-secondary-fixed text-[10px] px-2 py-0.5 rounded font-bold uppercase">Trending</span>
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-bold uppercase">Full-time</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-white p-1 flex items-center justify-center shadow-sm">
+<img alt="Company Logo" class="w-full h-full object-contain" data-alt="minimalist modern corporate logo icon with geometric shapes in dark blue and white colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAldgqJP3_z7MjYRLe1yjOynzmVspxvj-VJxcxh4KscyWqW0wXuoqwoTJkkLyukDPvWDJq956exWODPjOA-aPaj6UioxpORq4Y0rcV4c4QwiqQ9NAMRhdGe2F2pm-1E_Y-eRZsN5n9V2SmTDW44yDclbgjO8h4i9riFbGHx-gMs7MQNZljz5ZFbMeXfPZ98TtR-KnokFSFipnJWa7EcVLRVC5SN5e9LfogbUdXdV7l5qnb-dFs_H3tVnKU2P1lyVW5bdLq0ej21SdSc"/>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold text-sm">TechVerve Solutions</span>
+<span class="text-on-surface-variant text-xs">Dar es Salaam</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-on-surface-variant text-sm font-medium">
+                                Oct 24, 2023
+                            </td>
+<td class="px-6 py-6">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors group/btn relative" title="View Details">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="px-4 py-2 bg-error-container text-on-error-container text-xs font-bold rounded-full hover:bg-error hover:text-on-error transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span>
+                                        Flag
+                                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded-full hover:shadow-md transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                        Approve
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-surface-container-lowest transition-all">
+<td class="px-6 py-6 max-w-sm">
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-base group-hover:text-primary transition-colors">Marketing Associate</span>
+<span class="text-on-surface-variant text-sm line-clamp-2 mt-1 leading-relaxed">
+                                        Help us scale our digital presence across East Africa. Candidates should be proficient in SEO, SEM, and content strategy...
+                                    </span>
+<div class="mt-2 flex gap-2">
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 rounded font-bold uppercase">Remote</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-white p-1 flex items-center justify-center shadow-sm">
+<img alt="Company Logo" class="w-full h-full object-contain" data-alt="abstract colorful logo for a marketing agency with vibrant gradients and circular shapes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwScxDFlKXeulPyrz9HvhmLi8xrHfmkuVZJGNoEFBSCyTM4SYK71LI9hEwpqS-d9-FXH57oug42PoS0SRSLA6Ktm9Jh8_SZLuBCCtKEhvrUqBt9WV3fyMu2BFG7CxjzWTHaJbM320qGKARWqfaRssoJ2SqIA4n4y0vxeZrSvgI6ZnSuS451cM_qkfD6vTtSVroxnyDXJHOPjLNqmETakVyeq8oFOOdHtn2cB3jm0MS5Zw2cjrA4NDU9bhK1pRlcMiCeJvK50sZ3Rww"/>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold text-sm">Zanzibar Creative Hub</span>
+<span class="text-on-surface-variant text-xs">Zanzibar</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-on-surface-variant text-sm font-medium">
+                                Oct 23, 2023
+                            </td>
+<td class="px-6 py-6">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="View Details">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="px-4 py-2 bg-error-container text-on-error-container text-xs font-bold rounded-full hover:bg-error hover:text-on-error transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span>
+                                        Flag
+                                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded-full hover:shadow-md transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                        Approve
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-surface-container-lowest transition-all">
+<td class="px-6 py-6 max-w-sm">
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-base group-hover:text-primary transition-colors">Operations Manager</span>
+<span class="text-on-surface-variant text-sm line-clamp-2 mt-1 leading-relaxed">
+                                        Logistics powerhouse looking for a data-driven manager to oversee local distribution networks. 5+ years experience required...
+                                    </span>
+<div class="mt-2 flex gap-2">
+<span class="bg-primary-fixed text-on-primary-fixed text-[10px] px-2 py-0.5 rounded font-bold uppercase">High Priority</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-white p-1 flex items-center justify-center shadow-sm">
+<img alt="Company Logo" class="w-full h-full object-contain" data-alt="professional logistics company logo with stylized wings and sleek typography in navy and silver" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJBO1YYygMWpO0gR_oJ5Tdgvu-SNXy7FWQTv-ldIIe2iP3RVneeSC1wu3U4RVUIwA0TJhHuMK7VgNUquZ6s_DvHWjq4hnC8zd-qOYILE3llN7N2U0g8obopUTbokK_y9Iz8_g9AYSUE2FGs24YEsBcnCy9cobxEdadTyE_yfaZWjMcnaRp40-g5RV0nAZmOxz1U1MyvNqkpvTHirQNGRkGy_VPyjA4yOdg1mTpHC_OceiKH03MZNyMbVzxUjWr4kdz8wXsvl0K6U_V"/>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold text-sm">Swift Logistics Ltd.</span>
+<span class="text-on-surface-variant text-xs">Arusha</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-on-surface-variant text-sm font-medium">
+                                Oct 22, 2023
+                            </td>
+<td class="px-6 py-6">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="View Details">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="px-4 py-2 bg-error-container text-on-error-container text-xs font-bold rounded-full hover:bg-error hover:text-on-error transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span>
+                                        Flag
+                                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded-full hover:shadow-md transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                        Approve
+                                    </button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination/Footer -->
+<div class="px-6 py-4 bg-surface-container-low border-t border-surface-container flex justify-between items-center">
+<span class="text-on-surface-variant text-xs font-medium italic">Showing 1 to 10 of 124 listings requiring review</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface-variant text-xs font-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface-variant text-xs font-bold">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bento Stats Grid (Editorial Scale) -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="col-span-1 md:col-span-2 bg-primary-container/10 p-6 rounded-2xl border border-primary/5 flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-primary text-3xl mb-4" data-icon="bolt">bolt</span>
+<h3 class="text-xl font-bold text-on-surface">Queue Velocity</h3>
+<p class="text-on-surface-variant text-sm mt-1">Average moderation time has decreased by 14% this week.</p>
+</div>
+<div class="mt-6 flex items-baseline gap-2">
+<span class="text-4xl font-extrabold text-primary tracking-tighter">4.2m</span>
+<span class="text-primary text-xs font-bold">avg. review time</span>
+</div>
+</div>
+<div class="bg-surface-container p-6 rounded-2xl">
+<span class="material-symbols-outlined text-secondary text-2xl mb-4" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Top Reviewer</h3>
+<div class="mt-4 flex items-center gap-3">
+<img alt="Staff" class="w-10 h-10 rounded-full object-cover" data-alt="headshot of a confident professional female employee with a warm smile, natural hair, wearing minimalist glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg6PScKsxSXry5AIb_EzkD5FjU54NbsAH9fVawICPagEOXiS2WrQxlUgQqqEUXh0zlADjuXaRDeopmPt2c-7dcJvQ7e_ZHW_H-yfZO5FBwK0HHk3iSDCBowlOwtqEi7FVqahPlNnk2yUtDnA33GuxlCV0Du5nKWsrcHnaTv35vyqXTo2BunaTBzhnH7IMcAZEdrmseTXxH-ZqFfI3SMDe2xRu8AXO0SaFquHzbSPratzH1AQPDwNuQgyeFcQtMKLH2t-Bxb1FA-9sO"/>
+<div>
+<p class="text-on-surface font-bold text-sm">Fatuma M.</p>
+<p class="text-on-surface-variant text-[10px]">84 reviews today</p>
+</div>
+</div>
+</div>
+<div class="bg-error-container/20 p-6 rounded-2xl border border-error/5">
+<span class="material-symbols-outlined text-error text-2xl mb-4" data-icon="report">report</span>
+<h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Flag Rate</h3>
+<div class="mt-4">
+<p class="text-3xl font-extrabold text-error tracking-tighter">12%</p>
+<p class="text-on-surface-variant text-[10px] mt-1">+2% from last week</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Element -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="bg-secondary text-on-secondary w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all group">
+<span class="material-symbols-outlined text-2xl" data-icon="support_agent">support_agent</span>
+<span class="absolute right-full mr-4 bg-on-surface text-surface text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Moderation Support</span>
+</button>
+</div>
+</body></html>

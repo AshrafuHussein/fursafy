@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fursafy Admin - Modal Gallery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#efeee9",
+                        "outline": "#6d7a73",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dbdad5",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "surface-container-high": "#e9e8e3",
+                        "on-secondary-container": "#6b4200",
+                        "on-primary-fixed-variant": "#00513a",
+                        "on-tertiary-fixed": "#410003",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#68dbae",
+                        "on-secondary": "#ffffff",
+                        "background": "#faf9f4",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "primary-fixed": "#86f8c9",
+                        "on-primary-fixed": "#002115",
+                        "tertiary-container": "#b85751",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "tertiary-fixed": "#ffdad6",
+                        "secondary-fixed": "#ffddb7",
+                        "on-surface-variant": "#3d4943",
+                        "primary": "#00694c",
+                        "inverse-surface": "#2f312d",
+                        "surface-variant": "#e3e3dd",
+                        "inverse-primary": "#68dbae",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#008560",
+                        "on-background": "#1a1c19",
+                        "on-tertiary-container": "#fffbff",
+                        "on-surface": "#1a1c19",
+                        "secondary-container": "#fcaa33",
+                        "on-secondary-fixed": "#2a1700",
+                        "surface": "#faf9f4",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f4f4ee",
+                        "inverse-on-surface": "#f1f1eb",
+                        "surface-tint": "#006c4e",
+                        "secondary": "#855400",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-bright": "#faf9f4",
+                        "outline-variant": "#bccac1",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, .headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- Top Navigation Shell -->
+<nav class="sticky top-0 flex justify-between items-center w-full px-6 py-3 bg-stone-50/80 dark:bg-zinc-950/80 backdrop-blur-xl z-40 shadow-sm shadow-emerald-900/5 font-['Plus_Jakarta_Sans'] text-sm tracking-tight">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-emerald-800 dark:text-emerald-300">Fursafy Admin</span>
+<div class="hidden md:flex gap-6">
+<a class="text-emerald-700 dark:text-emerald-400 font-semibold border-b-2 border-emerald-600 px-1 py-1" href="#">Dashboard</a>
+<a class="text-stone-500 dark:text-zinc-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors px-1 py-1" href="#">Opportunities</a>
+<a class="text-stone-500 dark:text-zinc-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors px-1 py-1" href="#">Users</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer p-2 rounded-full hover:bg-surface-container">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer p-2 rounded-full hover:bg-surface-container">help_outline</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Administrator Profile" data-alt="professional portrait of a confident african male administrator in a modern office setting, warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMRrSbvTQDqz42iBgZY1GrrOHlJ-i5MwMg98mnX8TNssZkVtSr3CDA1jSyzi8sfO2wmYsqlMniPwqPCEhEhHPcVilNroL8SZU8aIfVioLaSrUFeYIFhVP3JeD_zIZsRoT3GbMZhrgwT1VEkHFKOatU4OgLYtQS3C7sJFXXzWTFd-74Pq-NKJsH5SFq2X9atxRpHi9Bn2TMs5ZeonXTVzTkLPHn3ksdd4nhkvbzh6vq5R5reshdBLZshANh1KfzmyRFmI17FapJ2N6X"/>
+</div>
+</div>
+</nav>
+<!-- Sidebar Shell -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-stone-50 dark:bg-zinc-950 py-6 space-y-1 z-30">
+<div class="px-6 mb-8">
+<h2 class="text-lg font-extrabold text-emerald-800 dark:text-emerald-400">Fursafy</h2>
+<p class="text-[11px] uppercase tracking-widest text-outline">Admin Portal</p>
+</div>
+<nav class="flex-1">
+<div class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg px-4 py-2.5 mx-2 flex items-center gap-3 transition-transform duration-150 active:translate-x-1 font-medium text-[13px]">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </div>
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">work_outline</span>
+                Opportunities
+            </div>
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">analytics</span>
+                Analytics
+            </div>
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">group</span>
+                Users
+            </div>
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">payments</span>
+                Financials
+            </div>
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">terminal</span>
+                System Logs
+            </div>
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </div>
+</nav>
+<div class="px-2 pt-4 border-t border-surface-container">
+<div class="text-stone-600 dark:text-zinc-400 px-4 py-2.5 flex items-center gap-3 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-medium text-[13px]">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 p-8 min-h-screen">
+<header class="mb-12 max-w-4xl">
+<h1 class="text-4xl font-extrabold text-on-surface tracking-tight mb-2">Component Preview</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">A curated gallery of the Fursafy Admin Modal system. These components utilize intentional asymmetry and tonal depth to provide a sophisticated management experience.</p>
+</header>
+<!-- Composite Grid for Modals -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-12 items-start">
+<!-- 1. Verify User Modal -->
+<div class="relative group">
+<div class="absolute -inset-2 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-2xl blur-xl transition-all group-hover:blur-2xl"></div>
+<section class="relative bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden max-w-lg border border-outline-variant/15">
+<div class="bg-primary-container p-6 text-on-primary-container flex justify-between items-center">
+<div>
+<h3 class="text-xl font-bold font-headline">Verify User</h3>
+<p class="text-sm opacity-80">Application ID: #VF-9021</p>
+</div>
+<span class="material-symbols-outlined cursor-pointer">close</span>
+</div>
+<div class="p-6 space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img alt="User Avatar" data-alt="close-up portrait of a young east african female entrepreneur with a bright smile, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLIydEcMBHyYmkY7bF-2qAUnPmoGz9-_SJgmuW8TxmsgFvlGj2WH7HGGfjiBlnjQoGIeT0E1xEtqp-jJx6fPmIy_ckNN1_xppewyeumcTXUwsfYUGtyii6ujQY7Ij1_LFcAT1CPw8mpW7uEKzplZNkB5TVW9ogN0WlMd4aAlkF_o9aJnVwrEEnBB6ykahd7LVwgyPCoaRQE09tdBc7UOwqZN4gXE3dN0ROKDTZBYVosS_ymM2VOPKrAZ4UP0qgxymWNUNzyGH4hEYe"/>
+</div>
+<div>
+<h4 class="font-bold text-lg">Zahra Mwinyi</h4>
+<p class="text-sm text-on-surface-variant">Applied: Oct 24, 2023 • Dar es Salaam</p>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-outline">Document Preview</label>
+<div class="relative aspect-[16/10] bg-surface-container-low rounded-lg overflow-hidden border border-outline-variant/20">
+<img alt="ID Document" class="w-full h-full object-cover grayscale-[20%] contrast-[110%]" data-alt="professional closeup of a high-security identification card with holographic elements and clear typography, macro photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM0rox6wUp0th1K6XEQCywbRt6S0jai4irVcf7JmudYXmdL-w8dtDfZYl1ZbvWBiNsskUSZhpj862sJpN6acHU6H8Kw5vwOl-juT9xSz2T6RYhKtQIBPMsZboeRHox7Atp729J3QkZx2dyYNHjRxub807KFXKfEkwbocqa0wm0U0rCTbWg9Uol17r2c_M4M7OP5YJu5qzfN6nuvSIcs8KhCrFeO-cZ7BQWz-75hnGm8TJqldIGPVeNa01H4XAGQmq_DsLdqaQ7UPEJ"/>
+<div class="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-surface-dim/20 backdrop-blur-[2px]">
+<button class="bg-surface-container-lowest text-on-surface px-4 py-2 rounded-full font-bold text-xs flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-sm">zoom_in</span> ENLARGE
+                                    </button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="w-full py-3 px-4 rounded-full border border-error text-error font-bold text-sm hover:bg-error-container transition-colors">
+                                Reject Case
+                            </button>
+<button class="w-full py-3 px-4 rounded-full bg-primary text-on-primary font-bold text-sm hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-lg">verified</span> Approve
+                            </button>
+</div>
+</div>
+</section>
+</div>
+<!-- 2. Suspend Account Modal -->
+<div class="relative group mt-8 xl:mt-0">
+<div class="absolute -inset-2 bg-gradient-to-br from-error/10 to-tertiary/10 rounded-2xl blur-xl transition-all"></div>
+<section class="relative bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden max-w-md border border-outline-variant/15">
+<div class="p-8 space-y-6">
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-error-container flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold font-headline text-on-surface">Suspend Account</h3>
+<p class="text-on-surface-variant px-4">You are about to restrict access for <span class="font-bold text-on-surface">Bakari Juma</span>. This action is reversible.</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-xs font-bold text-outline uppercase tracking-wider">Reason for Suspension</label>
+<select class="w-full bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary text-sm p-3">
+<option>Terms of Service Violation</option>
+<option>Suspicious Payment Activity</option>
+<option>Reported by Multiple Users</option>
+<option>Identity Verification Failure</option>
+<option>Other...</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-bold text-outline uppercase tracking-wider">Internal Notes</label>
+<textarea class="w-full bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary text-sm p-3 placeholder:text-outline" placeholder="Provide detailed context for this action..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex gap-3 pt-2">
+<button class="flex-1 py-3 font-bold text-on-surface-variant hover:bg-surface-container rounded-full transition-colors text-sm">Cancel</button>
+<button class="flex-1 py-3 bg-error text-on-error font-bold rounded-full hover:shadow-lg transition-all text-sm">Confirm Suspension</button>
+</div>
+</div>
+</section>
+</div>
+<!-- 3. Payout Confirmation Modal -->
+<div class="relative group xl:col-span-2 mx-auto mt-8 w-full max-w-2xl">
+<div class="absolute -inset-2 bg-gradient-to-r from-secondary/10 via-primary/10 to-secondary/10 rounded-3xl blur-2xl opacity-50"></div>
+<section class="relative bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden border border-outline-variant/15 flex flex-col md:flex-row">
+<!-- Visual Left Side -->
+<div class="md:w-1/3 bg-primary p-8 text-on-primary flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl mb-4 opacity-50">account_balance_wallet</span>
+<h3 class="text-2xl font-bold font-headline mb-2 leading-tight">Batch Payout Authorization</h3>
+<p class="text-primary-fixed-dim text-sm">Cycle: Oct 15 - Oct 30</p>
+</div>
+<div class="relative z-10 pt-8">
+<div class="text-xs font-bold uppercase tracking-widest opacity-60 mb-1">Total Amount</div>
+<div class="text-3xl font-extrabold">TZS 1.2M</div>
+</div>
+<!-- Abstract texture -->
+<div class="absolute bottom-0 right-0 w-32 h-32 bg-primary-container rounded-full blur-3xl opacity-40 translate-x-12 translate-y-12"></div>
+</div>
+<!-- Content Right Side -->
+<div class="md:w-2/3 p-8 bg-surface-container-lowest">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h4 class="font-bold text-lg mb-1">Confirm Batch Release</h4>
+<p class="text-sm text-on-surface-variant">Review the recipient summary before authorizing the transaction.</p>
+</div>
+</div>
+<div class="space-y-3 mb-8">
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">person</span>
+<span class="text-sm font-medium">32 Approved Recipients</span>
+</div>
+<span class="text-sm font-bold">TZS 850,000</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">account_balance</span>
+<span class="text-sm font-medium">Platform Commissions (15%)</span>
+</div>
+<span class="text-sm font-bold text-secondary">TZS 180,000</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">receipt_long</span>
+<span class="text-sm font-medium">Tax Deductions</span>
+</div>
+<span class="text-sm font-bold">TZS 170,000</span>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">info</span>
+<span class="text-xs">Funds will be available in 2-4 hours.</span>
+</div>
+<div class="flex gap-3 w-full sm:w-auto">
+<button class="px-6 py-3 font-bold text-on-surface-variant hover:bg-surface-container rounded-full text-sm">Modify</button>
+<button class="px-8 py-3 bg-secondary text-on-secondary font-bold rounded-full hover:shadow-xl transition-all text-sm flex items-center gap-2">
+                                    Release Funds <span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Hidden on detail-heavy modal gallery per instructions, but placeholder for structure) -->
+<!-- Suppressed per rules for task-focused screens -->
+</body></html>
