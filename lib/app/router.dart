@@ -27,9 +27,11 @@ import '../features/profile/presentation/screens/provider_profile_screen.dart';
 import '../features/profile/presentation/screens/youth_public_profile_screen.dart';
 import '../features/ratings/presentation/screens/rating_screen.dart';
 import '../features/ratings/presentation/screens/provider_rating_screen.dart';
+import '../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../features/jobs/presentation/screens/map_view_screen.dart';
+import '../core/constants/app_constants.dart';
 
 /// App route names.
 class AppRoutes {
@@ -60,6 +62,7 @@ class AppRoutes {
   static const String applicationDetail = '/applications/:applicationId';
   static const String youthPublicProfile = '/youth/:uid';
   static const String map = '/map';
+  static const String admin = '/admin';
 }
 
 /// GoRouter configuration.
@@ -210,6 +213,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.map,
       builder: (context, state) => const MapViewScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.admin,
+      builder: (context, state) => const AdminDashboardScreen(),
+      redirect: (context, state) {
+        final authState = context.read<AuthBloc>().state;
+        if (authState is AuthAuthenticated && authState.user.role == UserRole.admin) {
+          return null; // Let them through
+        }
+        return AppRoutes.login; // Redirect to login
+      },
     ),
   ],
 );

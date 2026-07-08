@@ -1,10 +1,10 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/home/ashtek/snap/flutter/common/flutter"
-export "FLUTTER_APPLICATION_PATH=/home/ashtek/Documents/PROJECTS/fursafy"
-export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=/home/ashtek/Documents/PROJECTS/fursafy/ios/Flutter/ephemeral/Packages/.packages/FlutterFramework"
+export "FLUTTER_ROOT=C:\flutter"
+export "FLUTTER_APPLICATION_PATH=D:\PROJECTS\fursafy"
+export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=D:\PROJECTS\fursafy\ios\Flutter\ephemeral\Packages\.packages\FlutterFramework"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
-export "FLUTTER_TARGET=lib/main.dart"
+export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
 export "FLUTTER_BUILD_NUMBER=1"
