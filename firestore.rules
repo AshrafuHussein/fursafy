@@ -125,5 +125,18 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isAdmin(); // Only admin can modify the taxonomy
     }
+
+    // 8. Global Configuration collection
+    match /config/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // 9. System Logs collection
+    match /system_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if true; // Allow client events to be logged, including bootstrapping logs
+      allow update, delete: if false; // Logs are write-once/immutable
+    }
   }
 }

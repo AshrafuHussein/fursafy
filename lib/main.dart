@@ -23,10 +23,29 @@ import 'package:fursafy/features/notifications/presentation/bloc/notification_bl
 import 'package:fursafy/core/services/notification_service.dart';
 import 'package:fursafy/core/location/location_bloc.dart';
 import 'package:fursafy/core/location/location_event.dart';
+import 'package:fursafy/features/admin/data/repositories/admin_repository_impl.dart';
+import 'package:fursafy/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:fursafy/core/config/env_config.dart';
+import 'package:fursafy/features/admin/presentation/bloc/admin_event.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  debugPrint('=== EnvConfig Debug ===');
+  debugPrint('FIREBASE_API_KEY: ${EnvConfig.firebaseApiKey}');
+  debugPrint('FIREBASE_WEB_API_KEY: ${EnvConfig.firebaseWebApiKey}');
+  debugPrint('FIREBASE_PROJECT_ID: ${EnvConfig.firebaseProjectId}');
+  debugPrint('=======================');
+
+  if (kIsWeb && EnvConfig.firebaseWebApiKey.isEmpty) {
+    debugPrint('================================================================');
+    debugPrint('[CRITICAL WARNING] FIREBASE_WEB_API_KEY is empty!');
+    debugPrint('Firebase Web functions will fail. Please run using:');
+    debugPrint('  flutter run -d edge --dart-define-from-file=.env');
+    debugPrint('================================================================');
+  }
+
   await Hive.initFlutter();
 
   // Lock orientation to portrait
@@ -52,6 +71,7 @@ void main() async {
     );
     await DatabaseSeeder.seedJobsIfNeeded();
     await DatabaseSeeder.seedSkillsTaxonomyIfNeeded();
+    await DatabaseSeeder.seedSystemLogsIfNeeded();
   } catch (e) {
     debugPrint('Firebase init error: $e');
   }
@@ -107,6 +127,11 @@ void main() async {
           create: (context) => LocationBloc()
             ..add(const LocationRequested())
             ..add(const LocationBackgroundStarted()),
+        ),
+        BlocProvider<AdminBloc>(
+          create: (context) => AdminBloc(
+            adminRepository: AdminRepositoryImpl(),
+          )..add(AdminStatsFetchRequested()),
         ),
       ],
       child: const FursafyApp(),

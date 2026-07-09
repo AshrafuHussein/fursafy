@@ -137,4 +137,59 @@ class DatabaseSeeder {
       debugPrint('[DatabaseSeeder] Error seeding skills_taxonomy: $e');
     }
   }
+
+  static Future<void> seedSystemLogsIfNeeded() async {
+    try {
+      final logsColl = FirebaseFirestore.instance.collection('system_logs');
+      final logsSnap = await logsColl.limit(1).get();
+      if (logsSnap.docs.isEmpty) {
+        final batch = FirebaseFirestore.instance.batch();
+        final sampleLogs = [
+          {
+            'eventId': 'EX-9021',
+            'severity': 'critical',
+            'title': 'Database Connection Timeout',
+            'desc': 'Failed to establish handshake with secondary read-replica-01',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'US-1120',
+            'severity': 'info',
+            'title': 'User Login Successful',
+            'desc': 'Administrator logged in from IP 197.250.2.14',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'CF-4412',
+            'severity': 'info',
+            'title': 'Rating Recalculation Triggered',
+            'desc': 'updateRatingAverage cloud function successfully triggered for review ID review_081',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'JB-8821',
+            'severity': 'info',
+            'title': 'New Job Listed',
+            'desc': 'Provider TechVerve Solutions listed a new opportunity for Software Architect',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'SE-2190',
+            'severity': 'warning',
+            'title': 'High Load Warning',
+            'desc': 'Firestore active operations limit has reached 85% of allocated capacity',
+            'timestamp': Timestamp.now(),
+          }
+        ];
+
+        for (var log in sampleLogs) {
+          batch.set(logsColl.doc(), log);
+        }
+        await batch.commit();
+        debugPrint('[DatabaseSeeder] Successfully seeded system logs.');
+      }
+    } catch (e) {
+      debugPrint('[DatabaseSeeder] Error seeding system logs: $e');
+    }
+  }
 }
