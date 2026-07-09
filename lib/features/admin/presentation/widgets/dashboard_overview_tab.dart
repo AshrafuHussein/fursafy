@@ -8,6 +8,7 @@ class DashboardOverviewTab extends StatelessWidget {
   final int completedJobs;
   final int flaggedJobsCount;
   final double totalTxVolume;
+  final List<Map<String, dynamic>> weeklyJobsData;
   final VoidCallback onVerifyUsers;
   final VoidCallback onModerateListings;
   final VoidCallback onSystemLogs;
@@ -20,6 +21,7 @@ class DashboardOverviewTab extends StatelessWidget {
     required this.completedJobs,
     required this.flaggedJobsCount,
     required this.totalTxVolume,
+    required this.weeklyJobsData,
     required this.onVerifyUsers,
     required this.onModerateListings,
     required this.onSystemLogs,
@@ -150,25 +152,23 @@ class DashboardOverviewTab extends StatelessWidget {
                     const SizedBox(height: 40),
 
                     // Custom Area Chart bars representation
-                    SizedBox(
+                     SizedBox(
                       height: 180,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _chartBar(0.40),
-                          _chartBar(0.55),
-                          _chartBar(0.45),
-                          _chartBar(0.70),
-                          _chartBar(0.65),
-                          _chartBar(0.85),
-                          _chartBar(0.75),
-                          _chartBar(0.95),
-                          _chartBar(0.80),
-                          _chartBar(0.60),
-                          _chartBar(0.85),
-                          _chartBar(1.0, isHighlight: true, label: '218'),
-                        ],
+                        children: weeklyJobsData.isEmpty
+                            ? List.generate(12, (index) => _chartBar(0.1))
+                            : weeklyJobsData.map((data) {
+                                final scale = (data['scale'] as num?)?.toDouble() ?? 0.1;
+                                final count = (data['count'] as num?)?.toInt() ?? 0;
+                                final isLast = weeklyJobsData.indexOf(data) == weeklyJobsData.length - 1;
+                                return _chartBar(
+                                  scale,
+                                  isHighlight: isLast,
+                                  label: count > 0 ? '$count' : null,
+                                );
+                              }).toList(),
                       ),
                     ),
                     const SizedBox(height: 12),

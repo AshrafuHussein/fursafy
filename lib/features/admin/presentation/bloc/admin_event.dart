@@ -48,3 +48,5 @@ class AdminInviteRequested extends AdminEvent {
   @override
   List<Object?> get props => [email];
 }
+
+class AdminWeeklySignupsFetchRequested extends AdminEvent {}

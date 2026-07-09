@@ -20,10 +20,20 @@ abstract class AdminRepository {
   Future<({
     Failure? failure,
     int totalUsers,
+    int totalProviders,
     int totalJobs,
     int totalApplications,
     int completedJobs,
     int flaggedJobsCount,
     double totalTxVolume
   })> fetchStats();
+
+  /// Fetches signups from the last 7 days grouped by weekday.
+  Future<({Failure? failure, List<Map<String, dynamic>> signupData})> fetchWeeklySignupData();
+
+  /// Fetches jobs posted over the last 12 weeks.
+  Future<({Failure? failure, List<Map<String, dynamic>> jobsData})> fetchWeeklyJobsData();
+
+  /// Streams the 4 most recent events from the system logs.
+  Stream<List<Map<String, dynamic>>> getRecentSystemLogs();
 }

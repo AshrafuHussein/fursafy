@@ -25,27 +25,11 @@ import 'package:fursafy/core/location/location_bloc.dart';
 import 'package:fursafy/core/location/location_event.dart';
 import 'package:fursafy/features/admin/data/repositories/admin_repository_impl.dart';
 import 'package:fursafy/features/admin/presentation/bloc/admin_bloc.dart';
-import 'package:fursafy/core/config/env_config.dart';
 import 'package:fursafy/features/admin/presentation/bloc/admin_event.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  debugPrint('=== EnvConfig Debug ===');
-  debugPrint('FIREBASE_API_KEY: ${EnvConfig.firebaseApiKey}');
-  debugPrint('FIREBASE_WEB_API_KEY: ${EnvConfig.firebaseWebApiKey}');
-  debugPrint('FIREBASE_PROJECT_ID: ${EnvConfig.firebaseProjectId}');
-  debugPrint('=======================');
-
-  if (kIsWeb && EnvConfig.firebaseWebApiKey.isEmpty) {
-    debugPrint('================================================================');
-    debugPrint('[CRITICAL WARNING] FIREBASE_WEB_API_KEY is empty!');
-    debugPrint('Firebase Web functions will fail. Please run using:');
-    debugPrint('  flutter run -d edge --dart-define-from-file=.env');
-    debugPrint('================================================================');
-  }
-
   await Hive.initFlutter();
 
   // Lock orientation to portrait

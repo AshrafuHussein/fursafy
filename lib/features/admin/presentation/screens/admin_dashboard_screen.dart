@@ -43,26 +43,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void _refresh() {
     context.read<AdminBloc>().add(AdminStatsFetchRequested());
     context.read<AdminBloc>().add(AdminPlatformConfigLoadRequested());
+    context.read<AdminBloc>().add(AdminWeeklySignupsFetchRequested());
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AdminBloc, AdminState>(
       listener: (context, state) {
-        if (state is AdminActionSuccess) {
+        if (state.successMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.successMessage!),
               backgroundColor: FursafyTheme.primary,
             ),
           );
-          // Auto refresh stats/config on successful operations
-          context.read<AdminBloc>().add(AdminStatsFetchRequested());
-          context.read<AdminBloc>().add(AdminPlatformConfigLoadRequested());
-        } else if (state is AdminFailure) {
+          // Auto refresh stats/config/weekly on successful operations
+          _refresh();
+        } else if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.errorMessage!),
               backgroundColor: FursafyTheme.error,
             ),
           );
@@ -95,55 +95,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ),
                   Expanded(
                     child: BlocBuilder<AdminBloc, AdminState>(
-                      buildWhen: (previous, current) {
-                        // Rebuild when we receive stats or configurations
-                        return current is AdminStatsLoaded ||
-                            current is AdminPlatformConfigLoaded ||
-                            current is AdminLoading ||
-                            current is AdminInitial;
-                      },
                       builder: (context, state) {
-                        if (state is AdminLoading && _activeTabIndex != 1 && _activeTabIndex != 3 && _activeTabIndex != 5) {
+                        if (state.isLoading && _activeTabIndex != 1 && _activeTabIndex != 3 && _activeTabIndex != 5) {
                           // Only show full-screen loader for non-streaming pages on initial loads
                           return const Center(child: CircularProgressIndicator(color: FursafyTheme.primary));
                         }
 
-                        // Extract parameters safely from bloc state or default
-                        int totalUsers = 0;
-                        int totalJobs = 0;
-                        int totalApplications = 0;
-                        int completedJobs = 0;
-                        int flaggedJobsCount = 0;
-                        double totalTxVolume = 0.0;
-                        Map<String, dynamic> platformConfig = {};
-
-                        final bloc = context.read<AdminBloc>();
-                        // If current state doesn't have data, we search the bloc history/cache if possible,
-                        // otherwise fallback to defaults or trigger reload
-                        if (bloc.state is AdminStatsLoaded) {
-                          final stats = bloc.state as AdminStatsLoaded;
-                          totalUsers = stats.totalUsers;
-                          totalJobs = stats.totalJobs;
-                          totalApplications = stats.totalApplications;
-                          completedJobs = stats.completedJobs;
-                          flaggedJobsCount = stats.flaggedJobsCount;
-                          totalTxVolume = stats.totalTxVolume;
-                        }
-                        if (bloc.state is AdminPlatformConfigLoaded) {
-                          platformConfig = (bloc.state as AdminPlatformConfigLoaded).config;
-                        }
-
                         return SingleChildScrollView(
                           padding: const EdgeInsets.all(40),
-                          child: _buildTabView(
-                            totalUsers: totalUsers,
-                            totalJobs: totalJobs,
-                            totalApplications: totalApplications,
-                            completedJobs: completedJobs,
-                            flaggedJobsCount: flaggedJobsCount,
-                            totalTxVolume: totalTxVolume,
-                            platformConfig: platformConfig,
-                          ),
+                          child: _buildTabView(state),
                         );
                       },
                     ),
@@ -157,24 +117,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildTabView({
-    required int totalUsers,
-    required int totalJobs,
-    required int totalApplications,
-    required int completedJobs,
-    required int flaggedJobsCount,
-    required double totalTxVolume,
-    required Map<String, dynamic> platformConfig,
-  }) {
+  Widget _buildTabView(AdminState state) {
     switch (_activeTabIndex) {
       case 0:
         return DashboardOverviewTab(
-          totalUsers: totalUsers,
-          totalJobs: totalJobs,
-          totalApplications: totalApplications,
-          completedJobs: completedJobs,
-          flaggedJobsCount: flaggedJobsCount,
-          totalTxVolume: totalTxVolume,
+          totalUsers: state.totalUsers,
+          totalJobs: state.totalJobs,
+          totalApplications: state.totalApplications,
+          completedJobs: state.completedJobs,
+          flaggedJobsCount: state.flaggedJobsCount,
+          totalTxVolume: state.totalTxVolume,
+          weeklyJobsData: state.weeklyJobsData,
           onVerifyUsers: () => setState(() => _activeTabIndex = 3),
           onModerateListings: () => setState(() => _activeTabIndex = 1),
           onSystemLogs: () => setState(() => _activeTabIndex = 5),
@@ -190,9 +143,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         );
       case 2:
         return AnalyticsReportsTab(
-          totalJobs: totalJobs,
-          completedJobs: completedJobs,
-          totalApplications: totalApplications,
+          totalJobs: state.totalJobs,
+          completedJobs: state.completedJobs,
+          totalApplications: state.totalApplications,
+          totalProviders: state.totalProviders,
         );
       case 3:
         return UserManagementTab(
@@ -207,17 +161,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           },
         );
       case 4:
-        final platformFee = (platformConfig['platformFee'] ?? 3.0) as double;
+        final platformFee = (state.platformConfig['platformFee'] ?? 3.0) as double;
         return FinancialOversightTab(
-          totalTxVolume: totalTxVolume,
+          totalTxVolume: state.totalTxVolume,
           platformFeesPercentage: platformFee,
-          completedJobs: completedJobs,
+          completedJobs: state.completedJobs,
         );
       case 5:
         return const SystemLogsTab();
       case 6:
         return ConfigurationHubTab(
-          initialConfig: platformConfig,
+          initialConfig: state.platformConfig,
           onSaveConfig: (updatedConfig) {
             context.read<AdminBloc>().add(AdminPlatformConfigSaveRequested(updatedConfig));
           },

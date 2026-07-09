@@ -8,26 +8,29 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   AdminBloc({required AdminRepository adminRepository})
       : _repo = adminRepository,
-        super(AdminInitial()) {
+        super(AdminState.initial()) {
     on<AdminStatsFetchRequested>(_onFetchStats);
     on<AdminPlatformConfigLoadRequested>(_onLoadConfig);
     on<AdminPlatformConfigSaveRequested>(_onSaveConfig);
     on<AdminUserStatusToggleRequested>(_onToggleUserStatus);
     on<AdminJobModerateRequested>(_onModerateJob);
     on<AdminInviteRequested>(_onInviteAdmin);
+    on<AdminWeeklySignupsFetchRequested>(_onFetchWeeklySignups);
   }
 
   Future<void> _onFetchStats(
     AdminStatsFetchRequested event,
     Emitter<AdminState> emit,
   ) async {
-    emit(AdminLoading());
+    emit(state.copyWith(isLoading: true));
     final result = await _repo.fetchStats();
     if (result.failure != null) {
-      emit(AdminFailure(result.failure!.message));
+      emit(state.copyWith(isLoading: false, errorMessage: result.failure!.message));
     } else {
-      emit(AdminStatsLoaded(
+      emit(state.copyWith(
+        isLoading: false,
         totalUsers: result.totalUsers,
+        totalProviders: result.totalProviders,
         totalJobs: result.totalJobs,
         totalApplications: result.totalApplications,
         completedJobs: result.completedJobs,
@@ -41,12 +44,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     AdminPlatformConfigLoadRequested event,
     Emitter<AdminState> emit,
   ) async {
-    emit(AdminLoading());
+    emit(state.copyWith(isLoading: true));
     final result = await _repo.loadPlatformConfig();
     if (result.failure != null) {
-      emit(AdminFailure(result.failure!.message));
+      emit(state.copyWith(isLoading: false, errorMessage: result.failure!.message));
     } else {
-      emit(AdminPlatformConfigLoaded(result.config ?? {}));
+      emit(state.copyWith(
+        isLoading: false,
+        platformConfig: result.config ?? {},
+      ));
     }
   }
 
@@ -54,12 +60,16 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     AdminPlatformConfigSaveRequested event,
     Emitter<AdminState> emit,
   ) async {
-    emit(AdminLoading());
+    emit(state.copyWith(isLoading: true));
     final failure = await _repo.savePlatformConfig(event.config);
     if (failure != null) {
-      emit(AdminFailure(failure.message));
+      emit(state.copyWith(isLoading: false, errorMessage: failure.message));
     } else {
-      emit(const AdminActionSuccess('Configuration saved successfully and synced to Firestore!'));
+      emit(state.copyWith(
+        isLoading: false,
+        platformConfig: event.config,
+        successMessage: 'Configuration saved successfully and synced to Firestore!',
+      ));
     }
   }
 
@@ -67,13 +77,16 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     AdminUserStatusToggleRequested event,
     Emitter<AdminState> emit,
   ) async {
-    emit(AdminLoading());
+    emit(state.copyWith(isLoading: true));
     final failure = await _repo.toggleUserStatus(event.uid, event.currentStatus);
     if (failure != null) {
-      emit(AdminFailure(failure.message));
+      emit(state.copyWith(isLoading: false, errorMessage: failure.message));
     } else {
       final newStatus = event.currentStatus == 'suspended' ? 'active' : 'suspended';
-      emit(AdminActionSuccess('User status updated to $newStatus'));
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: 'User status updated to $newStatus',
+      ));
     }
   }
 
@@ -81,12 +94,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     AdminJobModerateRequested event,
     Emitter<AdminState> emit,
   ) async {
-    emit(AdminLoading());
+    emit(state.copyWith(isLoading: true));
     final failure = await _repo.moderateJob(event.jobId, event.action);
     if (failure != null) {
-      emit(AdminFailure(failure.message));
+      emit(state.copyWith(isLoading: false, errorMessage: failure.message));
     } else {
-      emit(AdminActionSuccess('Job Listing ${event.action} success'));
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: 'Job Listing ${event.action} success',
+      ));
     }
   }
 
@@ -94,12 +110,31 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     AdminInviteRequested event,
     Emitter<AdminState> emit,
   ) async {
-    emit(AdminLoading());
+    emit(state.copyWith(isLoading: true));
     final failure = await _repo.inviteAdmin(event.email);
     if (failure != null) {
-      emit(AdminFailure(failure.message));
+      emit(state.copyWith(isLoading: false, errorMessage: failure.message));
     } else {
-      emit(AdminActionSuccess('Invitation sent to ${event.email}'));
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: 'Invitation sent to ${event.email}',
+      ));
+    }
+  }
+
+  Future<void> _onFetchWeeklySignups(
+    AdminWeeklySignupsFetchRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    final result = await _repo.fetchWeeklyJobsData();
+    if (result.failure != null) {
+      emit(state.copyWith(isLoading: false, errorMessage: result.failure!.message));
+    } else {
+      emit(state.copyWith(
+        isLoading: false,
+        weeklyJobsData: result.jobsData,
+      ));
     }
   }
 }

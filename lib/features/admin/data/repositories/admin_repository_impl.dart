@@ -122,6 +122,7 @@ class AdminRepositoryImpl implements AdminRepository {
   Future<({
     Failure? failure,
     int totalUsers,
+    int totalProviders,
     int totalJobs,
     int totalApplications,
     int completedJobs,
@@ -138,6 +139,14 @@ class AdminRepositoryImpl implements AdminRepository {
       final usersSnap = results[0];
       final jobsSnap = results[1];
       final appsSnap = results[2];
+
+      int providerCount = 0;
+      for (var doc in usersSnap.docs) {
+        final data = doc.data();
+        if (data['role'] == 'provider') {
+          providerCount++;
+        }
+      }
 
       int completedCount = 0;
       double txVolume = 0.0;
@@ -160,6 +169,7 @@ class AdminRepositoryImpl implements AdminRepository {
       return (
         failure: null,
         totalUsers: usersSnap.docs.length,
+        totalProviders: providerCount,
         totalJobs: jobsSnap.docs.length,
         totalApplications: appsSnap.docs.length,
         completedJobs: completedCount,
@@ -170,6 +180,7 @@ class AdminRepositoryImpl implements AdminRepository {
       return (
         failure: ServerFailure(message: e.toString()),
         totalUsers: 0,
+        totalProviders: 0,
         totalJobs: 0,
         totalApplications: 0,
         completedJobs: 0,
@@ -177,5 +188,119 @@ class AdminRepositoryImpl implements AdminRepository {
         totalTxVolume: 0.0,
       );
     }
+  }
+
+  @override
+  Future<({Failure? failure, List<Map<String, dynamic>> signupData})> fetchWeeklySignupData() async {
+    try {
+      final now = DateTime.now();
+      final sevenDaysAgo = now.subtract(const Duration(days: 7));
+      final query = await _firestore.collection(FirestorePaths.users)
+          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(sevenDaysAgo))
+          .get();
+
+      final Map<String, int> counts = {
+        'Mon': 0,
+        'Tue': 0,
+        'Wed': 0,
+        'Thu': 0,
+        'Fri': 0,
+        'Sat': 0,
+        'Sun': 0,
+      };
+
+      for (var doc in query.docs) {
+        final data = doc.data();
+        final timestamp = data['createdAt'] as Timestamp?;
+        if (timestamp != null) {
+          final date = timestamp.toDate();
+          final weekday = _getWeekdayLabel(date.weekday);
+          counts[weekday] = (counts[weekday] ?? 0) + 1;
+        }
+      }
+
+      int maxVal = counts.values.fold(0, (max, val) => val > max ? val : max);
+      if (maxVal == 0) maxVal = 1;
+
+      final List<Map<String, dynamic>> result = [];
+      final daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      for (var day in daysOrder) {
+        final count = counts[day] ?? 0;
+        result.add({
+          'day': day,
+          'count': count,
+          'scale': count / maxVal,
+        });
+      }
+
+      return (failure: null, signupData: result);
+    } catch (e) {
+      return (failure: ServerFailure(message: e.toString()), signupData: <Map<String, dynamic>>[]);
+    }
+  }
+
+  String _getWeekdayLabel(int dayIndex) {
+    switch (dayIndex) {
+      case DateTime.monday: return 'Mon';
+      case DateTime.tuesday: return 'Tue';
+      case DateTime.wednesday: return 'Wed';
+      case DateTime.thursday: return 'Thu';
+      case DateTime.friday: return 'Fri';
+      case DateTime.saturday: return 'Sat';
+      case DateTime.sunday: return 'Sun';
+      default: return 'Mon';
+    }
+  }
+
+  @override
+  Future<({Failure? failure, List<Map<String, dynamic>> jobsData})> fetchWeeklyJobsData() async {
+    try {
+      final now = DateTime.now();
+      final twelveWeeksAgo = now.subtract(const Duration(days: 84));
+      final query = await _firestore.collection(FirestorePaths.jobs)
+          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(twelveWeeksAgo))
+          .get();
+
+      final List<int> weeklyCounts = List.filled(12, 0);
+
+      for (var doc in query.docs) {
+        final data = doc.data();
+        final timestamp = data['createdAt'] as Timestamp?;
+        if (timestamp != null) {
+          final date = timestamp.toDate();
+          final diffDays = now.difference(date).inDays;
+          final weekIndex = diffDays ~/ 7;
+          if (weekIndex >= 0 && weekIndex < 12) {
+            weeklyCounts[11 - weekIndex]++;
+          }
+        }
+      }
+
+      int maxVal = weeklyCounts.fold(0, (max, val) => val > max ? val : max);
+      if (maxVal == 0) maxVal = 1;
+
+      final List<Map<String, dynamic>> result = [];
+      for (int i = 0; i < 12; i++) {
+        final count = weeklyCounts[i];
+        result.add({
+          'weekLabel': i == 11 ? 'Current' : 'Week ${i + 1}',
+          'count': count,
+          'scale': count / maxVal,
+        });
+      }
+
+      return (failure: null, jobsData: result);
+    } catch (e) {
+      return (failure: ServerFailure(message: e.toString()), jobsData: <Map<String, dynamic>>[]);
+    }
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> getRecentSystemLogs() {
+    return _firestore.collection('system_logs')
+        .orderBy('timestamp', descending: true)
+        .limit(4)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList());
   }
 }

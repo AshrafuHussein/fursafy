@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/app/theme.dart';
+import 'package:fursafy/core/constants/app_constants.dart';
 
 class AnalyticsReportsTab extends StatelessWidget {
   final int totalJobs;
   final int completedJobs;
   final int totalApplications;
+  final int totalProviders;
 
   const AnalyticsReportsTab({
     super.key,
     required this.totalJobs,
     required this.completedJobs,
     required this.totalApplications,
+    required this.totalProviders,
   });
 
   @override
@@ -47,7 +51,7 @@ class AnalyticsReportsTab extends StatelessWidget {
             _metricBentoCard(
               icon: Icons.business_center,
               label: 'Active Providers',
-              value: '180',
+              value: '$totalProviders',
               trend: 'Optimal',
               trendColor: FursafyTheme.secondary,
             ),
@@ -70,22 +74,75 @@ class AnalyticsReportsTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Top Performing Sectors',
-                style: FursafyTheme.headlineStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              _sectorRow('Technology & Software Design', 0.85, '85% active matches'),
-              const SizedBox(height: 16),
-              _sectorRow('Academic Tutoring', 0.65, '65% active matches'),
-              const SizedBox(height: 16),
-              _sectorRow('Home Cleaning & Services', 0.50, '50% active matches'),
-              const SizedBox(height: 16),
-              _sectorRow('Logistics & Delivery', 0.35, '35% active matches'),
-            ],
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance.collection(FirestorePaths.jobs).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 100,
+                  child: Center(child: CircularProgressIndicator(color: FursafyTheme.primary)),
+                );
+              }
+              final jobs = snapshot.data?.docs ?? [];
+              
+              final counts = <String, int>{
+                'Tech': 0,
+                'Tutoring': 0,
+                'Cleaning': 0,
+                'Construction': 0,
+                'Other': 0,
+              };
+              
+              for (var doc in jobs) {
+                final data = doc.data();
+                final category = data['category'] as String? ?? 'Other';
+                String mappedKey = 'Other';
+                if (category.toLowerCase().contains('tech')) {
+                  mappedKey = 'Tech';
+                } else if (category.toLowerCase().contains('tutor') || category.toLowerCase().contains('teach')) {
+                  mappedKey = 'Tutoring';
+                } else if (category.toLowerCase().contains('clean')) {
+                  mappedKey = 'Cleaning';
+                } else if (category.toLowerCase().contains('construct') || category.toLowerCase().contains('ujenzi')) {
+                  mappedKey = 'Construction';
+                }
+                
+                counts[mappedKey] = (counts[mappedKey] ?? 0) + 1;
+              }
+              
+              final totalActive = jobs.length;
+              final sortedSectors = counts.entries.toList()
+                ..sort((a, b) => b.value.compareTo(a.value));
+                
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Top Performing Sectors',
+                    style: FursafyTheme.headlineStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ...sortedSectors.map((entry) {
+                    final category = entry.key;
+                    final count = entry.value;
+                    final ratio = totalActive > 0 ? count / totalActive : 0.0;
+                    final percentage = (ratio * 100).toStringAsFixed(0);
+                    
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _sectorRow(
+                        category == 'Tech' ? 'Technology & Software Design' :
+                        category == 'Tutoring' ? 'Academic Tutoring' :
+                        category == 'Cleaning' ? 'Home Cleaning & Services' :
+                        category == 'Construction' ? 'Construction & Hard Labor' : 'Other Sectors & Miscellaneous',
+                        ratio,
+                        '$percentage% active matches ($count jobs)',
+                      ),
+                    );
+                  }),
+                ],
+              );
+            }
           ),
         ),
       ],
