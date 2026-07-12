@@ -22,6 +22,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
   bool _loading = true;
   int _totalJobsPosted = 0;
   int _jobsFilled = 0;
+  int _trustedYouthCount = 0;
   Map<String, int> _applicantCounts = {};
 
   @override
@@ -66,8 +67,8 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
           .limit(5)
           .get();
 
-      final closedCount = allJobsSnap.docs
-          .where((d) => d.data()['status'] == 'closed')
+      final filledCount = allJobsSnap.docs
+          .where((d) => d.data()['status'] == 'filled')
           .length;
 
       final jobs = activeJobSnap.docs
@@ -87,12 +88,30 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
 
       setState(() {
         _totalJobsPosted = allJobsSnap.docs.length;
-        _jobsFilled = closedCount;
+        _jobsFilled = filledCount;
         _activeJobs = jobs;
         _applicantCounts = applicantCounts;
       });
     } catch (e) {
       debugPrint('ProviderProfileScreen._loadProfile jobs query error: $e');
+    }
+
+    // 3. Fetch unique youth applicant counts
+    try {
+      final uniqueYouthSnap = await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .where('providerId', isEqualTo: uid)
+          .get();
+      final uniqueYouthCount = uniqueYouthSnap.docs
+          .map((d) => d.data()['youthId'] as String?)
+          .where((id) => id != null)
+          .toSet()
+          .length;
+      setState(() {
+        _trustedYouthCount = uniqueYouthCount;
+      });
+    } catch (e) {
+      debugPrint('ProviderProfileScreen._loadProfile unique youth error: $e');
     }
 
     setState(() {
@@ -303,11 +322,11 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
   }
 
   Widget _buildCoverHero(BuildContext context) {
-    final name = _userData?['displayName'] ?? 'Company Name';
+    final name = _userData?['displayName'] ?? 'No Name Provided';
     final avatarUrl = _userData?['avatarUrl'] as String?;
     final industry =
         _userData?['industry'] as String? ?? 'Opportunity Provider';
-    final location = _userData?['locationName'] ?? 'Dar es Salaam, Tanzania';
+    final location = _userData?['locationName'] ?? 'No location specified';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,7 +566,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
   Widget _buildAboutSection() {
     final bio =
         _userData?['bio'] ??
-        'A leading opportunity provider committed to empowering youth through meaningful short-term opportunities and professional apprenticeships.';
+        'No bio added yet.';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -598,73 +617,92 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    // Stacked avatars
-                    SizedBox(
-                      width: 64,
-                      height: 32,
-                      child: Stack(
+                child: _trustedYouthCount > 0
+                    ? Row(
                         children: [
-                          Positioned(
-                            left: 0,
-                            child: Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: FursafyTheme.primaryFixedDim,
-                                border: Border.all(
-                                  color: FursafyTheme.surfaceContainerLowest,
-                                  width: 2,
+                          // Stacked avatars
+                          SizedBox(
+                            width: 64,
+                            height: 32,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: 0,
+                                  child: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: FursafyTheme.primaryFixedDim,
+                                      border: Border.all(
+                                        color: FursafyTheme.surfaceContainerLowest,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Positioned(
+                                  left: 16,
+                                  child: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: FursafyTheme.secondaryFixedDim,
+                                      border: Border.all(
+                                        color: FursafyTheme.surfaceContainerLowest,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 32,
+                                  child: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: FursafyTheme.tertiaryFixedDim,
+                                      border: Border.all(
+                                        color: FursafyTheme.surfaceContainerLowest,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Positioned(
-                            left: 16,
-                            child: Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: FursafyTheme.secondaryFixedDim,
-                                border: Border.all(
-                                  color: FursafyTheme.surfaceContainerLowest,
-                                  width: 2,
-                                ),
-                              ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Trusted by $_trustedYouthCount Youth',
+                            style: FursafyTheme.labelStyle.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: FursafyTheme.outline,
                             ),
                           ),
-                          Positioned(
-                            left: 32,
-                            child: Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: FursafyTheme.tertiaryFixedDim,
-                                border: Border.all(
-                                  color: FursafyTheme.surfaceContainerLowest,
-                                  width: 2,
-                                ),
-                              ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          const Icon(
+                            Icons.group_outlined,
+                            color: FursafyTheme.outline,
+                            size: 22,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'No youth interactions yet',
+                            style: FursafyTheme.labelStyle.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: FursafyTheme.outline,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Trusted by 2k+ Youth',
-                      style: FursafyTheme.labelStyle.copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: FursafyTheme.outline,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

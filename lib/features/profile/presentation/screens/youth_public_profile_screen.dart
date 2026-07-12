@@ -32,7 +32,7 @@ class _YouthPublicProfileScreenState extends State<YouthPublicProfileScreen> {
     try {
       final db = FirebaseFirestore.instance;
 
-      // Load user + youth profile in parallel
+      // Load user + youth profile + ratings + real completed count in parallel
       final results = await Future.wait([
         db.collection(FirestorePaths.users).doc(widget.uid).get(),
         db.collection(FirestorePaths.youthProfiles).doc(widget.uid).get(),
@@ -42,11 +42,19 @@ class _YouthPublicProfileScreenState extends State<YouthPublicProfileScreen> {
             .orderBy('createdAt', descending: true)
             .limit(10)
             .get(),
+        db
+            .collection(FirestorePaths.applications)
+            .where('youthId', isEqualTo: widget.uid)
+            .where('status', isEqualTo: 'accepted')
+            .count()
+            .get(),
       ]);
 
       final userDoc = results[0] as DocumentSnapshot<Map<String, dynamic>>;
       final profileDoc = results[1] as DocumentSnapshot<Map<String, dynamic>>;
       final ratingsSnap = results[2] as QuerySnapshot<Map<String, dynamic>>;
+      final completedSnap = results[3] as AggregateQuerySnapshot;
+      final realCompletedCount = completedSnap.count ?? 0;
 
       if (!mounted) return;
 
@@ -57,7 +65,14 @@ class _YouthPublicProfileScreenState extends State<YouthPublicProfileScreen> {
         if (profileDoc.exists && profileDoc.data() != null) {
           final data = profileDoc.data()!;
           data['uid'] = widget.uid;
+          data['jobsCompleted'] = realCompletedCount;
+          data['completedJobsCount'] = realCompletedCount;
           _youthProfile = YouthProfile.fromMap(data);
+        } else {
+          _youthProfile = YouthProfile(
+            uid: widget.uid,
+            jobsCompleted: realCompletedCount,
+          );
         }
         _reviews = ratingsSnap.docs
             .map((d) => RatingEntity.fromMap(d.id, d.data()))

@@ -44,9 +44,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .doc(uid)
           .get();
 
+      // Query real completed jobs count
+      final completedSnap = await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .where('youthId', isEqualTo: uid)
+          .where('status', isEqualTo: 'accepted')
+          .count()
+          .get();
+      final realCompletedCount = completedSnap.count ?? 0;
+
+      // Update in background if out of sync
+      final currentDocCount = (profileDoc.data()?['jobsCompleted'] as num?)?.toInt() ??
+          (profileDoc.data()?['completedJobsCount'] as num?)?.toInt() ??
+          0;
+      if (currentDocCount != realCompletedCount) {
+        await FirebaseFirestore.instance
+            .collection(FirestorePaths.youthProfiles)
+            .doc(uid)
+            .set({
+          'jobsCompleted': realCompletedCount,
+          'completedJobsCount': realCompletedCount,
+        }, SetOptions(merge: true));
+      }
+
       setState(() {
         _userData = userDoc.data();
         _profileData = profileDoc.data();
+        if (_profileData != null) {
+          _profileData!['jobsCompleted'] = realCompletedCount;
+          _profileData!['completedJobsCount'] = realCompletedCount;
+        } else {
+          _profileData = {
+            'jobsCompleted': realCompletedCount,
+            'completedJobsCount': realCompletedCount,
+          };
+        }
         _loading = false;
       });
     } catch (_) {
@@ -584,7 +616,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatsGrid() {
-    final jobsCompleted = _profileData?['completedJobsCount'] ?? 0;
+    final jobsCompleted = _profileData?['jobsCompleted'] ?? _profileData?['completedJobsCount'] ?? 0;
     final clientRating = _profileData?['averageRating'] ?? 0.0;
     final ratingStr = clientRating is num
         ? clientRating.toDouble().toStringAsFixed(2)

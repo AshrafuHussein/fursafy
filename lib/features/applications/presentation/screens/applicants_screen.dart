@@ -89,6 +89,27 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
         final i = _applicants.indexWhere((a) => a.id == app.id);
         if (i != -1) _applicants[i] = app.copyWith(status: status);
       });
+
+      // Update youth's completed jobs count in their profile document
+      try {
+        final completedSnap = await FirebaseFirestore.instance
+            .collection(FirestorePaths.applications)
+            .where('youthId', isEqualTo: app.youthId)
+            .where('status', isEqualTo: 'accepted')
+            .count()
+            .get();
+        final realCompletedCount = completedSnap.count ?? 0;
+
+        await FirebaseFirestore.instance
+            .collection(FirestorePaths.youthProfiles)
+            .doc(app.youthId)
+            .set({
+          'jobsCompleted': realCompletedCount,
+          'completedJobsCount': realCompletedCount,
+        }, SetOptions(merge: true));
+      } catch (e) {
+        debugPrint('[Applicants] Failed to update youth completed jobs count: $e');
+      }
     } catch (e, stack) {
       debugPrint('[Applicants] ERROR in _updateStatus: $e');
       debugPrint('[Applicants] Stack: $stack');
