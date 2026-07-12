@@ -892,20 +892,25 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   ),
                 ),
                 // Profile button
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: FursafyTheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Text(
-                    'Profile',
-                    style: FursafyTheme.labelStyle.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
+                GestureDetector(
+                  onTap: () {
+                    context.push('/provider/${job.providerId}');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: FursafyTheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      'Profile',
+                      style: FursafyTheme.labelStyle.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),
