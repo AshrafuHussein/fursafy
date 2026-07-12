@@ -509,11 +509,15 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                         color: FursafyTheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        job.locationName ?? 'Tanzania',
-                        style: FursafyTheme.labelStyle.copyWith(
-                          color: FursafyTheme.onSurfaceVariant,
-                          fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Text(
+                          job.locationName ?? 'Tanzania',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: FursafyTheme.labelStyle.copyWith(
+                            color: FursafyTheme.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),

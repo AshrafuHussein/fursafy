@@ -712,11 +712,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                 const Icon(Icons.location_on_outlined,
                     size: 14, color: FursafyTheme.outline),
                 const SizedBox(width: 4),
-                Text(
-                  job.locationName ?? 'Tanzania',
-                  style: FursafyTheme.bodyStyle.copyWith(
-                    color: FursafyTheme.onSurfaceVariant,
-                    fontSize: 13,
+                Flexible(
+                  child: Text(
+                    job.locationName ?? 'Tanzania',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: FursafyTheme.bodyStyle.copyWith(
+                      color: FursafyTheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 if (distanceStr != null) ...[

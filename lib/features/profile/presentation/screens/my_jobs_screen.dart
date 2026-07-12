@@ -476,11 +476,15 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   color: FursafyTheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  job.locationName ?? 'Remote',
-                  style: FursafyTheme.labelStyle.copyWith(
-                    fontSize: 13,
-                    color: FursafyTheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    job.locationName ?? 'Remote',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 13,
+                      color: FursafyTheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),

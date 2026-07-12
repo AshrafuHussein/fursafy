@@ -648,11 +648,15 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                         color: FursafyTheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        job.locationName ?? 'Remote',
-                        style: FursafyTheme.labelStyle.copyWith(
-                          fontSize: 12,
-                          color: FursafyTheme.onSurfaceVariant,
+                      Flexible(
+                        child: Text(
+                          job.locationName ?? 'Remote',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 12,
+                            color: FursafyTheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                       if (distanceStr != null) ...[
