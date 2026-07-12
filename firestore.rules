@@ -131,6 +131,10 @@ service cloud.firestore {
     match /config/{configId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+
+      match /api_keys/{keyId} {
+        allow read, write: if isAdmin();
+      }
     }
 
     // 9. System Logs collection
@@ -138,6 +142,16 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow create: if true; // Allow client events to be logged, including bootstrapping logs
       allow update, delete: if false; // Logs are write-once/immutable
+    }
+
+    // 10. Admin invitations collection
+    match /admin_invitations/{invitationId} {
+      allow read, write: if isAdmin();
+    }
+
+    // 11. Transactions collection
+    match /transactions/{transactionId} {
+      allow read, write: if isAdmin();
     }
   }
 }
