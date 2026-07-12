@@ -138,9 +138,30 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   @override
   Future<Failure?> acceptApplication(String applicationId) async {
     try {
+      final doc = await _col.doc(applicationId).get();
+      if (!doc.exists) {
+        return const ServerFailure(message: 'Application not found');
+      }
+      final youthId = doc.data()?['youthId'] as String?;
+
       await _col.doc(applicationId).update({
         'status': ApplicationStatus.accepted.name,
       });
+
+      if (youthId != null) {
+        final completedSnap = await _col
+            .where('youthId', isEqualTo: youthId)
+            .where('status', isEqualTo: 'accepted')
+            .count()
+            .get();
+        final realCompletedCount = completedSnap.count ?? 0;
+
+        await _db.collection(FirestorePaths.youthProfiles).doc(youthId).set({
+          'jobsCompleted': realCompletedCount,
+          'completedJobsCount': realCompletedCount,
+        }, SetOptions(merge: true));
+      }
+
       return null;
     } catch (e) {
       return ServerFailure(message: 'Failed to accept: $e');
@@ -150,9 +171,30 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   @override
   Future<Failure?> rejectApplication(String applicationId) async {
     try {
+      final doc = await _col.doc(applicationId).get();
+      if (!doc.exists) {
+        return const ServerFailure(message: 'Application not found');
+      }
+      final youthId = doc.data()?['youthId'] as String?;
+
       await _col.doc(applicationId).update({
         'status': ApplicationStatus.rejected.name,
       });
+
+      if (youthId != null) {
+        final completedSnap = await _col
+            .where('youthId', isEqualTo: youthId)
+            .where('status', isEqualTo: 'accepted')
+            .count()
+            .get();
+        final realCompletedCount = completedSnap.count ?? 0;
+
+        await _db.collection(FirestorePaths.youthProfiles).doc(youthId).set({
+          'jobsCompleted': realCompletedCount,
+          'completedJobsCount': realCompletedCount,
+        }, SetOptions(merge: true));
+      }
+
       return null;
     } catch (e) {
       return ServerFailure(message: 'Failed to reject: $e');
@@ -162,7 +204,27 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   @override
   Future<Failure?> withdrawApplication(String applicationId) async {
     try {
+      final doc = await _col.doc(applicationId).get();
+      String? youthId;
+      if (doc.exists) {
+        youthId = doc.data()?['youthId'] as String?;
+      }
+
       await _col.doc(applicationId).delete();
+
+      if (youthId != null) {
+        final completedSnap = await _col
+            .where('youthId', isEqualTo: youthId)
+            .where('status', isEqualTo: 'accepted')
+            .count()
+            .get();
+        final realCompletedCount = completedSnap.count ?? 0;
+
+        await _db.collection(FirestorePaths.youthProfiles).doc(youthId).set({
+          'jobsCompleted': realCompletedCount,
+          'completedJobsCount': realCompletedCount,
+        }, SetOptions(merge: true));
+      }
       return null;
     } catch (e) {
       return ServerFailure(message: 'Failed to withdraw: $e');
