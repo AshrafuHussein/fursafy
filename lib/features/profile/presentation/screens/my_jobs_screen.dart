@@ -79,6 +79,15 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
   }
 
   Future<void> _updateJobStatus(String jobId, JobStatus status) async {
+    final oldJobs = List<JobEntity>.from(_jobs);
+
+    setState(() {
+      final index = _jobs.indexWhere((j) => j.id == jobId);
+      if (index != -1) {
+        _jobs[index] = _jobs[index].copyWith(status: status);
+      }
+    });
+
     try {
       await FirebaseFirestore.instance
           .collection(FirestorePaths.jobs)
@@ -92,10 +101,11 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ));
-
-      _loadJobs();
     } catch (e) {
       debugPrint('MyJobsScreen._updateJobStatus error: $e');
+      setState(() {
+        _jobs = oldJobs;
+      });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error: $e'),
