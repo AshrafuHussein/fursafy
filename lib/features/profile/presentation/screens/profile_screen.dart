@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final completedSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.applications)
           .where('youthId', isEqualTo: uid)
-          .where('status', isEqualTo: 'accepted')
+          .where('status', isEqualTo: 'completed')
           .count()
           .get();
       final realCompletedCount = completedSnap.count ?? 0;

@@ -396,6 +396,11 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
         badgeTextColor = const Color(0xFF00513A);
         badgeLabel = 'ACCEPTED';
         break;
+      case ApplicationStatus.completed:
+        badgeColor = FursafyTheme.primary.withValues(alpha: 0.1);
+        badgeTextColor = FursafyTheme.primary;
+        badgeLabel = 'COMPLETED';
+        break;
       case ApplicationStatus.rejected:
         badgeColor = FursafyTheme.tertiaryFixed;
         badgeTextColor = const Color(0xFF7E2A27);

@@ -255,25 +255,40 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
 
   Widget _statusBadge() {
     final isAccepted = _app!.status == ApplicationStatus.accepted;
+    final isCompleted = _app!.status == ApplicationStatus.completed;
+    final badgeColor = isAccepted
+        ? FursafyTheme.primary.withValues(alpha: 0.1)
+        : isCompleted
+            ? FursafyTheme.secondary.withValues(alpha: 0.1)
+            : FursafyTheme.surfaceContainerHigh;
+    final textColor = isAccepted
+        ? FursafyTheme.primary
+        : isCompleted
+            ? FursafyTheme.secondary
+            : FursafyTheme.onSurfaceVariant;
+    final icon = isAccepted
+        ? Icons.check_circle
+        : isCompleted
+            ? Icons.task_alt
+            : Icons.pending;
+
     return Align(alignment: Alignment.centerLeft,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isAccepted
-              ? FursafyTheme.primary.withValues(alpha: 0.1)
-              : FursafyTheme.surfaceContainerHigh,
+          color: badgeColor,
           borderRadius: BorderRadius.circular(100)),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(isAccepted ? Icons.check_circle : Icons.pending,
+          Icon(icon,
             size: 18,
-            color: isAccepted ? FursafyTheme.primary : FursafyTheme.onSurfaceVariant),
+            color: textColor),
           const SizedBox(width: 8),
           Text(
             _app!.status.name.toUpperCase(),
             style: FursafyTheme.labelStyle.copyWith(
               fontSize: 11, fontWeight: FontWeight.w700,
               letterSpacing: 2.0,
-              color: isAccepted ? FursafyTheme.primary : FursafyTheme.onSurfaceVariant)),
+              color: textColor)),
         ]),
       ),
     );

@@ -95,7 +95,7 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
         final completedSnap = await FirebaseFirestore.instance
             .collection(FirestorePaths.applications)
             .where('youthId', isEqualTo: app.youthId)
-            .where('status', isEqualTo: 'accepted')
+            .where('status', isEqualTo: 'completed')
             .count()
             .get();
         final realCompletedCount = completedSnap.count ?? 0;
@@ -331,9 +331,11 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
   Widget _applicantCard(ApplicationEntity app) {
     final statusColor = app.status == ApplicationStatus.accepted
         ? FursafyTheme.primary
-        : app.status == ApplicationStatus.rejected
-            ? FursafyTheme.error
-            : FursafyTheme.onSurfaceVariant;
+        : app.status == ApplicationStatus.completed
+            ? FursafyTheme.secondary
+            : app.status == ApplicationStatus.rejected
+                ? FursafyTheme.error
+                : FursafyTheme.onSurfaceVariant;
 
     return GestureDetector(
       onTap: () => _showApplicantProfile(app),
@@ -437,7 +439,7 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                     ),
                   )),
                 ])
-              else if (app.status == ApplicationStatus.accepted)
+              else if (app.status == ApplicationStatus.accepted || app.status == ApplicationStatus.completed)
                 Row(children: [
                   Expanded(child: SizedBox(height: 40,
                     child: ElevatedButton(
@@ -598,7 +600,7 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                         fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 16, color: FursafyTheme.error)),
                     ),
                   ),
-                ] else if (app.status == ApplicationStatus.accepted) ...[
+                ] else if (app.status == ApplicationStatus.accepted || app.status == ApplicationStatus.completed) ...[
                   SizedBox(height: 52, width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () { Navigator.pop(ctx); context.push('/provider/rate/${app.jobId}'); },

@@ -45,7 +45,7 @@ class _YouthPublicProfileScreenState extends State<YouthPublicProfileScreen> {
         db
             .collection(FirestorePaths.applications)
             .where('youthId', isEqualTo: widget.uid)
-            .where('status', isEqualTo: 'accepted')
+            .where('status', isEqualTo: 'completed')
             .count()
             .get(),
       ]);

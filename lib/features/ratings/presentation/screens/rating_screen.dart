@@ -81,10 +81,55 @@ class _RatingScreenState extends State<RatingScreen> {
         throw Exception(res.failure!.message);
       }
 
+      // ─── Post-rating Automation ───
+      // 1. Find and update the application status to 'completed'
+      final appSnap = await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .where('jobId', isEqualTo: widget.jobId)
+          .where('youthId', isEqualTo: uid)
+          .limit(1)
+          .get();
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      if (appSnap.docs.isNotEmpty) {
+        batch.update(appSnap.docs.first.reference, {
+          'status': ApplicationStatus.completed.name,
+        });
+      }
+
+      // 2. Update job status to 'closed'
+      final jobRef = FirebaseFirestore.instance
+          .collection(FirestorePaths.jobs)
+          .doc(widget.jobId);
+      batch.update(jobRef, {
+        'status': JobStatus.closed.name,
+      });
+
+      await batch.commit();
+
+      // 3. Recalculate youth completed jobs count
+      final completedSnap = await FirebaseFirestore.instance
+          .collection(FirestorePaths.applications)
+          .where('youthId', isEqualTo: uid)
+          .where('status', isEqualTo: 'completed')
+          .count()
+          .get();
+      final realCompletedCount = completedSnap.count ?? 0;
+
+      // 4. Update the youth's profile document with the new count
+      await FirebaseFirestore.instance
+          .collection(FirestorePaths.youthProfiles)
+          .doc(uid)
+          .set({
+        'jobsCompleted': realCompletedCount,
+        'completedJobsCount': realCompletedCount,
+      }, SetOptions(merge: true));
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Review submitted!'),
+          content: const Text('Review submitted! Job marked as completed.'),
           backgroundColor: FursafyTheme.primary,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
