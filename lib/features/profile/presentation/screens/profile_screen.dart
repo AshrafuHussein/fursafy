@@ -1015,9 +1015,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          final uri = Uri.parse(url);
+                          String formattedUrl = url.trim();
+                          if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+                            formattedUrl = 'https://$formattedUrl';
+                          }
+                          final uri = Uri.parse(formattedUrl);
+                          
+                          final lowerUrl = formattedUrl.toLowerCase();
+                          final socialDomains = [
+                            'facebook.com',
+                            'twitter.com',
+                            'x.com',
+                            'instagram.com',
+                            'linkedin.com',
+                            'youtube.com',
+                            'youtu.be',
+                            'tiktok.com',
+                            'github.com',
+                            'pinterest.com',
+                            'reddit.com',
+                            'whatsapp.com',
+                            'wa.me',
+                            'telegram.org',
+                            't.me',
+                            'snapchat.com',
+                          ];
+                          final isSocial = socialDomains.any((domain) => lowerUrl.contains(domain));
+                          final mode = isSocial 
+                              ? LaunchMode.externalApplication 
+                              : LaunchMode.inAppBrowserView;
+
                           if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            await launchUrl(uri, mode: mode);
                           } else {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(

@@ -62,10 +62,11 @@ service cloud.firestore {
     match /jobs/{jobId} {
       allow read: if isAuthenticated();
       
-      // Allow creation if the provider ID matches and user is active
-      allow create: if isAuthenticated() 
+      // Allow creation if the provider ID matches and user is active, OR if user is an admin
+      allow create: if (isAuthenticated() 
         && request.resource.data.providerId == request.auth.uid
-        && isActive();
+        && isActive())
+        || isAdmin();
 
       // Allow updates by the provider who created the job OR admin
       allow update: if (isAuthenticated() 

@@ -50,3 +50,12 @@ class AdminInviteRequested extends AdminEvent {
 }
 
 class AdminWeeklySignupsFetchRequested extends AdminEvent {}
+
+class AdminJobPostRequested extends AdminEvent {
+  final Map<String, dynamic> jobData;
+
+  const AdminJobPostRequested(this.jobData);
+
+  @override
+  List<Object?> get props => [jobData];
+}

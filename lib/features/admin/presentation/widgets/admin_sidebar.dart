@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/app/router.dart';
+import 'package:fursafy/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:fursafy/features/admin/presentation/bloc/admin_event.dart';
 
 class AdminSidebar extends StatelessWidget {
   final int activeTabIndex;
@@ -88,9 +92,26 @@ class AdminSidebar extends StatelessWidget {
 
           const Spacer(),
 
+          // Post Opportunity Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showPostJobDialog(context),
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Post Opportunity'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: FursafyTheme.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                minimumSize: const Size(double.infinity, 48),
+                elevation: 0,
+              ),
+            ),
+          ),
+
           // Logout Item at bottom
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: InkWell(
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
@@ -165,6 +186,185 @@ class AdminSidebar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showPostJobDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final descController = TextEditingController();
+    final payAmountController = TextEditingController();
+    final locationController = TextEditingController(text: 'Kinondoni, Dar es Salaam');
+    final skillsController = TextEditingController();
+    String category = 'Tech';
+    String payType = 'fixed';
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return AlertDialog(
+          backgroundColor: FursafyTheme.surfaceContainerLowest,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            'Post New Opportunity',
+            style: FursafyTheme.headlineStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          content: SizedBox(
+            width: 500,
+            child: SingleChildScrollView(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    TextFormField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Opportunity Title',
+                        hintText: 'e.g. Graphic Designer, Assistant Mason',
+                      ),
+                      validator: (value) => value == null || value.trim().isEmpty ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Description
+                    TextFormField(
+                      controller: descController,
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        hintText: 'Describe the role, responsibilities, and requirements...',
+                      ),
+                      validator: (value) => value == null || value.trim().isEmpty ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Category
+                    DropdownButtonFormField<String>(
+                      value: category,
+                      decoration: const InputDecoration(labelText: 'Category'),
+                      items: const [
+                        DropdownMenuItem(value: 'Tech', child: Text('Technology & Tech')),
+                        DropdownMenuItem(value: 'Tutoring', child: Text('Academic & Tutoring')),
+                        DropdownMenuItem(value: 'Cleaning', child: Text('Home Cleaning & Services')),
+                        DropdownMenuItem(value: 'Construction', child: Text('Construction & Labor')),
+                        DropdownMenuItem(value: 'Other', child: Text('Other Sectors')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) category = val;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Pay Amount & Type Row
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: payAmountController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Pay Amount (TZS)',
+                              hintText: 'e.g. 50000',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) return 'Required';
+                              if (double.tryParse(value) == null) return 'Invalid number';
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: payType,
+                            decoration: const InputDecoration(labelText: 'Pay Type'),
+                            items: const [
+                              DropdownMenuItem(value: 'fixed', child: Text('Fixed')),
+                              DropdownMenuItem(value: 'hourly', child: Text('Hourly')),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) payType = val;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Location Name
+                    TextFormField(
+                      controller: locationController,
+                      decoration: const InputDecoration(
+                        labelText: 'Location Name',
+                        hintText: 'e.g. Kinondoni, Dar es Salaam',
+                      ),
+                      validator: (value) => value == null || value.trim().isEmpty ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Skills Required
+                    TextFormField(
+                      controller: skillsController,
+                      decoration: const InputDecoration(
+                        labelText: 'Skills Required (comma separated)',
+                        hintText: 'e.g. Photoshop, Illustrator',
+                      ),
+                      validator: (value) => value == null || value.trim().isEmpty ? 'Required' : null,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: FursafyTheme.primary,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                if (formKey.currentState?.validate() ?? false) {
+                  final skillsList = skillsController.text
+                      .split(',')
+                      .map((s) => s.trim())
+                      .where((s) => s.isNotEmpty)
+                      .toList();
+
+                  final Map<String, dynamic> jobData = {
+                    'providerId': 'admin_portal',
+                    'providerName': 'Fursafy Admin',
+                    'providerAvatarUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCCapGDi6ZqtA7fbJVA8YOlbXsJ9RcuW9X9JzFMRqlC3XBexBohqrDnaLhdKOYsfJxgbNG6K-NCG9bO0S9xR4RW5sGbxqHETn0n_VYIhL6M7FTOJGcm0VCmemzlu0198FQtf-rCQFG3akTfsq69k1jCcx_SGP9ZgW6KAKwgEwbCtIgqT8Qn6cKW4uVfFifcKNoAvRev2oquKeAhY0kysQ8uPSwsaU7nIQ1E-8x9l_J-4-qppif8fTHdM66tAOp2HDXpcxVciyDBbRWk',
+                    'providerRating': 5.0,
+                    'providerJobsDone': 42,
+                    'title': titleController.text.trim(),
+                    'description': descController.text.trim(),
+                    'category': category,
+                    'payAmount': double.parse(payAmountController.text.trim()),
+                    'payType': payType,
+                    'location': const GeoPoint(-6.7924, 39.2083),
+                    'locationName': locationController.text.trim(),
+                    'skillsRequired': skillsList,
+                    'status': 'open',
+                    'createdAt': Timestamp.now(),
+                  };
+
+                  context.read<AdminBloc>().add(AdminJobPostRequested(jobData));
+                  Navigator.pop(dialogCtx);
+                }
+              },
+              child: const Text('Post'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

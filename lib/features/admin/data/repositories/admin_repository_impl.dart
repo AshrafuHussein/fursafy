@@ -119,6 +119,25 @@ class AdminRepositoryImpl implements AdminRepository {
   }
 
   @override
+  Future<Failure?> postJob(Map<String, dynamic> jobData) async {
+    try {
+      final docRef = await _firestore.collection(FirestorePaths.jobs).add(jobData);
+      
+      // Log event
+      await _firestore.collection('system_logs').add({
+        'eventId': 'JB-POST',
+        'severity': 'info',
+        'title': 'New Opportunity Posted',
+        'desc': 'A new job opportunity "${jobData['title']}" was posted directly by Admin. (Job ID: ${docRef.id})',
+        'timestamp': Timestamp.now(),
+      });
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
   Future<({
     Failure? failure,
     int totalUsers,

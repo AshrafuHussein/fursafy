@@ -16,6 +16,9 @@ abstract class AdminRepository {
   /// Sends an invitation to an administrator and logs the invitation event.
   Future<Failure?> inviteAdmin(String email);
 
+  /// Posts a new opportunity (job listing) directly as admin.
+  Future<Failure?> postJob(Map<String, dynamic> jobData);
+
   /// Fetches basic counts and aggregates the total transaction volume.
   Future<({
     Failure? failure,

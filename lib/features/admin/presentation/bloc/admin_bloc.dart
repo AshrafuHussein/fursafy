@@ -16,6 +16,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<AdminJobModerateRequested>(_onModerateJob);
     on<AdminInviteRequested>(_onInviteAdmin);
     on<AdminWeeklySignupsFetchRequested>(_onFetchWeeklySignups);
+    on<AdminJobPostRequested>(_onPostJob);
   }
 
   Future<void> _onFetchStats(
@@ -134,6 +135,22 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       emit(state.copyWith(
         isLoading: false,
         weeklyJobsData: result.jobsData,
+      ));
+    }
+  }
+
+  Future<void> _onPostJob(
+    AdminJobPostRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    final failure = await _repo.postJob(event.jobData);
+    if (failure != null) {
+      emit(state.copyWith(isLoading: false, errorMessage: failure.message));
+    } else {
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: 'Opportunity posted successfully!',
       ));
     }
   }
