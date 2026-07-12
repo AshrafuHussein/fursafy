@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
-import 'package:fursafy/features/admin/presentation/bloc/admin_bloc.dart';
-import 'package:fursafy/features/admin/presentation/bloc/admin_event.dart';
 
 class JobModerationTab extends StatefulWidget {
   final String jobSearchQuery;
   final String jobFilterStatus;
   final ValueChanged<String> onJobFilterStatusChanged;
-  final Function(String jobId, String action) onJobAction;
+  final Function(String jobId, String action, {Map<String, dynamic>? jobData}) onJobAction;
 
   const JobModerationTab({
     super.key,
@@ -27,6 +24,11 @@ class JobModerationTab extends StatefulWidget {
 class _JobModerationTabState extends State<JobModerationTab> {
   int _currentPage = 0;
   static const int _pageSize = 10;
+
+  String _formatDate(DateTime date) {
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +90,9 @@ class _JobModerationTabState extends State<JobModerationTab> {
             final docs = snapshot.data?.docs ?? [];
             int pendingCount = docs.where((doc) => (doc.data()['status'] ?? 'open') == 'pending').length;
             int flaggedCount = docs.where((doc) => (doc.data()['status'] ?? 'open') == 'flagged').length;
+            
+            // Calculate dynamic flag rate
+            final double flagRate = docs.isNotEmpty ? flaggedCount / docs.length : 0.12;
 
             // Filter jobs based on selected tab + search query
             final filteredDocs = docs.where((doc) {
@@ -178,11 +183,11 @@ class _JobModerationTabState extends State<JobModerationTab> {
                             final category = data['category'] ?? 'Other';
                             final desc = data['description'] ?? 'No Description provided.';
                             final status = data['status'] ?? 'open';
-                            final payAmount = (data['payAmount'] ?? 0.0) as num;
-                            final payType = data['payType'] ?? 'fixed';
-
                             final isPending = status == 'pending';
                             final isFlagged = status == 'flagged';
+                            final payAmount = (data['payAmount'] ?? 0.0) as num;
+                            final payType = data['payType'] ?? 'fixed';
+                            final createdAt = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
 
                             // Map custom tags
                             List<String> tags = [category];
@@ -252,7 +257,8 @@ class _JobModerationTabState extends State<JobModerationTab> {
                                                         : FursafyTheme.onSurfaceVariant,
                                               ),
                                             ),
-                                          )).toList(),
+                                          ),
+                                          ).toList(),
                                         )
                                       ],
                                     ),
@@ -296,7 +302,7 @@ class _JobModerationTabState extends State<JobModerationTab> {
                                   Expanded(
                                     flex: 2,
                                     child: Text(
-                                      'Oct 24, 2023',
+                                      _formatDate(createdAt),
                                       style: FursafyTheme.bodyStyle.copyWith(fontSize: 13, color: FursafyTheme.onSurfaceVariant),
                                     ),
                                   ),
@@ -441,125 +447,125 @@ class _JobModerationTabState extends State<JobModerationTab> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 36),
+
+                // Bento Stats Grid (Editorial Scale)
+                GridView.count(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  childAspectRatio: 2.2,
+                  children: [
+                    // Queue Velocity
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: FursafyTheme.primary.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: FursafyTheme.primary.withValues(alpha: 0.1)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(Icons.bolt, color: FursafyTheme.primary, size: 28),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Queue Velocity',
+                                style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                'Average moderation time has decreased by 14% this week.',
+                                style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, color: FursafyTheme.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: const [
+                              Text('4.2m', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: FursafyTheme.primary, letterSpacing: -1)),
+                              SizedBox(width: 6),
+                              Text('avg. review time', style: TextStyle(fontSize: 11, color: FursafyTheme.primary, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Top Reviewer
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: FursafyTheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(Icons.verified_user, color: FursafyTheme.secondary, size: 24),
+                          Text(
+                            'TOP REVIEWER',
+                            style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline, letterSpacing: 1.2),
+                          ),
+                          Row(
+                            children: [
+                              const CircleAvatar(
+                                radius: 20,
+                                backgroundImage: NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Fatuma M.', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
+                                  Text('84 reviews today', style: FursafyTheme.bodyStyle.copyWith(fontSize: 11, color: FursafyTheme.onSurfaceVariant)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Flag Rate
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: FursafyTheme.errorContainer.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: FursafyTheme.error.withValues(alpha: 0.05)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(Icons.report, color: FursafyTheme.error, size: 24),
+                          Text(
+                            'FLAG RATE',
+                            style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.error, letterSpacing: 1.2),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${(flagRate * 100).toStringAsFixed(0)}%', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: FursafyTheme.error)),
+                              Text('+2% from last week', style: FursafyTheme.bodyStyle.copyWith(fontSize: 10, color: FursafyTheme.onSurfaceVariant)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
               ],
             );
           },
         ),
-        const SizedBox(height: 36),
-
-        // Bento Stats Grid (Editorial Scale)
-        GridView.count(
-          crossAxisCount: 3,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.2,
-          children: [
-            // Queue Velocity (flex: 2 width is emulated by layout, here we bento-card it)
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: FursafyTheme.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: FursafyTheme.primary.withValues(alpha: 0.1)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.bolt, color: FursafyTheme.primary, size: 28),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Queue Velocity',
-                        style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Average moderation time has decreased by 14% this week.',
-                        style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, color: FursafyTheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: const [
-                      Text('4.2m', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: FursafyTheme.primary, letterSpacing: -1)),
-                      SizedBox(width: 6),
-                      Text('avg. review time', style: TextStyle(fontSize: 11, color: FursafyTheme.primary, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Top Reviewer
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: FursafyTheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.verified_user, color: FursafyTheme.secondary, size: 24),
-                  Text(
-                    'TOP REVIEWER',
-                    style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline, letterSpacing: 1.2),
-                  ),
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Fatuma M.', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
-                          Text('84 reviews today', style: FursafyTheme.bodyStyle.copyWith(fontSize: 11, color: FursafyTheme.onSurfaceVariant)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Flag Rate
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: FursafyTheme.errorContainer.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: FursafyTheme.error.withValues(alpha: 0.05)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.report, color: FursafyTheme.error, size: 24),
-                  Text(
-                    'FLAG RATE',
-                    style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.error, letterSpacing: 1.2),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('12%', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: FursafyTheme.error)),
-                      Text('+2% from last week', style: FursafyTheme.bodyStyle.copyWith(fontSize: 10, color: FursafyTheme.onSurfaceVariant)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
       ],
     );
   }
@@ -799,21 +805,20 @@ class _JobModerationTabState extends State<JobModerationTab> {
                     'providerJobsDone': 42,
                     'title': titleController.text.trim(),
                     'description': descController.text.trim(),
-                    'category': category,
+                    'skillsRequired': skillsList,
+                    'locationName': locationController.text.trim(),
                     'payAmount': double.parse(payAmountController.text.trim()),
                     'payType': payType,
-                    'location': const GeoPoint(-6.7924, 39.2083),
-                    'locationName': locationController.text.trim(),
-                    'skillsRequired': skillsList,
+                    'category': category,
                     'status': 'open',
                     'createdAt': Timestamp.now(),
                   };
 
-                  context.read<AdminBloc>().add(AdminJobPostRequested(jobData));
+                  widget.onJobAction('', 'post', jobData: jobData); // trigger reload or call direct repository save if BLoC is hooked
                   Navigator.pop(dialogCtx);
                 }
               },
-              child: const Text('Post'),
+              child: const Text('Post Opportunity'),
             ),
           ],
         );

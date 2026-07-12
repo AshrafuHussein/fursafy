@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fursafy/app/theme.dart';
+import 'package:fursafy/features/auth/domain/entities/user_entity.dart';
 
 class ConfigurationHubTab extends StatefulWidget {
   final Map<String, dynamic> initialConfig;
   final ValueChanged<Map<String, dynamic>> onSaveConfig;
+  final List<UserEntity> admins;
+  final List<Map<String, dynamic>> adminInvites;
+  final List<Map<String, dynamic>> apiKeys;
+  final Function(String email) onInviteAdmin;
+  final Function(String email) onRevokeInvite;
+  final Function(String name, String env) onGenerateApiKey;
+  final Function(String keyId) onDeleteApiKey;
 
   const ConfigurationHubTab({
     super.key,
     required this.initialConfig,
     required this.onSaveConfig,
+    required this.admins,
+    required this.adminInvites,
+    required this.apiKeys,
+    required this.onInviteAdmin,
+    required this.onRevokeInvite,
+    required this.onGenerateApiKey,
+    required this.onDeleteApiKey,
   });
 
   @override
@@ -28,37 +44,9 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
   late TextEditingController _talentFeeController;
   late TextEditingController _platformFeeController;
 
-  final List<String> _apiKeys = [
-    'pk_live_********************8a2',
-    'sk_test_********************4f1',
-  ];
-
-  final List<Map<String, String>> _admins = [
-    {
-      'name': 'Sarah Mwasiti',
-      'email': 'sarah.m@fursafy.co.tz',
-      'role': 'Super Admin',
-      'avatar': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
-      'isMe': 'true',
-      'status': 'active',
-    },
-    {
-      'name': 'James Kitalu',
-      'email': 'j.kitalu@fursafy.co.tz',
-      'role': 'Moderator',
-      'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-      'isMe': 'false',
-      'status': 'active',
-    },
-    {
-      'name': 'Lulu Mapunda',
-      'email': 'lulu@fursafy.co.tz',
-      'role': 'Support',
-      'avatar': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-      'isMe': 'false',
-      'status': 'pending',
-    },
-  ];
+  final _adminNameController = TextEditingController();
+  final _adminEmailController = TextEditingController();
+  String _selectedAdminRole = 'Moderator';
 
   @override
   void initState() {
@@ -81,6 +69,8 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
     _employerFeeController.dispose();
     _talentFeeController.dispose();
     _platformFeeController.dispose();
+    _adminNameController.dispose();
+    _adminEmailController.dispose();
     super.dispose();
   }
 
@@ -102,7 +92,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Manage your platform\'s core logic, administrative access, and security protocols from a single editorial dashboard.',
+                  'Manage your platform\'s core logic, administrative access, and security protocols from a single dashboard.',
                   style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.onSurfaceVariant),
                 ),
               ],
@@ -151,7 +141,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                     Row(
                       children: const [
                         Icon(Icons.tune, color: FursafyTheme.primary, size: 20),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           'Platform Settings',
                           style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 18, fontWeight: FontWeight.bold),
@@ -282,7 +272,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
         Row(
           children: const [
             Icon(Icons.shield_outlined, color: FursafyTheme.secondary, size: 20),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'Security & Authentication',
               style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 18, fontWeight: FontWeight.bold),
@@ -373,16 +363,27 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                           style: FursafyTheme.headlineStyle.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         TextButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _showGenerateApiKeyDialog(context),
                           icon: const Icon(Icons.add, size: 14),
                           label: const Text('Generate New'),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Column(
-                      children: _apiKeys.map((key) => _buildApiKeyRow(key)).toList(),
-                    ),
+                    if (widget.apiKeys.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                            'No active API keys found.',
+                            style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.onSurfaceVariant),
+                          ),
+                        ),
+                      )
+                    else
+                      Column(
+                        children: widget.apiKeys.map((key) => _buildApiKeyRow(key)).toList(),
+                      ),
                   ],
                 ),
               ),
@@ -395,7 +396,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
         Row(
           children: const [
             Icon(Icons.admin_panel_settings_outlined, color: FursafyTheme.primary, size: 20),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'Admin Management',
               style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 18, fontWeight: FontWeight.bold),
@@ -423,18 +424,20 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                       style: FursafyTheme.headlineStyle.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 24),
-                    Text('FULL NAME', style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
+                    Text('FULL NAME (OPTIONAL)', style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
                     const SizedBox(height: 8),
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      controller: _adminNameController,
+                      decoration: const InputDecoration(
                         hintText: 'John Doe',
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text('WORK EMAIL', style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
                     const SizedBox(height: 8),
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      controller: _adminEmailController,
+                      decoration: const InputDecoration(
                         hintText: 'john@fursafy.com',
                       ),
                     ),
@@ -442,7 +445,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                     Text('ROLE', style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: 'Moderator',
+                      value: _selectedAdminRole,
                       decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
@@ -451,11 +454,23 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                         DropdownMenuItem(value: 'Financial Analyst', child: Text('Financial Analyst')),
                         DropdownMenuItem(value: 'Support Manager', child: Text('Support Manager')),
                       ],
-                      onChanged: (val) {},
+                      onChanged: (val) {
+                        if (val != null) setState(() => _selectedAdminRole = val);
+                      },
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        final email = _adminEmailController.text.trim();
+                        if (email.isNotEmpty) {
+                          widget.onInviteAdmin(email);
+                          _adminEmailController.clear();
+                          _adminNameController.clear();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Administrator invitation sent!')),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: FursafyTheme.onSurface,
                         foregroundColor: FursafyTheme.surface,
@@ -475,7 +490,10 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
             Expanded(
               flex: 2,
               child: Column(
-                children: _admins.map((admin) => _buildAdminCard(admin)).toList(),
+                children: [
+                  ...widget.admins.map((admin) => _buildAdminCard(admin)),
+                  ...widget.adminInvites.map((invite) => _buildInviteCard(invite)),
+                ],
               ),
             ),
           ],
@@ -513,7 +531,12 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
     );
   }
 
-  Widget _buildApiKeyRow(String key) {
+  Widget _buildApiKeyRow(Map<String, dynamic> key) {
+    final keyValue = key['keyValue']?.toString() ?? '';
+    final name = key['name']?.toString() ?? '';
+    final env = key['environment']?.toString() ?? 'test';
+    final keyId = key['keyId']?.toString() ?? '';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -525,26 +548,43 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            key,
-            style: const TextStyle(
-              fontFamily: 'monospace',
-              fontSize: 12,
-              color: FursafyTheme.outline,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$keyValue (${env.toUpperCase()})',
+                  style: const TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    color: FursafyTheme.outline,
+                  ),
+                ),
+              ],
             ),
           ),
           Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.content_copy, size: 16, color: FursafyTheme.outline),
-                onPressed: () {},
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: keyValue));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('API Key copied to clipboard!')),
+                  );
+                },
                 constraints: const BoxConstraints(),
                 padding: EdgeInsets.zero,
               ),
               const SizedBox(width: 12),
               IconButton(
                 icon: const Icon(Icons.delete, size: 16, color: FursafyTheme.error),
-                onPressed: () {},
+                onPressed: () => widget.onDeleteApiKey(keyId),
                 constraints: const BoxConstraints(),
                 padding: EdgeInsets.zero,
               ),
@@ -555,9 +595,72 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
     );
   }
 
-  Widget _buildAdminCard(Map<String, String> admin) {
-    final isMe = admin['isMe'] == 'true';
-    final isPending = admin['status'] == 'pending';
+  Widget _buildAdminCard(UserEntity admin) {
+    // Default avatar
+    final avatarUrl = admin.avatarUrl ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: FursafyTheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundImage: NetworkImage(avatarUrl),
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    admin.displayName,
+                    style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  Text(
+                    '${admin.email} • ${admin.role.displayName}',
+                    style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, color: FursafyTheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: FursafyTheme.primaryFixed,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  admin.role.name.toUpperCase(),
+                  style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.onPrimaryFixed),
+                ),
+              ),
+              const SizedBox(width: 12),
+              IconButton(
+                icon: const Icon(Icons.edit, size: 18, color: FursafyTheme.outline),
+                onPressed: () {},
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInviteCard(Map<String, dynamic> invite) {
+    final email = invite['email']?.toString() ?? '';
+    final role = invite['role']?.toString() ?? 'Moderator';
+    final avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -568,7 +671,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
         border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
       ),
       child: Opacity(
-        opacity: isPending ? 0.6 : 1.0,
+        opacity: 0.6,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -576,18 +679,18 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: NetworkImage(admin['avatar']!),
+                  backgroundImage: NetworkImage(avatarUrl),
                 ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      admin['name']!,
+                      email.split('@').first,
                       style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                     Text(
-                      '${admin['email']!} • ${admin['role']!}',
+                      '$email • $role',
                       style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, color: FursafyTheme.onSurfaceVariant),
                     ),
                   ],
@@ -596,45 +699,92 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
             ),
             Row(
               children: [
-                if (isMe)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: FursafyTheme.primaryFixed,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Text(
-                      'ME',
-                      style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.onPrimaryFixed),
-                    ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: FursafyTheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                if (isPending)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: FursafyTheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Text(
-                      'PENDING INVITE',
-                      style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline),
-                    ),
+                  child: Text(
+                    'PENDING',
+                    style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline),
                   ),
+                ),
                 const SizedBox(width: 12),
                 IconButton(
-                  icon: const Icon(Icons.edit, size: 18, color: FursafyTheme.outline),
-                  onPressed: () {},
+                  icon: const Icon(Icons.delete, size: 18, color: FursafyTheme.error),
+                  onPressed: () => widget.onRevokeInvite(email),
                 ),
-                if (!isMe)
-                  IconButton(
-                    icon: Icon(isPending ? Icons.refresh : Icons.delete, size: 18, color: isPending ? FursafyTheme.primary : FursafyTheme.error),
-                    onPressed: () {},
-                  ),
               ],
             )
           ],
         ),
       ),
+    );
+  }
+
+  void _showGenerateApiKeyDialog(BuildContext context) {
+    final keyNameController = TextEditingController();
+    String keyEnv = 'test';
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return AlertDialog(
+          backgroundColor: FursafyTheme.surfaceContainerLowest,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text('Generate API Key', style: FursafyTheme.headlineStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 18)),
+          content: StatefulBuilder(
+            builder: (context, setDialogState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: keyNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Key Identifier Name',
+                      hintText: 'e.g. M-Pesa Callback Gateway',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: keyEnv,
+                    decoration: const InputDecoration(labelText: 'Environment'),
+                    items: const [
+                      DropdownMenuItem(value: 'test', child: Text('Sandbox / Testing')),
+                      DropdownMenuItem(value: 'live', child: Text('Production / Live')),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) setDialogState(() => keyEnv = val);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: FursafyTheme.primary,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                final name = keyNameController.text.trim();
+                if (name.isNotEmpty) {
+                  widget.onGenerateApiKey(name, keyEnv);
+                  Navigator.pop(dialogCtx);
+                }
+              },
+              child: const Text('Generate'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

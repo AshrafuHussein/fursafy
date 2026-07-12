@@ -44,6 +44,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     context.read<AdminBloc>().add(AdminStatsFetchRequested());
     context.read<AdminBloc>().add(AdminPlatformConfigLoadRequested());
     context.read<AdminBloc>().add(AdminWeeklySignupsFetchRequested());
+    context.read<AdminBloc>().add(AdminAnalyticsLoadRequested());
   }
 
   @override
@@ -137,8 +138,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           jobSearchQuery: _jobSearchQuery,
           jobFilterStatus: _jobFilterStatus,
           onJobFilterStatusChanged: (val) => setState(() => _jobFilterStatus = val),
-          onJobAction: (jobId, action) {
-            context.read<AdminBloc>().add(AdminJobModerateRequested(jobId: jobId, action: action));
+          onJobAction: (jobId, action, {jobData}) {
+            if (action == 'post' && jobData != null) {
+              context.read<AdminBloc>().add(AdminJobPostRequested(jobData));
+            } else {
+              context.read<AdminBloc>().add(AdminJobModerateRequested(jobId: jobId, action: action));
+            }
           },
         );
       case 2:
@@ -147,6 +152,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           completedJobs: state.completedJobs,
           totalApplications: state.totalApplications,
           totalProviders: state.totalProviders,
+          regionalData: state.analyticsRegional,
+          categoryShareData: state.analyticsCategories,
+          growthMetrics: state.analyticsGrowth,
         );
       case 3:
         return UserManagementTab(
@@ -155,6 +163,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           onUserFilterRoleChanged: (val) => setState(() => _userFilterRole = val),
           onUserStatusToggle: (uid, status) {
             context.read<AdminBloc>().add(AdminUserStatusToggleRequested(uid: uid, currentStatus: status));
+          },
+          onUserVerification: (uid, isApproved, reason, notes) {
+            context.read<AdminBloc>().add(AdminUserVerificationUpdateRequested(
+              uid: uid,
+              isApproved: isApproved,
+              rejectionReason: reason,
+              notes: notes,
+            ));
+          },
+          onUserSuspended: (uid, reason, notes) {
+            context.read<AdminBloc>().add(AdminUserVerificationUpdateRequested(
+              uid: uid,
+              isApproved: false,
+              rejectionReason: reason,
+              notes: notes,
+            ));
           },
           onInviteAdmin: (email) {
             context.read<AdminBloc>().add(AdminInviteRequested(email));
@@ -166,6 +190,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           totalTxVolume: state.totalTxVolume,
           platformFeesPercentage: platformFee,
           completedJobs: state.completedJobs,
+          transactions: state.transactions,
+          onTransactionStatusUpdate: (txId, newStatus) {
+            context.read<AdminBloc>().add(AdminTransactionStatusUpdateRequested(
+              transactionId: txId,
+              status: newStatus,
+            ));
+          },
+          onAuthorizeBatchPayout: (txIds) {
+            context.read<AdminBloc>().add(AdminBatchPayoutReleaseRequested(txIds));
+          },
         );
       case 5:
         return const SystemLogsTab();
@@ -174,6 +208,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           initialConfig: state.platformConfig,
           onSaveConfig: (updatedConfig) {
             context.read<AdminBloc>().add(AdminPlatformConfigSaveRequested(updatedConfig));
+          },
+          admins: state.admins,
+          adminInvites: state.adminInvites,
+          apiKeys: state.apiKeys,
+          onInviteAdmin: (email) {
+            context.read<AdminBloc>().add(AdminInviteRequested(email));
+          },
+          onRevokeInvite: (email) {
+            context.read<AdminBloc>().add(AdminInviteRevokeRequested(email));
+          },
+          onGenerateApiKey: (name, env) {
+            context.read<AdminBloc>().add(AdminApiKeyGenerateRequested(name: name, environment: env));
+          },
+          onDeleteApiKey: (keyId) {
+            context.read<AdminBloc>().add(AdminApiKeyDeleteRequested(keyId));
           },
         );
       default:

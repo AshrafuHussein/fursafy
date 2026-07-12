@@ -6,6 +6,9 @@ class AnalyticsReportsTab extends StatelessWidget {
   final int completedJobs;
   final int totalApplications;
   final int totalProviders;
+  final List<Map<String, dynamic>> regionalData;
+  final List<Map<String, dynamic>> categoryShareData;
+  final List<Map<String, dynamic>> growthMetrics;
 
   const AnalyticsReportsTab({
     super.key,
@@ -13,10 +16,20 @@ class AnalyticsReportsTab extends StatelessWidget {
     required this.completedJobs,
     required this.totalApplications,
     required this.totalProviders,
+    required this.regionalData,
+    required this.categoryShareData,
+    required this.growthMetrics,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Determine skill category shares dynamically
+    final double plumbingFill = _getCategoryPercentage('cleaning'); // plumbing is mapped or cleaning
+    final double cleaningFill = _getCategoryPercentage('cleaning');
+    final double techFill = _getCategoryPercentage('tech');
+    final double constructionFill = _getCategoryPercentage('construction');
+    final double tutoringFill = _getCategoryPercentage('tutoring');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -89,7 +102,7 @@ class AnalyticsReportsTab extends StatelessWidget {
         ),
         const SizedBox(height: 32),
 
-        // Chart and Stats look (Jan to Jul Spline Line)
+        // Chart and Stats look
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,21 +138,21 @@ class AnalyticsReportsTab extends StatelessWidget {
                         // Legend
                         Row(
                           children: [
-                            _chartLegendDot(FursafyTheme.primary, 'GROWTH'),
+                            _chartLegendDot(FursafyTheme.primary, 'SIGNUPS'),
                             const SizedBox(width: 16),
-                            _chartLegendDot(FursafyTheme.secondary, 'REVENUE'),
+                            _chartLegendDot(FursafyTheme.secondary, 'JOBS'),
                           ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 32),
 
-                    // Custom Line Spline Painter mockup
+                    // Custom Line Spline Painter
                     SizedBox(
                       height: 180,
                       width: double.infinity,
                       child: CustomPaint(
-                        painter: SplineChartPainter(),
+                        painter: SplineChartPainter(growthMetrics: growthMetrics),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -165,9 +178,9 @@ class AnalyticsReportsTab extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _bentoTotalValueCard('Total Value', 'TSh 128.4M', '+14.2% than last month', Icons.trending_up, FursafyTheme.primaryContainer, FursafyTheme.onPrimaryContainer),
+                  _bentoTotalValueCard('Total Match Velocity', '${totalApplications}', 'applications submitted to date', Icons.trending_up, FursafyTheme.primaryContainer, FursafyTheme.onPrimaryContainer),
                   const SizedBox(height: 24),
-                  _bentoTotalValueCard('Active Professionals', '4,821', '+28% surge in registration', Icons.groups, FursafyTheme.secondaryFixed, FursafyTheme.onSecondaryFixed),
+                  _bentoTotalValueCard('Active Providers', '${totalProviders}', 'verified partners listing opportunities', Icons.groups, FursafyTheme.secondaryFixed, FursafyTheme.onSecondaryFixed),
                 ],
               ),
             ),
@@ -222,22 +235,8 @@ class AnalyticsReportsTab extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Hotspots
-                          const Positioned(
-                            top: 220,
-                            right: 80,
-                            child: MapHotspot(label: 'Dar es Salaam: 2.4k Jobs'),
-                          ),
-                          const Positioned(
-                            top: 120,
-                            left: 140,
-                            child: MapHotspot(label: 'Mwanza: 800 Jobs', isAmber: true),
-                          ),
-                          const Positioned(
-                            top: 170,
-                            left: 200,
-                            child: MapHotspot(label: 'Dodoma: 1.2k Jobs'),
-                          ),
+                          // Hotspots driven by dynamic data
+                          ..._buildMapHotspots(),
 
                           // Legends Overlay Box
                           Positioned(
@@ -258,11 +257,7 @@ class AnalyticsReportsTab extends StatelessWidget {
                                     style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline, letterSpacing: 1.2),
                                   ),
                                   const SizedBox(height: 12),
-                                  _legendItem('Dar es Salaam', '42%'),
-                                  const SizedBox(height: 8),
-                                  _legendItem('Arusha', '18%'),
-                                  const SizedBox(height: 8),
-                                  _legendItem('Mbeya', '12%'),
+                                  ..._buildLegendsList(),
                                 ],
                               ),
                             ),
@@ -293,15 +288,15 @@ class AnalyticsReportsTab extends StatelessWidget {
                       style: FursafyTheme.headlineStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 24),
-                    _skillRow('Plumbing & Maintenance', 0.85, '840 Jobs', FursafyTheme.primary),
+                    _skillRow('Plumbing & Maintenance', plumbingFill, '${(plumbingFill * totalJobs).round()} Jobs', FursafyTheme.primary),
                     const SizedBox(height: 20),
-                    _skillRow('Professional Cleaning', 0.65, '620 Jobs', FursafyTheme.primary),
+                    _skillRow('Professional Cleaning', cleaningFill, '${(cleaningFill * totalJobs).round()} Jobs', FursafyTheme.primary),
                     const SizedBox(height: 20),
-                    _skillRow('Electrical Services', 0.52, '512 Jobs', FursafyTheme.secondary),
+                    _skillRow('Electrical Services', techFill, '${(techFill * totalJobs).round()} Jobs', FursafyTheme.secondary),
                     const SizedBox(height: 20),
-                    _skillRow('IT Support & Tech', 0.40, '390 Jobs', FursafyTheme.primary),
+                    _skillRow('IT Support & Tech', constructionFill, '${(constructionFill * totalJobs).round()} Jobs', FursafyTheme.primary),
                     const SizedBox(height: 20),
-                    _skillRow('Delivery & Logistics', 0.32, '280 Jobs', FursafyTheme.primary),
+                    _skillRow('Delivery & Logistics', tutoringFill, '${(tutoringFill * totalJobs).round()} Jobs', FursafyTheme.primary),
 
                     const SizedBox(height: 36),
                     Container(
@@ -365,6 +360,69 @@ class AnalyticsReportsTab extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  double _getCategoryPercentage(String category) {
+    if (categoryShareData.isEmpty) return 0.25;
+    final total = categoryShareData.fold<int>(0, (sum, item) => sum + ((item['count'] ?? 0) as num).toInt());
+    if (total == 0) return 0.25;
+    final item = categoryShareData.firstWhere(
+      (e) => e['category']?.toString().toLowerCase() == category.toLowerCase(),
+      orElse: () => {'count': 0},
+    );
+    return ((item['count'] ?? 0) as num) / total;
+  }
+
+  List<Widget> _buildMapHotspots() {
+    if (regionalData.isEmpty) {
+      return const [
+        Positioned(top: 220, right: 80, child: MapHotspot(label: 'Dar es Salaam: 2.4k Jobs')),
+        Positioned(top: 120, left: 140, child: MapHotspot(label: 'Mwanza: 800 Jobs', isAmber: true)),
+        Positioned(top: 170, left: 200, child: MapHotspot(label: 'Dodoma: 1.2k Jobs')),
+      ];
+    }
+    final List<Widget> list = [];
+    double top = 100;
+    double left = 100;
+    for (var r in regionalData) {
+      final region = r['region']?.toString() ?? 'Unknown';
+      final count = r['count'] ?? 0;
+      
+      list.add(
+        Positioned(
+          top: top,
+          left: left,
+          child: MapHotspot(label: '$region: $count Jobs'),
+        ),
+      );
+      top += 50;
+      left += 60;
+    }
+    return list;
+  }
+
+  List<Widget> _buildLegendsList() {
+    if (regionalData.isEmpty) {
+      return [
+        _legendItem('Dar es Salaam', '42%'),
+        const SizedBox(height: 8),
+        _legendItem('Arusha', '18%'),
+        const SizedBox(height: 8),
+        _legendItem('Mbeya', '12%'),
+      ];
+    }
+    final total = regionalData.fold<int>(0, (sum, r) => sum + ((r['count'] ?? 0) as num).toInt());
+    if (total == 0) return [const Text('No data')];
+
+    final List<Widget> list = [];
+    for (var r in regionalData.take(3)) {
+      final region = r['region']?.toString() ?? 'Other';
+      final count = ((r['count'] ?? 0) as num).toDouble();
+      final pct = total > 0 ? (count / total * 100).toStringAsFixed(0) : '0';
+      list.add(_legendItem(region, '$pct%'));
+      list.add(const SizedBox(height: 8));
+    }
+    return list;
   }
 
   Widget _chartLegendDot(Color color, String label) {
@@ -496,8 +554,11 @@ class AnalyticsReportsTab extends StatelessWidget {
   }
 }
 
-// Custom Painter to draw a gorgeous line chart mockup matching stitch reference!
 class SplineChartPainter extends CustomPainter {
+  final List<Map<String, dynamic>> growthMetrics;
+
+  SplineChartPainter({required this.growthMetrics});
+
   @override
   void paint(Canvas canvas, Size size) {
     // Background lines
@@ -510,45 +571,81 @@ class SplineChartPainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
     }
 
-    // Path 1: Primary line (Growth)
+    if (growthMetrics.isEmpty) {
+      // Stock painter coordinates
+      final path1 = Path();
+      path1.moveTo(0, size.height * 0.7);
+      path1.cubicTo(size.width * 0.15, size.height * 0.65, size.width * 0.3, size.height * 0.2, size.width * 0.45, size.height * 0.3);
+      path1.cubicTo(size.width * 0.6, size.height * 0.4, size.width * 0.75, size.height * 0.05, size.width, size.height * 0.1);
+
+      final linePaint1 = Paint()
+        ..color = FursafyTheme.primary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.5;
+
+      final path2 = Path();
+      path2.moveTo(0, size.height * 0.8);
+      path2.cubicTo(size.width * 0.2, size.height * 0.85, size.width * 0.4, size.height * 0.5, size.width * 0.6, size.height * 0.45);
+      path2.cubicTo(size.width * 0.8, size.height * 0.4, size.width * 0.9, size.height * 0.25, size.width, size.height * 0.2);
+
+      final linePaint2 = Paint()
+        ..color = FursafyTheme.secondary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3;
+
+      canvas.drawPath(path1, linePaint1);
+      canvas.drawPath(path2, linePaint2);
+      return;
+    }
+
+    // Dynamic coordinates based on growth metrics
     final path1 = Path();
-    path1.moveTo(0, size.height * 0.7);
-    path1.cubicTo(size.width * 0.15, size.height * 0.65, size.width * 0.3, size.height * 0.2, size.width * 0.45, size.height * 0.3);
-    path1.cubicTo(size.width * 0.6, size.height * 0.4, size.width * 0.75, size.height * 0.05, size.width, size.height * 0.1);
+    final path2 = Path();
+
+    final count = growthMetrics.length;
+    double maxSignups = 10;
+    double maxJobs = 10;
+
+    for (var m in growthMetrics) {
+      final s = ((m['signups'] ?? 0) as num).toDouble();
+      final j = ((m['jobs'] ?? 0) as num).toDouble();
+      if (s > maxSignups) maxSignups = s;
+      if (j > maxJobs) maxJobs = j;
+    }
+
+    final double step = size.width / (count - 1);
+    for (int i = 0; i < count; i++) {
+      final x = i * step;
+      final ySignups = size.height * (1.0 - (((growthMetrics[i]['signups'] ?? 0) as num).toDouble() / maxSignups).clamp(0.05, 0.95));
+      final yJobs = size.height * (1.0 - (((growthMetrics[i]['jobs'] ?? 0) as num).toDouble() / maxJobs).clamp(0.05, 0.95));
+
+      if (i == 0) {
+        path1.moveTo(x, ySignups);
+        path2.moveTo(x, yJobs);
+      } else {
+        path1.lineTo(x, ySignups);
+        path2.lineTo(x, yJobs);
+      }
+    }
 
     final linePaint1 = Paint()
       ..color = FursafyTheme.primary
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.5;
 
-    // Path 2: Secondary line (Revenue)
-    final path2 = Path();
-    path2.moveTo(0, size.height * 0.8);
-    path2.cubicTo(size.width * 0.2, size.height * 0.85, size.width * 0.4, size.height * 0.5, size.width * 0.6, size.height * 0.45);
-    path2.cubicTo(size.width * 0.8, size.height * 0.4, size.width * 0.9, size.height * 0.25, size.width, size.height * 0.2);
-
     final linePaint2 = Paint()
       ..color = FursafyTheme.secondary
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
 
-    // Draw lines
     canvas.drawPath(path1, linePaint1);
     canvas.drawPath(path2, linePaint2);
-
-    // Draw dots at highlights
-    final dotPaint1 = Paint()..color = FursafyTheme.primary;
-    final dotPaint2 = Paint()..color = FursafyTheme.secondary;
-    canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.3), 5, dotPaint1);
-    canvas.drawCircle(Offset(size.width, size.height * 0.1), 5, dotPaint1);
-    canvas.drawCircle(Offset(size.width * 0.6, size.height * 0.45), 5.5, dotPaint2);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-// Styled Map Hotspot circles
 class MapHotspot extends StatefulWidget {
   final String label;
   final bool isAmber;

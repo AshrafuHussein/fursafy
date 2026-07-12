@@ -15,6 +15,9 @@ class UserEntity extends Equatable {
   final GeoPoint? location;
   final String? locationName;
   final DateTime createdAt;
+  final String? nationalIdUrl;
+  final String? businessLicenseUrl;
+  final String? videoKycUrl;
 
   const UserEntity({
     required this.uid,
@@ -28,6 +31,9 @@ class UserEntity extends Equatable {
     this.location,
     this.locationName,
     required this.createdAt,
+    this.nationalIdUrl,
+    this.businessLicenseUrl,
+    this.videoKycUrl,
   });
 
   @override
@@ -43,6 +49,9 @@ class UserEntity extends Equatable {
         location,
         locationName,
         createdAt,
+        nationalIdUrl,
+        businessLicenseUrl,
+        videoKycUrl,
       ];
 
   /// Firestore serialization.
@@ -58,6 +67,9 @@ class UserEntity extends Equatable {
         'location': location,
         'locationName': locationName,
         'createdAt': Timestamp.fromDate(createdAt),
+        'nationalIdUrl': nationalIdUrl,
+        'businessLicenseUrl': businessLicenseUrl,
+        'videoKycUrl': videoKycUrl,
       };
 
   factory UserEntity.fromMap(Map<String, dynamic> map) => UserEntity(
@@ -73,6 +85,9 @@ class UserEntity extends Equatable {
         location: map['location'] as GeoPoint?,
         locationName: map['locationName'] as String?,
         createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        nationalIdUrl: map['nationalIdUrl'] as String?,
+        businessLicenseUrl: map['businessLicenseUrl'] as String?,
+        videoKycUrl: map['videoKycUrl'] as String?,
       );
 
   UserEntity copyWith({
@@ -87,6 +102,9 @@ class UserEntity extends Equatable {
     GeoPoint? location,
     String? locationName,
     DateTime? createdAt,
+    String? nationalIdUrl,
+    String? businessLicenseUrl,
+    String? videoKycUrl,
   }) =>
       UserEntity(
         uid: uid ?? this.uid,
@@ -100,6 +118,9 @@ class UserEntity extends Equatable {
         location: location ?? this.location,
         locationName: locationName ?? this.locationName,
         createdAt: createdAt ?? this.createdAt,
+        nationalIdUrl: nationalIdUrl ?? this.nationalIdUrl,
+        businessLicenseUrl: businessLicenseUrl ?? this.businessLicenseUrl,
+        videoKycUrl: videoKycUrl ?? this.videoKycUrl,
       );
 }
 

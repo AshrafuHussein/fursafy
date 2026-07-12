@@ -1,23 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/app/theme.dart';
-import 'package:fursafy/core/constants/app_constants.dart';
 
 class FinancialOversightTab extends StatelessWidget {
   final double totalTxVolume;
   final double platformFeesPercentage;
   final int completedJobs;
+  final List<Map<String, dynamic>> transactions;
+  final Function(String txId, String status) onTransactionStatusUpdate;
+  final Function(List<String> txIds) onAuthorizeBatchPayout;
 
   const FinancialOversightTab({
     super.key,
     required this.totalTxVolume,
     required this.platformFeesPercentage,
     required this.completedJobs,
+    required this.transactions,
+    required this.onTransactionStatusUpdate,
+    required this.onAuthorizeBatchPayout,
   });
 
   @override
   Widget build(BuildContext context) {
     final platformFees = totalTxVolume * (platformFeesPercentage / 100.0);
+
+    // Dynamic calculations from real transactions
+    final disputedCount = transactions
+        .where((tx) => tx['status'] == 'disputed')
+        .length;
+    final pendingCount = transactions
+        .where((tx) => tx['status'] == 'pending')
+        .length;
+
+    // Calculate channel share dynamically if transactions exist
+    int mpesa = 0, airtel = 0, tigo = 0;
+    for (var tx in transactions) {
+      final ch = tx['channel']?.toString().toLowerCase();
+      if (ch == 'mpesa')
+        mpesa++;
+      else if (ch == 'airtel')
+        airtel++;
+      else if (ch == 'tigo')
+        tigo++;
+    }
+    final totalChannels = mpesa + airtel + tigo;
+    final double mpesaPct = totalChannels > 0 ? mpesa / totalChannels : 0.68;
+    final double airtelPct = totalChannels > 0 ? airtel / totalChannels : 0.22;
+    final double tigoPct = totalChannels > 0 ? tigo / totalChannels : 0.10;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -25,12 +53,17 @@ class FinancialOversightTab extends StatelessWidget {
         // Header info
         Text(
           'Financial Oversight',
-          style: FursafyTheme.headlineStyle.copyWith(fontSize: 32, fontWeight: FontWeight.w900),
+          style: FursafyTheme.headlineStyle.copyWith(
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         const SizedBox(height: 6),
         Text(
           'Oversee total transactional value aggregated dynamically from completed jobs.',
-          style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.onSurfaceVariant),
+          style: FursafyTheme.bodyStyle.copyWith(
+            color: FursafyTheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 32),
 
@@ -41,11 +74,11 @@ class FinancialOversightTab extends StatelessWidget {
           mainAxisSpacing: 20,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 1.5,
+          childAspectRatio: 1.8,
           children: [
             // Total Volume (Large Bento)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [FursafyTheme.primaryContainer, FursafyTheme.primary],
@@ -78,18 +111,29 @@ class FinancialOversightTab extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Row(
                           children: const [
-                            Icon(Icons.trending_up, color: Colors.white, size: 12),
+                            Icon(
+                              Icons.trending_up,
+                              color: Colors.white,
+                              size: 12,
+                            ),
                             SizedBox(width: 4),
                             Text(
                               '+12.5%',
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -97,7 +141,10 @@ class FinancialOversightTab extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         'vs last 30 days',
-                        style: FursafyTheme.bodyStyle.copyWith(color: Colors.white70, fontSize: 12),
+                        style: FursafyTheme.bodyStyle.copyWith(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -107,7 +154,8 @@ class FinancialOversightTab extends StatelessWidget {
             // Platform Fees
             _statsCard(
               icon: Icons.account_balance_wallet,
-              label: 'Platform Fees (${platformFeesPercentage.toStringAsFixed(0)}%)',
+              label:
+                  'Platform Fees (${platformFeesPercentage.toStringAsFixed(0)}%)',
               value: 'TZS ${_formatPrice(platformFees)}',
               bottomLabel: 'Net Revenue',
               iconBg: FursafyTheme.primary.withValues(alpha: 0.05),
@@ -115,11 +163,13 @@ class FinancialOversightTab extends StatelessWidget {
             ),
             // Worker Payouts Pending
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: FursafyTheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
+                border: Border.all(
+                  color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +184,11 @@ class FinancialOversightTab extends StatelessWidget {
                           color: FursafyTheme.secondary.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.pending_actions, color: FursafyTheme.secondary, size: 20),
+                        child: const Icon(
+                          Icons.pending_actions,
+                          color: FursafyTheme.secondary,
+                          size: 20,
+                        ),
                       ),
                     ],
                   ),
@@ -143,12 +197,20 @@ class FinancialOversightTab extends StatelessWidget {
                     children: [
                       Text(
                         'Worker Payouts Pending',
-                        style: FursafyTheme.bodyStyle.copyWith(fontSize: 13, color: FursafyTheme.onSurfaceVariant, fontWeight: FontWeight.w500),
+                        style: FursafyTheme.bodyStyle.copyWith(
+                          fontSize: 13,
+                          color: FursafyTheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$completedJobs Jobs',
-                        style: FursafyTheme.headlineStyle.copyWith(fontSize: 24, fontWeight: FontWeight.w900, color: FursafyTheme.onSurface),
+                        '$pendingCount Payouts',
+                        style: FursafyTheme.headlineStyle.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: FursafyTheme.onSurface,
+                        ),
                       ),
                     ],
                   ),
@@ -158,7 +220,11 @@ class FinancialOversightTab extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         'Awaiting Verification',
-                        style: FursafyTheme.labelStyle.copyWith(fontSize: 10, color: FursafyTheme.outline, fontWeight: FontWeight.bold),
+                        style: FursafyTheme.labelStyle.copyWith(
+                          fontSize: 10,
+                          color: FursafyTheme.outline,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -184,7 +250,10 @@ class FinancialOversightTab extends StatelessWidget {
                     children: [
                       Text(
                         'Recent Transactions',
-                        style: FursafyTheme.headlineStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: FursafyTheme.headlineStyle.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       TextButton.icon(
                         onPressed: () {},
@@ -198,113 +267,217 @@ class FinancialOversightTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: FursafyTheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
+                      border: Border.all(
+                        color: FursafyTheme.outlineVariant.withValues(
+                          alpha: 0.15,
+                        ),
+                      ),
                     ),
-                    child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      stream: FirebaseFirestore.instance.collection(FirestorePaths.jobs).snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(28.0),
-                              child: CircularProgressIndicator(color: FursafyTheme.primary),
-                            ),
-                          );
-                        }
-                        final docs = snapshot.data?.docs ?? [];
-                        final completedJobsList = docs.where((doc) {
-                          final status = doc.data()['status'] ?? '';
-                          return status == 'completed' || status == 'closed' || status == 'open';
-                        }).take(5).toList(); // Show top 5 recent jobs
-
-                        if (completedJobsList.isEmpty) {
-                          return const Padding(
+                    child: transactions.isEmpty
+                        ? const Padding(
                             padding: EdgeInsets.all(40.0),
                             child: Center(
-                              child: Text('No transaction history on the platform yet.'),
+                              child: Text(
+                                'No transaction history on the platform yet.',
+                              ),
                             ),
-                          );
-                        }
+                          )
+                        : DataTable(
+                            headingRowColor: WidgetStateProperty.all(
+                              FursafyTheme.surfaceContainerLow.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                            horizontalMargin: 24,
+                            columns: const [
+                              DataColumn(
+                                label: Text(
+                                  'ENTITY',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'SERVICE',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'AMOUNT',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'FEE',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'STATUS',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            rows: transactions.take(5).map<DataRow>((tx) {
+                              final provider = tx['providerName'] ?? 'Provider';
+                              final title = tx['jobTitle'] ?? 'Job';
+                              final pay = (tx['amount'] ?? 0.0) as num;
+                              final fee = (tx['platformFee'] ?? 0.0) as num;
+                              final status = tx['status'] ?? 'pending';
 
-                        return DataTable(
-                          headingRowColor: WidgetStateProperty.all(FursafyTheme.surfaceContainerLow.withValues(alpha: 0.5)),
-                          horizontalMargin: 24,
-                          columns: const [
-                            DataColumn(label: Text('ENTITY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                            DataColumn(label: Text('SERVICE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                            DataColumn(label: Text('AMOUNT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                            DataColumn(label: Text('FEE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                            DataColumn(label: Text('STATUS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                          ],
-                          rows: completedJobsList.map<DataRow>((doc) {
-                            final data = doc.data();
-                            final title = data['title'] ?? 'Job';
-                            final provider = data['providerName'] ?? 'Provider';
-                            final pay = (data['payAmount'] ?? 0.0) as num;
-                            final fee = pay * (platformFeesPercentage / 100.0);
-                            final status = data['status'] ?? 'open';
-                            final isCompleted = status == 'completed';
-
-                            return DataRow(
-                              cells: [
-                                DataCell(
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 16,
-                                        backgroundColor: FursafyTheme.primary.withValues(alpha: 0.1),
-                                        child: Text(
-                                          provider.substring(0, 1).toUpperCase(),
-                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: FursafyTheme.primary),
+                              return DataRow(
+                                cells: [
+                                  DataCell(
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 16,
+                                          backgroundColor: FursafyTheme.primary
+                                              .withValues(alpha: 0.1),
+                                          child: Text(
+                                            provider
+                                                .substring(0, 1)
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: FursafyTheme.primary,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              provider,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Youth Worker',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: FursafyTheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          title,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Provider: $provider',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color:
+                                                FursafyTheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      'TZS ${_formatPrice(pay.toDouble())}',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      'TZS ${_formatPrice(fee.toDouble())}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: FursafyTheme.outline,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: status == 'paid'
+                                            ? FursafyTheme.primary.withValues(
+                                                alpha: 0.1,
+                                              )
+                                            : status == 'disputed'
+                                            ? FursafyTheme.error.withValues(
+                                                alpha: 0.1,
+                                              )
+                                            : FursafyTheme.secondary.withValues(
+                                                alpha: 0.1,
+                                              ),
+                                        borderRadius: BorderRadius.circular(
+                                          100,
                                         ),
                                       ),
-                                      const SizedBox(width: 12),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(provider, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                                          Text('Youth Worker', style: TextStyle(fontSize: 11, color: FursafyTheme.onSurfaceVariant)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                DataCell(
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                                      Text('Provider: $provider', style: TextStyle(fontSize: 11, color: FursafyTheme.onSurfaceVariant)),
-                                    ],
-                                  ),
-                                ),
-                                DataCell(Text('TZS ${_formatPrice(pay.toDouble())}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                                DataCell(Text('TZS ${_formatPrice(fee)}', style: TextStyle(fontSize: 12, color: FursafyTheme.outline))),
-                                DataCell(
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: isCompleted ? FursafyTheme.primary.withValues(alpha: 0.1) : FursafyTheme.secondary.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: Text(
-                                      isCompleted ? 'PAID' : 'PENDING',
-                                      style: TextStyle(
-                                        color: isCompleted ? FursafyTheme.primary : FursafyTheme.secondary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10,
+                                      child: Text(
+                                        status.toUpperCase(),
+                                        style: TextStyle(
+                                          color: status == 'paid'
+                                              ? FursafyTheme.primary
+                                              : status == 'disputed'
+                                              ? FursafyTheme.error
+                                              : FursafyTheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 10,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        );
-                      },
-                    ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
                   ),
                 ],
               ),
@@ -318,7 +491,10 @@ class FinancialOversightTab extends StatelessWidget {
                 children: [
                   Text(
                     'Revenue Breakdown',
-                    style: FursafyTheme.headlineStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: FursafyTheme.headlineStyle.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -326,27 +502,58 @@ class FinancialOversightTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: FursafyTheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
+                      border: Border.all(
+                        color: FursafyTheme.outlineVariant.withValues(
+                          alpha: 0.15,
+                        ),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _breakdownRow('Worker Payouts', 0.97, '97%', FursafyTheme.primary),
+                        _breakdownRow(
+                          'Worker Payouts',
+                          0.97,
+                          '97%',
+                          FursafyTheme.primary,
+                        ),
                         const SizedBox(height: 16),
-                        _breakdownRow('Platform Fee', 0.03, '3%', FursafyTheme.secondary),
+                        _breakdownRow(
+                          'Platform Fee',
+                          0.03,
+                          '3%',
+                          FursafyTheme.secondary,
+                        ),
                         const SizedBox(height: 24),
                         const Divider(color: FursafyTheme.outlineVariant),
                         const SizedBox(height: 16),
                         Text(
                           'PAYOUT CHANNELS',
-                          style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline, letterSpacing: 1.2),
+                          style: FursafyTheme.labelStyle.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: FursafyTheme.outline,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        _channelRow(Colors.green, 'M-Pesa', '68%'),
+                        _channelRow(
+                          Colors.green,
+                          'M-Pesa',
+                          '${(mpesaPct * 100).toStringAsFixed(0)}%',
+                        ),
                         const SizedBox(height: 10),
-                        _channelRow(Colors.red, 'Airtel Money', '22%'),
+                        _channelRow(
+                          Colors.red,
+                          'Airtel Money',
+                          '${(airtelPct * 100).toStringAsFixed(0)}%',
+                        ),
                         const SizedBox(height: 10),
-                        _channelRow(Colors.blue, 'Tigo Pesa', '10%'),
+                        _channelRow(
+                          Colors.blue,
+                          'Tigo Pesa',
+                          '${(tigoPct * 100).toStringAsFixed(0)}%',
+                        ),
                       ],
                     ),
                   ),
@@ -358,7 +565,10 @@ class FinancialOversightTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: FursafyTheme.surfaceBright,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: FursafyTheme.primary.withValues(alpha: 0.15), width: 2),
+                      border: Border.all(
+                        color: FursafyTheme.primary.withValues(alpha: 0.15),
+                        width: 2,
+                      ),
                     ),
                     child: Stack(
                       children: [
@@ -367,7 +577,11 @@ class FinancialOversightTab extends StatelessWidget {
                           bottom: -16,
                           child: Opacity(
                             opacity: 0.05,
-                            child: Icon(Icons.gavel, size: 80, color: FursafyTheme.primary),
+                            child: Icon(
+                              Icons.gavel,
+                              size: 80,
+                              color: FursafyTheme.primary,
+                            ),
                           ),
                         ),
                         Column(
@@ -375,12 +589,19 @@ class FinancialOversightTab extends StatelessWidget {
                           children: [
                             Text(
                               'Reconciliation Needed',
-                              style: FursafyTheme.headlineStyle.copyWith(color: FursafyTheme.primary, fontWeight: FontWeight.bold, fontSize: 16),
+                              style: FursafyTheme.headlineStyle.copyWith(
+                                color: FursafyTheme.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '4 transactions flagged for provider-worker dispute. Review required before payout.',
-                              style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.outline, fontSize: 12),
+                              '$disputedCount transactions flagged for provider-worker dispute. Review required before payout.',
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                color: FursafyTheme.outline,
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             ElevatedButton(
@@ -388,17 +609,28 @@ class FinancialOversightTab extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: FursafyTheme.primary,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
                                 elevation: 0,
                               ),
-                              child: const Text('Open Dispute Center', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                              child: const Text(
+                                'Open Dispute Center',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -414,21 +646,50 @@ class FinancialOversightTab extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text('System Status: ', style: TextStyle(fontSize: 11, color: FursafyTheme.outline)),
-                const Text('Operational', style: TextStyle(fontSize: 11, color: Colors.green, fontWeight: FontWeight.bold)),
-                const Text(' • Last Sync: 2m ago', style: TextStyle(fontSize: 11, color: FursafyTheme.outline)),
+                const Text(
+                  'System Status: ',
+                  style: TextStyle(fontSize: 11, color: FursafyTheme.outline),
+                ),
+                const Text(
+                  'Operational',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  ' • Last Sync: 2m ago',
+                  style: TextStyle(fontSize: 11, color: FursafyTheme.outline),
+                ),
               ],
             ),
             Row(
               children: [
                 TextButton(
                   onPressed: () {},
-                  child: Text('EXPORT CSV', style: FursafyTheme.labelStyle.copyWith(fontSize: 11, color: FursafyTheme.outline, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                  child: Text(
+                    'EXPORT CSV',
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 11,
+                      color: FursafyTheme.outline,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 16),
                 TextButton(
                   onPressed: () {},
-                  child: Text('GENERATE PDF REPORT', style: FursafyTheme.labelStyle.copyWith(fontSize: 11, color: FursafyTheme.outline, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                  child: Text(
+                    'GENERATE PDF REPORT',
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 11,
+                      color: FursafyTheme.outline,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -447,11 +708,13 @@ class FinancialOversightTab extends StatelessWidget {
     required Color iconColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: FursafyTheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: FursafyTheme.outlineVariant.withValues(alpha: 0.15)),
+        border: Border.all(
+          color: FursafyTheme.outlineVariant.withValues(alpha: 0.15),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,18 +733,31 @@ class FinancialOversightTab extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: FursafyTheme.bodyStyle.copyWith(fontSize: 13, color: FursafyTheme.onSurfaceVariant, fontWeight: FontWeight.w500),
+                style: FursafyTheme.bodyStyle.copyWith(
+                  fontSize: 13,
+                  color: FursafyTheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: FursafyTheme.headlineStyle.copyWith(fontSize: 24, fontWeight: FontWeight.w900, color: FursafyTheme.onSurface),
+                style: FursafyTheme.headlineStyle.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: FursafyTheme.onSurface,
+                ),
               ),
             ],
           ),
           Text(
             bottomLabel.toUpperCase(),
-            style: FursafyTheme.labelStyle.copyWith(fontSize: 10, color: FursafyTheme.outline, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+            style: FursafyTheme.labelStyle.copyWith(
+              fontSize: 10,
+              color: FursafyTheme.outline,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
         ],
       ),
@@ -503,7 +779,9 @@ class FinancialOversightTab extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 1.5),
                 image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'),
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -518,7 +796,9 @@ class FinancialOversightTab extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 1.5),
                 image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'),
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -533,7 +813,9 @@ class FinancialOversightTab extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 1.5),
                 image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'),
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -553,11 +835,17 @@ class FinancialOversightTab extends StatelessWidget {
           children: [
             Text(
               title,
-              style: FursafyTheme.bodyStyle.copyWith(color: FursafyTheme.onSurfaceVariant, fontSize: 13),
+              style: FursafyTheme.bodyStyle.copyWith(
+                color: FursafyTheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
             ),
             Text(
               pct,
-              style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+              style: FursafyTheme.bodyStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
           ],
         ),
@@ -581,17 +869,30 @@ class FinancialOversightTab extends StatelessWidget {
       children: [
         Row(
           children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle)),
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: dotColor,
+                shape: BoxShape.circle,
+              ),
+            ),
             const SizedBox(width: 8),
             Text(
               label,
-              style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.w500),
+              style: FursafyTheme.bodyStyle.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
         Text(
           value,
-          style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+          style: FursafyTheme.bodyStyle.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
@@ -601,7 +902,6 @@ class FinancialOversightTab extends StatelessWidget {
     if (value >= 1000000) {
       return '${(value / 1000000).toStringAsFixed(1)}M';
     }
-    // Add comma format manually
     final str = value.toStringAsFixed(0);
     final buffer = StringBuffer();
     for (int i = 0; i < str.length; i++) {
@@ -613,8 +913,18 @@ class FinancialOversightTab extends StatelessWidget {
     return buffer.toString();
   }
 
-  // Batch Payout Authorization Modal matching design exactly!
   void _showBatchPayoutModal(BuildContext context) {
+    // Filter pending/disputed items
+    final pendingTx = transactions
+        .where((tx) => tx['status'] == 'pending' || tx['status'] == 'disputed')
+        .toList();
+    final totalAmount = pendingTx.fold<double>(
+      0.0,
+      (sum, tx) => sum + ((tx['amount'] ?? 0.0) as num).toDouble(),
+    );
+    final commissions = totalAmount * (platformFeesPercentage / 100.0);
+    final netPayout = totalAmount - commissions;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -628,20 +938,26 @@ class FinancialOversightTab extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Left Column: Green background
+                // Left Column: Teal background
                 Expanded(
                   flex: 2,
                   child: Container(
                     padding: const EdgeInsets.all(32),
                     decoration: const BoxDecoration(
                       color: FursafyTheme.primary,
-                      borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(20),
+                      ),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.payments_outlined, color: Colors.white70, size: 28),
+                        const Icon(
+                          Icons.payments_outlined,
+                          color: Colors.white70,
+                          size: 28,
+                        ),
                         const SizedBox(height: 24),
                         Text(
                           'Batch Payout Authorization',
@@ -653,13 +969,13 @@ class FinancialOversightTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Cycle: Oct 15 - Oct 30',
+                          'Cycle: Dynamic Payout',
                           style: FursafyTheme.labelStyle.copyWith(
                             color: Colors.white70,
                             fontSize: 11,
                           ),
                         ),
-                        const Spacer(),
+                        const SizedBox(height: 48),
                         Text(
                           'TOTAL AMOUNT',
                           style: FursafyTheme.labelStyle.copyWith(
@@ -670,7 +986,7 @@ class FinancialOversightTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'TZS 1.2M',
+                          'TZS ${_formatPrice(totalAmount)}',
                           style: FursafyTheme.headlineStyle.copyWith(
                             color: Colors.white,
                             fontSize: 28,
@@ -709,21 +1025,40 @@ class FinancialOversightTab extends StatelessWidget {
                         const SizedBox(height: 24),
 
                         // Itemized summaries
-                        _itemizedRow(Icons.people_outline, '32 Approved Recipients', 'TZS 850,000'),
+                        _itemizedRow(
+                          Icons.people_outline,
+                          '${pendingTx.length} Recipients',
+                          'TZS ${_formatPrice(netPayout)}',
+                        ),
                         const SizedBox(height: 12),
-                        _itemizedRow(Icons.account_balance, 'Platform Commissions (15%)', 'TZS 180,000'),
+                        _itemizedRow(
+                          Icons.account_balance,
+                          'Commissions (${platformFeesPercentage.toStringAsFixed(0)}%)',
+                          'TZS ${_formatPrice(commissions)}',
+                        ),
                         const SizedBox(height: 12),
-                        _itemizedRow(Icons.receipt_long_outlined, 'Tax Deductions', 'TZS 170,000'),
+                        _itemizedRow(
+                          Icons.receipt_long_outlined,
+                          'Gross Deductions',
+                          'TZS ${_formatPrice(totalAmount)}',
+                        ),
                         const SizedBox(height: 24),
 
                         Row(
                           children: const [
-                            Icon(Icons.info_outline, size: 14, color: FursafyTheme.outline),
+                            Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: FursafyTheme.outline,
+                            ),
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 'Funds will be available in 2-4 hours.',
-                                style: TextStyle(fontSize: 11, color: FursafyTheme.outline),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: FursafyTheme.outline,
+                                ),
                               ),
                             ),
                           ],
@@ -735,27 +1070,45 @@ class FinancialOversightTab extends StatelessWidget {
                           children: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('Modify'),
+                              child: const Text('Cancel'),
                             ),
                             const SizedBox(width: 16),
                             ElevatedButton(
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                if (pendingTx.isNotEmpty) {
+                                  final txIds = pendingTx
+                                      .map((tx) => tx['id']?.toString() ?? '')
+                                      .toList();
+                                  onAuthorizeBatchPayout(txIds);
+                                }
+                              },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF855400), // secondary/amber
+                                backgroundColor: const Color(0xFF855400),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
                               ),
                               child: Row(
                                 children: const [
-                                  Text('Release Funds', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(
+                                    'Release Funds',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                   SizedBox(width: 8),
                                   Icon(Icons.send, size: 14),
                                 ],
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -782,20 +1135,21 @@ class FinancialOversightTab extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+              style: FursafyTheme.bodyStyle.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           Text(
             amount,
-            style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+            style: FursafyTheme.bodyStyle.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
     );
   }
-}
-
-// Helper to support gridIndex attribute used above
-extension on Widget {
-  Widget get gridIndex => this;
 }
