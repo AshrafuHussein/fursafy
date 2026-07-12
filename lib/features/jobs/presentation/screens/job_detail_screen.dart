@@ -83,208 +83,208 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        decoration: const BoxDecoration(
-          color: FursafyTheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 40,
-              offset: Offset(0, -10),
-            ),
-          ],
-        ),
-        padding: EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          MediaQuery.of(ctx).viewInsets.bottom + 40,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 48,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: FursafyTheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(100),
-                ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: FursafyTheme.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x1A000000),
+                blurRadius: 40,
+                offset: Offset(0, -10),
               ),
-            ),
-            const SizedBox(height: 24),
-
-            // Title + subtitle
-            Text(
-              'Apply for this role',
-              style: FursafyTheme.headlineStyle.copyWith(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Send a short message to the hiring manager.',
-              style: FursafyTheme.bodyStyle.copyWith(
-                fontSize: 14,
-                color: FursafyTheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Job summary card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: FursafyTheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Container(
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
                     width: 48,
-                    height: 48,
+                    height: 6,
                     decoration: BoxDecoration(
-                      color: FursafyTheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.work,
-                      color: FursafyTheme.onPrimaryContainer,
-                      size: 24,
+                      color: FursafyTheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(100),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          job.title,
-                          style: FursafyTheme.bodyStyle.copyWith(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          job.providerName.toUpperCase(),
-                          style: FursafyTheme.labelStyle.copyWith(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.2,
-                            color: FursafyTheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
+                ),
+                const SizedBox(height: 24),
 
-            // Intro message label
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: Text(
-                'INTRO MESSAGE',
-                style: FursafyTheme.labelStyle.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2.0,
-                  color: FursafyTheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: FursafyTheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: coverController,
-                maxLines: 4,
-                style: FursafyTheme.bodyStyle.copyWith(
-                  color: FursafyTheme.onSurface,
-                  fontSize: 14,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Tell them why you\'re a great fit...',
-                  hintStyle: FursafyTheme.bodyStyle.copyWith(
-                    color: FursafyTheme.outline.withValues(alpha: 0.6),
-                    fontSize: 14,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(16),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Confirm Application button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _submitApplication(coverController.text.trim());
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: FursafyTheme.primary,
-                  foregroundColor: FursafyTheme.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  elevation: 4,
-                  shadowColor: FursafyTheme.primary.withValues(alpha: 0.2),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Confirm Application',
-                      style: FursafyTheme.bodyStyle.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.send, size: 18),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Cancel button
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                style: TextButton.styleFrom(
-                  foregroundColor: FursafyTheme.onSurfaceVariant,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
+                // Title + subtitle
+                Text(
+                  'Apply for this role',
+                  style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
                   ),
                 ),
-                child: Text(
-                  'Cancel',
+                const SizedBox(height: 4),
+                Text(
+                  'Send a short message to the hiring manager.',
                   style: FursafyTheme.bodyStyle.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                     color: FursafyTheme.onSurfaceVariant,
                   ),
                 ),
-              ),
+                const SizedBox(height: 24),
+
+                // Job summary card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: FursafyTheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: FursafyTheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.work,
+                          color: FursafyTheme.onPrimaryContainer,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              job.title,
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              job.providerName.toUpperCase(),
+                              style: FursafyTheme.labelStyle.copyWith(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                                color: FursafyTheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Intro message label
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: Text(
+                    'INTRO MESSAGE',
+                    style: FursafyTheme.labelStyle.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.0,
+                      color: FursafyTheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: FursafyTheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: coverController,
+                    maxLines: 4,
+                    style: FursafyTheme.bodyStyle.copyWith(
+                      color: FursafyTheme.onSurface,
+                      fontSize: 14,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Tell them why you\'re a great fit...',
+                      hintStyle: FursafyTheme.bodyStyle.copyWith(
+                        color: FursafyTheme.outline.withValues(alpha: 0.6),
+                        fontSize: 14,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Confirm Application button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _submitApplication(coverController.text.trim());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: FursafyTheme.primary,
+                      foregroundColor: FursafyTheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      elevation: 4,
+                      shadowColor: FursafyTheme.primary.withValues(alpha: 0.2),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Confirm Application',
+                          style: FursafyTheme.bodyStyle.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.send, size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Cancel button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: TextButton.styleFrom(
+                      foregroundColor: FursafyTheme.onSurfaceVariant,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: FursafyTheme.bodyStyle.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: FursafyTheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -892,20 +892,25 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   ),
                 ),
                 // Profile button
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: FursafyTheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Text(
-                    'Profile',
-                    style: FursafyTheme.labelStyle.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
+                GestureDetector(
+                  onTap: () {
+                    context.push('/provider/${job.providerId}');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: FursafyTheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      'Profile',
+                      style: FursafyTheme.labelStyle.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),

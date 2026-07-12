@@ -158,33 +158,40 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                     const SizedBox(height: 12),
 
                     // Provider row
-                    Row(children: [
-                      Container(
-                        width: 48, height: 48,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: FursafyTheme.surfaceContainerHigh),
-                        child: Center(child: Text(
-                          (_provider?['displayName'] as String?)?.isNotEmpty == true
-                              ? (_provider!['displayName'] as String)[0].toUpperCase()
-                              : '?',
-                          style: FursafyTheme.headlineStyle.copyWith(
-                            fontSize: 20, fontWeight: FontWeight.w800,
-                            color: FursafyTheme.primary))),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(_provider?['displayName'] ?? 'Provider',
+                    GestureDetector(
+                      onTap: () {
+                        if (_app?.providerId != null && _app!.providerId.isNotEmpty) {
+                          context.push('/provider/${_app!.providerId}');
+                        }
+                      },
+                      child: Row(children: [
+                        Container(
+                          width: 48, height: 48,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: FursafyTheme.surfaceContainerHigh),
+                          child: Center(child: Text(
+                            (_provider?['displayName'] as String?)?.isNotEmpty == true
+                                ? (_provider!['displayName'] as String)[0].toUpperCase()
+                                : '?',
                             style: FursafyTheme.headlineStyle.copyWith(
-                              fontSize: 16, fontWeight: FontWeight.w700)),
-                          Text('${_job?['locationName'] ?? 'Remote'} • Full-time',
-                            style: FursafyTheme.bodyStyle.copyWith(
-                              fontSize: 13, color: FursafyTheme.onSurfaceVariant)),
-                        ],
-                      ),
-                    ]),
+                              fontSize: 20, fontWeight: FontWeight.w800,
+                              color: FursafyTheme.primary))),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_provider?['displayName'] ?? 'Provider',
+                              style: FursafyTheme.headlineStyle.copyWith(
+                                fontSize: 16, fontWeight: FontWeight.w700)),
+                            Text('${_job?['locationName'] ?? 'Remote'} • Full-time',
+                              style: FursafyTheme.bodyStyle.copyWith(
+                                fontSize: 13, color: FursafyTheme.onSurfaceVariant)),
+                          ],
+                        ),
+                      ]),
+                    ),
                     const SizedBox(height: 24),
 
                     // Bento Stats
@@ -248,25 +255,40 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
 
   Widget _statusBadge() {
     final isAccepted = _app!.status == ApplicationStatus.accepted;
+    final isCompleted = _app!.status == ApplicationStatus.completed;
+    final badgeColor = isAccepted
+        ? FursafyTheme.primary.withValues(alpha: 0.1)
+        : isCompleted
+            ? FursafyTheme.secondary.withValues(alpha: 0.1)
+            : FursafyTheme.surfaceContainerHigh;
+    final textColor = isAccepted
+        ? FursafyTheme.primary
+        : isCompleted
+            ? FursafyTheme.secondary
+            : FursafyTheme.onSurfaceVariant;
+    final icon = isAccepted
+        ? Icons.check_circle
+        : isCompleted
+            ? Icons.task_alt
+            : Icons.pending;
+
     return Align(alignment: Alignment.centerLeft,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isAccepted
-              ? FursafyTheme.primary.withValues(alpha: 0.1)
-              : FursafyTheme.surfaceContainerHigh,
+          color: badgeColor,
           borderRadius: BorderRadius.circular(100)),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(isAccepted ? Icons.check_circle : Icons.pending,
+          Icon(icon,
             size: 18,
-            color: isAccepted ? FursafyTheme.primary : FursafyTheme.onSurfaceVariant),
+            color: textColor),
           const SizedBox(width: 8),
           Text(
             _app!.status.name.toUpperCase(),
             style: FursafyTheme.labelStyle.copyWith(
               fontSize: 11, fontWeight: FontWeight.w700,
               letterSpacing: 2.0,
-              color: isAccepted ? FursafyTheme.primary : FursafyTheme.onSurfaceVariant)),
+              color: textColor)),
         ]),
       ),
     );
@@ -332,35 +354,42 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
           ),
           const SizedBox(height: 20),
           // Provider info row
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: FursafyTheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [
-              Stack(children: [
-                CircleAvatar(radius: 24,
-                  backgroundColor: FursafyTheme.surfaceContainerHigh,
-                  child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?',
-                    style: FursafyTheme.headlineStyle.copyWith(
-                      fontSize: 20, fontWeight: FontWeight.w800,
-                      color: FursafyTheme.primary))),
-                Positioned(bottom: 0, right: 0,
-                  child: Container(width: 14, height: 14,
-                    decoration: BoxDecoration(
-                      color: FursafyTheme.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: FursafyTheme.surface, width: 2)))),
+          GestureDetector(
+            onTap: () {
+              if (_app?.providerId != null && _app!.providerId.isNotEmpty) {
+                context.push('/provider/${_app!.providerId}');
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: FursafyTheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12)),
+              child: Row(children: [
+                Stack(children: [
+                  CircleAvatar(radius: 24,
+                    backgroundColor: FursafyTheme.surfaceContainerHigh,
+                    child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?',
+                      style: FursafyTheme.headlineStyle.copyWith(
+                        fontSize: 20, fontWeight: FontWeight.w800,
+                        color: FursafyTheme.primary))),
+                  Positioned(bottom: 0, right: 0,
+                    child: Container(width: 14, height: 14,
+                      decoration: BoxDecoration(
+                        color: FursafyTheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: FursafyTheme.surface, width: 2)))),
+                ]),
+                const SizedBox(width: 16),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(name, style: FursafyTheme.headlineStyle.copyWith(
+                    fontSize: 16, fontWeight: FontWeight.w700)),
+                  Text(_provider?['phone'] as String? ?? 'Operations Lead',
+                    style: FursafyTheme.bodyStyle.copyWith(
+                      fontSize: 13, color: FursafyTheme.onSurfaceVariant)),
+                ]),
               ]),
-              const SizedBox(width: 16),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(name, style: FursafyTheme.headlineStyle.copyWith(
-                  fontSize: 16, fontWeight: FontWeight.w700)),
-                Text(_provider?['phone'] as String? ?? 'Operations Lead',
-                  style: FursafyTheme.bodyStyle.copyWith(
-                    fontSize: 13, color: FursafyTheme.onSurfaceVariant)),
-              ]),
-            ]),
+            ),
           ),
           const SizedBox(height: 16),
           // Action buttons

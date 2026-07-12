@@ -25,6 +25,7 @@ import '../features/profile/presentation/screens/my_jobs_screen.dart';
 import '../features/profile/presentation/screens/provider_dashboard_screen.dart';
 import '../features/profile/presentation/screens/provider_profile_screen.dart';
 import '../features/profile/presentation/screens/youth_public_profile_screen.dart';
+import '../features/profile/presentation/screens/provider_public_profile_screen.dart';
 import '../features/ratings/presentation/screens/rating_screen.dart';
 import '../features/ratings/presentation/screens/provider_rating_screen.dart';
 import '../features/admin/presentation/screens/admin_dashboard_screen.dart';
@@ -61,6 +62,7 @@ class AppRoutes {
   static const String providerRateJob = '/provider/rate/:jobId';
   static const String applicationDetail = '/applications/:applicationId';
   static const String youthPublicProfile = '/youth/:uid';
+  static const String providerPublicProfile = '/provider/:uid';
   static const String map = '/map';
   static const String admin = '/admin';
 }
@@ -208,6 +210,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final uid = state.pathParameters['uid']!;
         return YouthPublicProfileScreen(uid: uid);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.providerPublicProfile,
+      builder: (context, state) {
+        final uid = state.pathParameters['uid']!;
+        return ProviderPublicProfileScreen(uid: uid);
       },
     ),
     GoRoute(

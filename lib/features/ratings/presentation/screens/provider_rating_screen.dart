@@ -56,7 +56,7 @@ class _ProviderRatingScreenState extends State<ProviderRatingScreen> {
       final appSnap = await FirebaseFirestore.instance
           .collection(FirestorePaths.applications)
           .where('jobId', isEqualTo: widget.jobId)
-          .where('status', isEqualTo: 'accepted')
+          .where('status', whereIn: const ['accepted', 'completed'])
           .where('providerId', isEqualTo: uid)
           .limit(1)
           .get();

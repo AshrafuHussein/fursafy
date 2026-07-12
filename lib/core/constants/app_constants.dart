@@ -121,7 +121,8 @@ enum ApplicationStatus {
   pending,
   accepted,
   rejected,
-  withdrawn;
+  withdrawn,
+  completed;
 
   static ApplicationStatus fromString(String value) {
     return ApplicationStatus.values.firstWhere(
