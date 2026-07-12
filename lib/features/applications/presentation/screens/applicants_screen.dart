@@ -56,9 +56,19 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
 
   Future<void> _updateStatus(ApplicationEntity app, ApplicationStatus status) async {
     try {
-      await FirebaseFirestore.instance
-          .collection(FirestorePaths.applications).doc(app.id)
-          .update({'status': status.name});
+      final batch = FirebaseFirestore.instance.batch();
+
+      final appRef = FirebaseFirestore.instance
+          .collection(FirestorePaths.applications).doc(app.id);
+      batch.update(appRef, {'status': status.name});
+
+      if (status == ApplicationStatus.accepted) {
+        final jobRef = FirebaseFirestore.instance
+            .collection(FirestorePaths.jobs).doc(app.jobId);
+        batch.update(jobRef, {'acceptedYouthId': app.youthId});
+      }
+
+      await batch.commit();
 
       debugPrint('[Applicants] Status updated to ${status.name} for app=${app.id}');
       debugPrint('[Applicants] Writing notification for youthId=${app.youthId}');
