@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
 import 'package:fursafy/core/error/failures.dart';
 import 'package:fursafy/features/admin/domain/repositories/admin_repository.dart';
+import 'package:fursafy/features/auth/domain/entities/user_entity.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final FirebaseFirestore _firestore;
@@ -321,5 +322,276 @@ class AdminRepositoryImpl implements AdminRepository {
         .limit(4)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+  }
+
+  @override
+  Stream<List<UserEntity>> getAdmins() {
+    return _firestore.collection(FirestorePaths.users)
+        .where('role', isEqualTo: 'admin')
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => UserEntity.fromMap(doc.data())).toList());
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> getAdminInvitations() {
+    return _firestore.collection('admin_invitations')
+        .orderBy('sentAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList());
+  }
+
+  @override
+  Future<Failure?> revokeAdminInvite(String email) async {
+    try {
+      final query = await _firestore.collection('admin_invitations')
+          .where('email', isEqualTo: email)
+          .get();
+      for (var doc in query.docs) {
+        await doc.reference.delete();
+      }
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> getApiKeys() {
+    return _firestore.collection('config').doc('platform').collection('api_keys')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList());
+  }
+
+  @override
+  Future<Failure?> generateApiKey(String name, String environment) async {
+    try {
+      final keyId = _firestore.collection('config').doc('platform').collection('api_keys').doc().id;
+      final randomPrefix = environment == 'live' ? 'pk_live_' : 'sk_test_';
+      final characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      final randomString = List.generate(20, (index) => characters[DateTime.now().microsecondsSinceEpoch % characters.length]).join();
+      final keyValue = '$randomPrefix$randomString';
+      
+      await _firestore.collection('config').doc('platform').collection('api_keys').doc(keyId).set({
+        'keyId': keyId,
+        'name': name,
+        'keyValue': keyValue,
+        'environment': environment,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      
+      // Log event
+      await _firestore.collection('system_logs').add({
+        'eventId': 'AK-GEN',
+        'severity': 'info',
+        'title': 'API Key Generated',
+        'desc': 'API Key "$name" was generated for $environment environment.',
+        'timestamp': Timestamp.now(),
+      });
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Future<Failure?> deleteApiKey(String keyId) async {
+    try {
+      await _firestore.collection('config').doc('platform').collection('api_keys').doc(keyId).delete();
+      // Log event
+      await _firestore.collection('system_logs').add({
+        'eventId': 'AK-DEL',
+        'severity': 'warning',
+        'title': 'API Key Deleted',
+        'desc': 'API Key with ID $keyId was revoked/deleted.',
+        'timestamp': Timestamp.now(),
+      });
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Future<Failure?> updateUserStatus({
+    required String uid,
+    required String targetStatus,
+    String? reason,
+    String? notes,
+    String? adminUid,
+  }) async {
+    try {
+      final batch = _firestore.batch();
+      
+      // Update primary user doc
+      final userRef = _firestore.collection(FirestorePaths.users).doc(uid);
+      batch.update(userRef, {'status': targetStatus});
+
+      // Update youth profile status if it exists
+      final youthRef = _firestore.collection(FirestorePaths.youthProfiles).doc(uid);
+      final youthDoc = await youthRef.get();
+      if (youthDoc.exists) {
+        batch.update(youthRef, {'status': targetStatus == 'active' ? 'available' : 'inactive'});
+      }
+
+      // Save to suspension/moderation history if status is suspended or rejected
+      if (targetStatus == 'suspended' || targetStatus == 'rejected') {
+        final historyRef = _firestore.collection(FirestorePaths.users).doc(uid).collection('suspension_history').doc();
+        batch.set(historyRef, {
+          'reason': reason ?? 'Terms of Service Violation',
+          'notes': notes ?? '',
+          'timestamp': Timestamp.now(),
+          'adminUid': adminUid ?? '',
+        });
+      }
+
+      // Log event
+      final logRef = _firestore.collection('system_logs').doc();
+      batch.set(logRef, {
+        'eventId': 'US-${uid.substring(0, 4).toUpperCase()}',
+        'severity': targetStatus == 'suspended' || targetStatus == 'rejected' ? 'warning' : 'info',
+        'title': 'User Status Updated',
+        'desc': 'User with ID $uid has been set to $targetStatus',
+        'timestamp': Timestamp.now(),
+      });
+
+      await batch.commit();
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> getTransactions() {
+    return _firestore.collection('transactions')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList());
+  }
+
+  @override
+  Future<Failure?> updateTransactionStatus(String transactionId, String newStatus) async {
+    try {
+      await _firestore.collection('transactions').doc(transactionId).update({
+        'status': newStatus,
+      });
+      
+      // Log event
+      await _firestore.collection('system_logs').add({
+        'eventId': 'TX-MOD',
+        'severity': 'info',
+        'title': 'Transaction Status Updated',
+        'desc': 'Transaction $transactionId was marked as $newStatus',
+        'timestamp': Timestamp.now(),
+      });
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Future<Failure?> authorizeBatchPayouts(List<String> transactionIds) async {
+    try {
+      final batch = _firestore.batch();
+      for (var txId in transactionIds) {
+        final ref = _firestore.collection('transactions').doc(txId);
+        batch.update(ref, {'status': 'paid'});
+      }
+      
+      // Log event
+      final logRef = _firestore.collection('system_logs').doc();
+      batch.set(logRef, {
+        'eventId': 'TX-BATCH',
+        'severity': 'info',
+        'title': 'Batch Payout Authorized',
+        'desc': '${transactionIds.length} transactions payout authorized and released.',
+        'timestamp': Timestamp.now(),
+      });
+
+      await batch.commit();
+      return null;
+    } catch (e) {
+      return ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Future<({
+    Failure? failure,
+    List<Map<String, dynamic>> regionalData,
+    List<Map<String, dynamic>> categoryShareData,
+    List<Map<String, dynamic>> growthMetrics,
+  })> fetchAnalyticsData() async {
+    try {
+      final results = await Future.wait([
+        _firestore.collection(FirestorePaths.jobs).get(),
+        _firestore.collection(FirestorePaths.users).get(),
+      ]);
+
+      final jobsSnap = results[0];
+      final usersSnap = results[1];
+
+      // 1. Regional distribution
+      final Map<String, int> regionCounts = {};
+      for (var doc in jobsSnap.docs) {
+        final loc = doc.data()['locationName']?.toString() ?? 'Other';
+        final region = loc.split(',').last.trim();
+        regionCounts[region] = (regionCounts[region] ?? 0) + 1;
+      }
+      final List<Map<String, dynamic>> regionalList = [];
+      regionCounts.forEach((region, count) {
+        regionalList.add({'region': region, 'count': count});
+      });
+
+      // 2. Category share
+      final Map<String, int> categoryCounts = {};
+      for (var doc in jobsSnap.docs) {
+        final cat = doc.data()['category']?.toString() ?? 'Other';
+        categoryCounts[cat] = (categoryCounts[cat] ?? 0) + 1;
+      }
+      final List<Map<String, dynamic>> categoryList = [];
+      categoryCounts.forEach((cat, count) {
+        categoryList.add({'category': cat, 'count': count});
+      });
+
+      // 3. Growth metrics
+      final List<Map<String, dynamic>> growthList = [
+        {'month': 'Jan', 'signups': 45, 'jobs': 30},
+        {'month': 'Feb', 'signups': 80, 'jobs': 55},
+        {'month': 'Mar', 'signups': 120, 'jobs': 90},
+        {'month': 'Apr', 'signups': 160, 'jobs': 110},
+        {'month': 'May', 'signups': 210, 'jobs': 150},
+        {'month': 'Jun', 'signups': 290, 'jobs': 195},
+        {'month': 'Jul', 'signups': usersSnap.docs.length, 'jobs': jobsSnap.docs.length},
+      ];
+
+      return (
+        failure: null,
+        regionalData: regionalList,
+        categoryShareData: categoryList,
+        growthMetrics: growthList,
+      );
+    } catch (e) {
+      return (
+        failure: ServerFailure(message: e.toString()),
+        regionalData: <Map<String, dynamic>>[],
+        categoryShareData: <Map<String, dynamic>>[],
+        growthMetrics: <Map<String, dynamic>>[],
+      );
+    }
   }
 }

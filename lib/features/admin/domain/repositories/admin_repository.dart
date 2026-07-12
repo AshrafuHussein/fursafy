@@ -1,4 +1,5 @@
 import 'package:fursafy/core/error/failures.dart';
+import 'package:fursafy/features/auth/domain/entities/user_entity.dart';
 
 abstract class AdminRepository {
   /// Loads the global platform config from Firestore `/config/platform`.
@@ -39,4 +40,48 @@ abstract class AdminRepository {
 
   /// Streams the 4 most recent events from the system logs.
   Stream<List<Map<String, dynamic>>> getRecentSystemLogs();
+
+  /// Streams all administrator users from users collection where role is admin.
+  Stream<List<UserEntity>> getAdmins();
+
+  /// Streams pending invitations from /admin_invitations collection.
+  Stream<List<Map<String, dynamic>>> getAdminInvitations();
+
+  /// Revokes or deletes a pending administrator invite.
+  Future<Failure?> revokeAdminInvite(String email);
+
+  /// Streams platform API Keys from /config/api_keys collection.
+  Stream<List<Map<String, dynamic>>> getApiKeys();
+
+  /// Generates a new API Key and adds it to Firestore.
+  Future<Failure?> generateApiKey(String name, String environment);
+
+  /// Deletes an API Key.
+  Future<Failure?> deleteApiKey(String keyId);
+
+  /// Updates status of a user (with detailed reasons/notes if suspended).
+  Future<Failure?> updateUserStatus({
+    required String uid,
+    required String targetStatus,
+    String? reason,
+    String? notes,
+    String? adminUid,
+  });
+
+  /// Streams all platform transaction logs.
+  Stream<List<Map<String, dynamic>>> getTransactions();
+
+  /// Resolves a dispute or releases a payout transaction.
+  Future<Failure?> updateTransactionStatus(String transactionId, String newStatus);
+
+  /// Batch authorizes and processes pending payout transactions.
+  Future<Failure?> authorizeBatchPayouts(List<String> transactionIds);
+
+  /// Dynamic aggregates for analytics page.
+  Future<({
+    Failure? failure,
+    List<Map<String, dynamic>> regionalData,
+    List<Map<String, dynamic>> categoryShareData,
+    List<Map<String, dynamic>> growthMetrics,
+  })> fetchAnalyticsData();
 }

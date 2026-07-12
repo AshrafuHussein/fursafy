@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fursafy/features/auth/domain/entities/user_entity.dart';
 
 class AdminState extends Equatable {
   final bool isLoading;
@@ -20,6 +21,17 @@ class AdminState extends Equatable {
   // Weekly Jobs
   final List<Map<String, dynamic>> weeklyJobsData;
 
+  // Real-time Lists
+  final List<UserEntity> admins;
+  final List<Map<String, dynamic>> adminInvites;
+  final List<Map<String, dynamic>> apiKeys;
+  final List<Map<String, dynamic>> transactions;
+
+  // Analytics Dynamic Data
+  final List<Map<String, dynamic>> analyticsRegional;
+  final List<Map<String, dynamic>> analyticsCategories;
+  final List<Map<String, dynamic>> analyticsGrowth;
+
   const AdminState({
     required this.isLoading,
     this.errorMessage,
@@ -33,6 +45,13 @@ class AdminState extends Equatable {
     required this.totalTxVolume,
     required this.platformConfig,
     required this.weeklyJobsData,
+    this.admins = const [],
+    this.adminInvites = const [],
+    this.apiKeys = const [],
+    this.transactions = const [],
+    this.analyticsRegional = const [],
+    this.analyticsCategories = const [],
+    this.analyticsGrowth = const [],
   });
 
   factory AdminState.initial() {
@@ -47,6 +66,13 @@ class AdminState extends Equatable {
       totalTxVolume: 0.0,
       platformConfig: {},
       weeklyJobsData: [],
+      admins: [],
+      adminInvites: [],
+      apiKeys: [],
+      transactions: [],
+      analyticsRegional: [],
+      analyticsCategories: [],
+      analyticsGrowth: [],
     );
   }
 
@@ -63,6 +89,13 @@ class AdminState extends Equatable {
     double? totalTxVolume,
     Map<String, dynamic>? platformConfig,
     List<Map<String, dynamic>>? weeklyJobsData,
+    List<UserEntity>? admins,
+    List<Map<String, dynamic>>? adminInvites,
+    List<Map<String, dynamic>>? apiKeys,
+    List<Map<String, dynamic>>? transactions,
+    List<Map<String, dynamic>>? analyticsRegional,
+    List<Map<String, dynamic>>? analyticsCategories,
+    List<Map<String, dynamic>>? analyticsGrowth,
   }) {
     return AdminState(
       isLoading: isLoading ?? this.isLoading,
@@ -77,6 +110,13 @@ class AdminState extends Equatable {
       totalTxVolume: totalTxVolume ?? this.totalTxVolume,
       platformConfig: platformConfig ?? this.platformConfig,
       weeklyJobsData: weeklyJobsData ?? this.weeklyJobsData,
+      admins: admins ?? this.admins,
+      adminInvites: adminInvites ?? this.adminInvites,
+      apiKeys: apiKeys ?? this.apiKeys,
+      transactions: transactions ?? this.transactions,
+      analyticsRegional: analyticsRegional ?? this.analyticsRegional,
+      analyticsCategories: analyticsCategories ?? this.analyticsCategories,
+      analyticsGrowth: analyticsGrowth ?? this.analyticsGrowth,
     );
   }
 
@@ -94,5 +134,12 @@ class AdminState extends Equatable {
         totalTxVolume,
         platformConfig,
         weeklyJobsData,
+        admins,
+        adminInvites,
+        apiKeys,
+        transactions,
+        analyticsRegional,
+        analyticsCategories,
+        analyticsGrowth,
       ];
 }

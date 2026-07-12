@@ -193,7 +193,9 @@ enum NotificationType {
 /// Account status.
 enum AccountStatus {
   active,
-  suspended;
+  suspended,
+  pending,
+  rejected;
 
   static AccountStatus fromString(String value) {
     return AccountStatus.values.firstWhere(

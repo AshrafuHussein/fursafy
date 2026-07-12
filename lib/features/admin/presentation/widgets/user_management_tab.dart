@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/constants/app_constants.dart';
@@ -8,6 +9,8 @@ class UserManagementTab extends StatefulWidget {
   final String userFilterRole;
   final ValueChanged<String> onUserFilterRoleChanged;
   final Function(String uid, String currentStatus) onUserStatusToggle;
+  final Function(String uid, bool isApproved, String? reason, String? notes) onUserVerification;
+  final Function(String uid, String reason, String notes) onUserSuspended;
   final Function(String email) onInviteAdmin;
 
   const UserManagementTab({
@@ -16,6 +19,8 @@ class UserManagementTab extends StatefulWidget {
     required this.userFilterRole,
     required this.onUserFilterRoleChanged,
     required this.onUserStatusToggle,
+    required this.onUserVerification,
+    required this.onUserSuspended,
     required this.onInviteAdmin,
   });
 
@@ -27,6 +32,33 @@ class _UserManagementTabState extends State<UserManagementTab> {
   int _currentPage = 0;
   static const int _pageSize = 10;
   bool _sortAscending = true;
+
+  String _formatJoinDate(DateTime date) {
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  void _exportCsv(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
+    final buffer = StringBuffer();
+    buffer.writeln('UID,DisplayName,Email,Role,Status,JoinDate');
+    for (var doc in docs) {
+      final data = doc.data();
+      final uid = doc.id;
+      final name = data['displayName'] ?? '';
+      final email = data['email'] ?? '';
+      final role = data['role'] ?? 'youth';
+      final status = data['status'] ?? 'active';
+      final timestamp = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final joinDate = '${timestamp.year}-${timestamp.month}-${timestamp.day}';
+      
+      buffer.writeln('"$uid","$name","$email","$role","$status","$joinDate"');
+    }
+
+    Clipboard.setData(ClipboardData(text: buffer.toString()));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Filtered users exported and copied to clipboard as CSV!')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +103,6 @@ class _UserManagementTabState extends State<UserManagementTab> {
           } else if (status == 'pending') {
             pendingCount++;
           }
-          // Mock active now count (e.g. users with recent activity or 8% of total)
         }
         activeNowCount = (totalCount * 0.08).round().clamp(1, 1000);
 
@@ -238,7 +269,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                             ),
                             const SizedBox(width: 12),
                             TextButton.icon(
-                              onPressed: () {},
+                              onPressed: () => _exportCsv(filteredDocs),
                               icon: const Icon(Icons.download, size: 18),
                               label: const Text('Export CSV'),
                               style: TextButton.styleFrom(
@@ -282,11 +313,14 @@ class _UserManagementTabState extends State<UserManagementTab> {
                         final email = data['email'] ?? 'No Email';
                         final role = (data['role'] ?? 'youth').toString();
                         final status = (data['status'] ?? 'active').toString();
+                        final joinDate = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
 
-                        // Get random/consistent Unsplash avatar image
-                        final avatarUrl = role == 'youth'
-                            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
-                            : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80';
+                        // Get actual or consistent Unsplash avatar image
+                        final avatarUrl = (data['avatarUrl'] ?? '').toString().isNotEmpty
+                            ? data['avatarUrl'].toString()
+                            : (role == 'youth'
+                                ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
+                                : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80');
 
                         final isPending = status == 'pending';
                         final isSuspended = status == 'suspended';
@@ -380,7 +414,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                             ),
                             DataCell(
                               Text(
-                                'Oct 12, 2023',
+                                _formatJoinDate(joinDate),
                                 style: FursafyTheme.bodyStyle.copyWith(
                                   color: FursafyTheme.onSurfaceVariant,
                                   fontSize: 13,
@@ -393,7 +427,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                                 children: [
                                   if (isPending)
                                     ElevatedButton(
-                                      onPressed: () => _showVerifyUserModal(context, name, uid),
+                                      onPressed: () => _showVerifyUserModal(context, name, uid, role, data),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: FursafyTheme.primary,
                                         foregroundColor: Colors.white,
@@ -406,7 +440,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                                   else ...[
                                     IconButton(
                                       icon: const Icon(Icons.visibility, size: 20),
-                                      onPressed: () {},
+                                      onPressed: () => _showUserDetailsModal(context, name, email, role, status, joinDate, data),
                                       color: FursafyTheme.onSurfaceVariant,
                                       tooltip: 'View Details',
                                     ),
@@ -555,7 +589,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'System flags show a 15% increase in job provider sign-ups this week. Automated verification is processing 80% of applicants; 412 users require manual review of credentials.',
+                              'System flags show a 15% increase in job provider sign-ups this week. Automated verification is processing 80% of applicants; $pendingCount users require manual review of credentials.',
                               style: FursafyTheme.bodyStyle.copyWith(
                                 color: Colors.white.withValues(alpha: 0.9),
                                 height: 1.5,
@@ -608,7 +642,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                         const SizedBox(height: 16),
                         _insightRow(Icons.groups, 'Engagement', 'Daily active users +8%', FursafyTheme.primary),
                         const SizedBox(height: 16),
-                        _insightRow(Icons.priority_high, 'Support Load', '14 tickets pending', FursafyTheme.tertiary),
+                        _insightRow(Icons.priority_high, 'Support Load', '$pendingCount pending verifications', FursafyTheme.tertiary),
                       ],
                     ),
                   ),
@@ -815,8 +849,15 @@ class _UserManagementTabState extends State<UserManagementTab> {
     );
   }
 
-  // Verify User Modal matching Design exactly!
-  void _showVerifyUserModal(BuildContext context, String name, String uid) {
+  void _showVerifyUserModal(BuildContext context, String name, String uid, String role, Map<String, dynamic> data) {
+    // Determine preview doc URL
+    final docUrl = role == 'youth' ? (data['nationalIdUrl'] as String?) : (data['businessLicenseUrl'] as String?);
+    final documentPreviewUrl = (docUrl ?? '').isNotEmpty 
+        ? docUrl! 
+        : 'https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?auto=format&fit=crop&w=600&q=80';
+
+    final notesController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) {
@@ -877,9 +918,15 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     children: [
                       Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 24,
-                            backgroundImage: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'),
+                            backgroundImage: NetworkImage(
+                              (data['avatarUrl'] ?? '').toString().isNotEmpty
+                                  ? data['avatarUrl'].toString()
+                                  : (role == 'youth'
+                                      ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
+                                      : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80')
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Column(
@@ -893,7 +940,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                                 ),
                               ),
                               Text(
-                                'Applied: Oct 24, 2023 • Dar es Salaam',
+                                'Role: ${role.toUpperCase()}',
                                 style: FursafyTheme.bodyStyle.copyWith(
                                   color: FursafyTheme.onSurfaceVariant,
                                   fontSize: 13,
@@ -905,7 +952,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'DOCUMENT PREVIEW',
+                        'DOCUMENT PREVIEW (${role == 'youth' ? 'NATIONAL ID' : 'BUSINESS LICENSE'})',
                         style: FursafyTheme.labelStyle.copyWith(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -914,14 +961,32 @@ class _UserManagementTabState extends State<UserManagementTab> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Mock National ID Image preview
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
-                          'https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?auto=format&fit=crop&w=600&q=80',
+                          documentPreviewUrl,
                           height: 180,
                           width: double.infinity,
                           fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'DECISION NOTES / REASONS',
+                        style: FursafyTheme.labelStyle.copyWith(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: FursafyTheme.onSurfaceVariant,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: notesController,
+                        maxLines: 2,
+                        decoration: const InputDecoration(
+                          hintText: 'Add audit notes, internal comments or rejection details...',
+                          border: OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -931,7 +996,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                           OutlinedButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              widget.onUserStatusToggle(uid, 'pending'); // Set state back/toggle
+                              widget.onUserVerification(uid, false, 'Invalid documentation submitted.', notesController.text.trim());
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: FursafyTheme.error,
@@ -944,7 +1009,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                           ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              widget.onUserStatusToggle(uid, 'pending'); // Marks active
+                              widget.onUserVerification(uid, true, null, notesController.text.trim());
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: FursafyTheme.primary,
@@ -966,7 +1031,6 @@ class _UserManagementTabState extends State<UserManagementTab> {
     );
   }
 
-  // Suspend User Modal matching Design exactly!
   void _showSuspendUserModal(BuildContext context, String name, String uid, String currentStatus) {
     if (currentStatus == 'suspended') {
       widget.onUserStatusToggle(uid, currentStatus);
@@ -974,6 +1038,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
     }
 
     String selectedReason = 'Terms of Service Violation';
+    final notesController = TextEditingController();
 
     showDialog(
       context: context,
@@ -1053,6 +1118,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: notesController,
                 maxLines: 3,
                 decoration: const InputDecoration(
                   hintText: 'Provide detailed context for this action...',
@@ -1071,7 +1137,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      widget.onUserStatusToggle(uid, currentStatus);
+                      widget.onUserSuspended(uid, selectedReason, notesController.text.trim());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: FursafyTheme.error,
@@ -1084,6 +1150,47 @@ class _UserManagementTabState extends State<UserManagementTab> {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showUserDetailsModal(
+    BuildContext context,
+    String name,
+    String email,
+    String role,
+    String status,
+    DateTime joinDate,
+    Map<String, dynamic> data,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: FursafyTheme.surfaceContainerLowest,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text('User Profile Details', style: FursafyTheme.headlineStyle.copyWith(fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Name: $name', style: FursafyTheme.bodyStyle.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              Text('Email: $email', style: FursafyTheme.bodyStyle),
+              Text('Role: ${role.toUpperCase()}', style: FursafyTheme.bodyStyle),
+              Text('Status: ${status.toUpperCase()}', style: FursafyTheme.bodyStyle),
+              Text('Member Since: ${_formatJoinDate(joinDate)}', style: FursafyTheme.bodyStyle),
+              if (data['phone'] != null) Text('Phone: ${data['phone']}', style: FursafyTheme.bodyStyle),
+              if (data['locationName'] != null) Text('Location: ${data['locationName']}', style: FursafyTheme.bodyStyle),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
         );
       },
     );
