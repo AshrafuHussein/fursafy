@@ -73,19 +73,18 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(
-            authRepository: AuthRepositoryImpl(),
-          )..add(AuthCheckRequested()),
+          create: (context) =>
+              AuthBloc(authRepository: AuthRepositoryImpl())
+                ..add(AuthCheckRequested()),
         ),
         BlocProvider<RegisterBloc>(
-          create: (context) => RegisterBloc(
-            authRepository: AuthRepositoryImpl(),
-          ),
+          create: (context) =>
+              RegisterBloc(authRepository: AuthRepositoryImpl()),
         ),
         BlocProvider<JobFeedBloc>(
-          create: (context) => JobFeedBloc(
-            jobRepository: JobRepositoryImpl(),
-          )..add(const JobFeedLoadRequested()),
+          create: (context) =>
+              JobFeedBloc(jobRepository: JobRepositoryImpl())
+                ..add(const JobFeedLoadRequested()),
         ),
         BlocProvider<ApplicationBloc>(
           create: (context) => ApplicationBloc(
@@ -93,19 +92,17 @@ void main() async {
           ),
         ),
         BlocProvider<RatingBloc>(
-          create: (context) => RatingBloc(
-            ratingRepository: RatingRepositoryImpl(),
-          ),
+          create: (context) =>
+              RatingBloc(ratingRepository: RatingRepositoryImpl()),
         ),
         BlocProvider<ProfileBloc>(
-          create: (context) => ProfileBloc(
-            profileRepository: ProfileRepositoryImpl(),
-          ),
+          create: (context) =>
+              ProfileBloc(profileRepository: ProfileRepositoryImpl()),
         ),
         BlocProvider<NotificationBloc>(
-          create: (context) => NotificationBloc(
-            repository: NotificationRepositoryImpl(),
-          )..add(const UnreadCountSubscriptionRequested()),
+          create: (context) =>
+              NotificationBloc(repository: NotificationRepositoryImpl())
+                ..add(const UnreadCountSubscriptionRequested()),
         ),
         BlocProvider<LocationBloc>(
           create: (context) => LocationBloc()
@@ -113,9 +110,9 @@ void main() async {
             ..add(const LocationBackgroundStarted()),
         ),
         BlocProvider<AdminBloc>(
-          create: (context) => AdminBloc(
-            adminRepository: AdminRepositoryImpl(),
-          )..add(AdminStatsFetchRequested()),
+          create: (context) =>
+              AdminBloc(adminRepository: AdminRepositoryImpl())
+                ..add(AdminStatsFetchRequested()),
         ),
       ],
       child: const FursafyApp(),

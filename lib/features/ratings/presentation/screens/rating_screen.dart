@@ -266,7 +266,7 @@ class _RatingScreenState extends State<RatingScreen> {
                                   i < _score
                                       ? Icons.star_rounded
                                       : Icons.star_outline_rounded,
-                                  size: 48,
+                                  size: 40,
                                   color: i < _score
                                       ? FursafyTheme.secondaryContainer
                                       : FursafyTheme.surfaceContainerHighest,

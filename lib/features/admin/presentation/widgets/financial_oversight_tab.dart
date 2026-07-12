@@ -36,16 +36,16 @@ class FinancialOversightTab extends StatelessWidget {
 
         // Bento Grid
         GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 1.8,
+          childAspectRatio: 1.5,
           children: [
             // Total Volume (Large Bento)
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [FursafyTheme.primaryContainer, FursafyTheme.primary],
@@ -115,7 +115,7 @@ class FinancialOversightTab extends StatelessWidget {
             ),
             // Worker Payouts Pending
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: FursafyTheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(16),
@@ -447,7 +447,7 @@ class FinancialOversightTab extends StatelessWidget {
     required Color iconColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: FursafyTheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
