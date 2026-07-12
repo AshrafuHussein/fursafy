@@ -104,4 +104,92 @@ class DatabaseSeeder {
       debugPrint('[DatabaseSeeder] Error seeding jobs: $e');
     }
   }
+
+  /// Seeds the skills_taxonomy collection with the predefined skills from SRS §6.7.
+  /// Only runs once — checks if the collection already has documents.
+  static Future<void> seedSkillsTaxonomyIfNeeded() async {
+    try {
+      final col = FirebaseFirestore.instance.collection('skills_taxonomy');
+      final existing = await col.limit(1).get();
+      if (existing.docs.isNotEmpty) return; // Already seeded
+
+      const skills = [
+        {'id': 'plumbing', 'label_en': 'Plumbing', 'label_sw': 'Ufinyanzi wa Maji', 'category': 'technical_repair'},
+        {'id': 'electrical', 'label_en': 'Electrical Work', 'label_sw': 'Kazi ya Umeme', 'category': 'technical_repair'},
+        {'id': 'carpentry', 'label_en': 'Carpentry', 'label_sw': 'Useremala', 'category': 'construction'},
+        {'id': 'cleaning', 'label_en': 'Cleaning', 'label_sw': 'Usafi', 'category': 'cleaning'},
+        {'id': 'tutoring_math', 'label_en': 'Maths Tutoring', 'label_sw': 'Kufundisha Hisabati', 'category': 'tutoring'},
+        {'id': 'it_support', 'label_en': 'IT Support', 'label_sw': 'Msaada wa Teknolojia', 'category': 'technical_repair'},
+        {'id': 'driving', 'label_en': 'Driving', 'label_sw': 'Udereva', 'category': 'delivery'},
+        {'id': 'painting', 'label_en': 'Painting', 'label_sw': 'Upigaji Rangi', 'category': 'construction'},
+        {'id': 'cooking', 'label_en': 'Cooking / Catering', 'label_sw': 'Kupika / Upishi', 'category': 'other'},
+        {'id': 'garden', 'label_en': 'Gardening', 'label_sw': 'Bustani', 'category': 'cleaning'},
+      ];
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (final skill in skills) {
+        final docRef = col.doc(skill['id'] as String);
+        batch.set(docRef, skill);
+      }
+      await batch.commit();
+      debugPrint('[DatabaseSeeder] Successfully seeded ${skills.length} skills in skills_taxonomy.');
+    } catch (e) {
+      debugPrint('[DatabaseSeeder] Error seeding skills_taxonomy: $e');
+    }
+  }
+
+  static Future<void> seedSystemLogsIfNeeded() async {
+    try {
+      final logsColl = FirebaseFirestore.instance.collection('system_logs');
+      final logsSnap = await logsColl.limit(1).get();
+      if (logsSnap.docs.isEmpty) {
+        final batch = FirebaseFirestore.instance.batch();
+        final sampleLogs = [
+          {
+            'eventId': 'EX-9021',
+            'severity': 'critical',
+            'title': 'Database Connection Timeout',
+            'desc': 'Failed to establish handshake with secondary read-replica-01',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'US-1120',
+            'severity': 'info',
+            'title': 'User Login Successful',
+            'desc': 'Administrator logged in from IP 197.250.2.14',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'CF-4412',
+            'severity': 'info',
+            'title': 'Rating Recalculation Triggered',
+            'desc': 'updateRatingAverage cloud function successfully triggered for review ID review_081',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'JB-8821',
+            'severity': 'info',
+            'title': 'New Job Listed',
+            'desc': 'Provider TechVerve Solutions listed a new opportunity for Software Architect',
+            'timestamp': Timestamp.now(),
+          },
+          {
+            'eventId': 'SE-2190',
+            'severity': 'warning',
+            'title': 'High Load Warning',
+            'desc': 'Firestore active operations limit has reached 85% of allocated capacity',
+            'timestamp': Timestamp.now(),
+          }
+        ];
+
+        for (var log in sampleLogs) {
+          batch.set(logsColl.doc(), log);
+        }
+        await batch.commit();
+        debugPrint('[DatabaseSeeder] Successfully seeded system logs.');
+      }
+    } catch (e) {
+      debugPrint('[DatabaseSeeder] Error seeding system logs: $e');
+    }
+  }
 }

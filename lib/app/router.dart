@@ -3,6 +3,7 @@ import '../core/services/notification_service.dart';
 
 // Placeholder screens — will be replaced with Stitch-generated UI
 import '../features/auth/presentation/screens/splash_screen.dart';
+import '../features/auth/presentation/screens/onboarding_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_role_screen.dart';
 import '../features/auth/presentation/screens/register_details_screen.dart';
@@ -23,17 +24,21 @@ import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/my_jobs_screen.dart';
 import '../features/profile/presentation/screens/provider_dashboard_screen.dart';
 import '../features/profile/presentation/screens/provider_profile_screen.dart';
+import '../features/profile/presentation/screens/youth_public_profile_screen.dart';
 import '../features/ratings/presentation/screens/rating_screen.dart';
 import '../features/ratings/presentation/screens/provider_rating_screen.dart';
+import '../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../features/jobs/presentation/screens/map_view_screen.dart';
+import '../core/constants/app_constants.dart';
 
 /// App route names.
 class AppRoutes {
   AppRoutes._();
 
   static const String splash = '/';
+  static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String registerRole = '/register/role';
   static const String registerDetails = '/register/details';
@@ -57,6 +62,7 @@ class AppRoutes {
   static const String applicationDetail = '/applications/:applicationId';
   static const String youthPublicProfile = '/youth/:uid';
   static const String map = '/map';
+  static const String admin = '/admin';
 }
 
 /// GoRouter configuration.
@@ -69,6 +75,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.splash,
       builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.onboarding,
+      builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
       path: AppRoutes.login,
@@ -194,8 +204,26 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: AppRoutes.youthPublicProfile,
+      builder: (context, state) {
+        final uid = state.pathParameters['uid']!;
+        return YouthPublicProfileScreen(uid: uid);
+      },
+    ),
+    GoRoute(
       path: AppRoutes.map,
       builder: (context, state) => const MapViewScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.admin,
+      builder: (context, state) => const AdminDashboardScreen(),
+      redirect: (context, state) {
+        final authState = context.read<AuthBloc>().state;
+        if (authState is AuthAuthenticated && authState.user.role == UserRole.admin) {
+          return null; // Let them through
+        }
+        return AppRoutes.login; // Redirect to login
+      },
     ),
   ],
 );

@@ -18,3 +18,11 @@ export { newApplicationNotification } from "./applicationStatusNotification";
 // ─── Rating Notification (SRS §3.7 / FR-35) ───
 // Fires on new rating → notifies the ratee
 export { ratingNotification } from "./ratingNotification";
+
+// ─── Update Rating Average (SRS §7.2) ───
+// Fires on new rating → recomputes ratingAvg on the ratee's profile
+export { updateRatingAverage } from "./updateRatingAverage";
+
+// ─── Set Custom Claims (SRS §13.2) ───
+// Fires on new user creation → sets role as Firebase Auth custom claim
+export { setCustomClaims } from "./setCustomClaims";

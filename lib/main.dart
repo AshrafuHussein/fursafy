@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fursafy/app/app.dart';
+import 'package:fursafy/firebase_options.dart';
 import 'package:fursafy/core/utils/db_seeder.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fursafy/features/auth/presentation/bloc/register_bloc.dart';
@@ -21,9 +23,14 @@ import 'package:fursafy/features/notifications/presentation/bloc/notification_bl
 import 'package:fursafy/core/services/notification_service.dart';
 import 'package:fursafy/core/location/location_bloc.dart';
 import 'package:fursafy/core/location/location_event.dart';
+import 'package:fursafy/features/admin/data/repositories/admin_repository_impl.dart';
+import 'package:fursafy/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:fursafy/features/admin/presentation/bloc/admin_event.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
 
   // Lock orientation to portrait
   await SystemChrome.setPreferredOrientations([
@@ -41,35 +48,43 @@ void main() async {
     ),
   );
 
-  // Initialize Firebase — google-services.json + Gradle plugin handle native config.
+  // Initialize Firebase
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     await DatabaseSeeder.seedJobsIfNeeded();
+    await DatabaseSeeder.seedSkillsTaxonomyIfNeeded();
+    await DatabaseSeeder.seedSystemLogsIfNeeded();
   } catch (e) {
-    // Already initialized by native plugin — safe to continue.
-    debugPrint('Firebase init: $e');
+    debugPrint('Firebase init error: $e');
   }
 
-  // Initialize FCM push notifications
-  await NotificationService.instance.initialize();
+  // Initialize FCM push notifications (only on mobile)
+  if (!kIsWeb) {
+    try {
+      await NotificationService.instance.initialize();
+    } catch (e) {
+      debugPrint('[FCM] Notification initialization failed: $e');
+    }
+  }
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(
-            authRepository: AuthRepositoryImpl(),
-          )..add(AuthCheckRequested()),
+          create: (context) =>
+              AuthBloc(authRepository: AuthRepositoryImpl())
+                ..add(AuthCheckRequested()),
         ),
         BlocProvider<RegisterBloc>(
-          create: (context) => RegisterBloc(
-            authRepository: AuthRepositoryImpl(),
-          ),
+          create: (context) =>
+              RegisterBloc(authRepository: AuthRepositoryImpl()),
         ),
         BlocProvider<JobFeedBloc>(
-          create: (context) => JobFeedBloc(
-            jobRepository: JobRepositoryImpl(),
-          )..add(const JobFeedLoadRequested()),
+          create: (context) =>
+              JobFeedBloc(jobRepository: JobRepositoryImpl())
+                ..add(const JobFeedLoadRequested()),
         ),
         BlocProvider<ApplicationBloc>(
           create: (context) => ApplicationBloc(
@@ -77,24 +92,27 @@ void main() async {
           ),
         ),
         BlocProvider<RatingBloc>(
-          create: (context) => RatingBloc(
-            ratingRepository: RatingRepositoryImpl(),
-          ),
+          create: (context) =>
+              RatingBloc(ratingRepository: RatingRepositoryImpl()),
         ),
         BlocProvider<ProfileBloc>(
-          create: (context) => ProfileBloc(
-            profileRepository: ProfileRepositoryImpl(),
-          ),
+          create: (context) =>
+              ProfileBloc(profileRepository: ProfileRepositoryImpl()),
         ),
         BlocProvider<NotificationBloc>(
-          create: (context) => NotificationBloc(
-            repository: NotificationRepositoryImpl(),
-          )..add(const UnreadCountSubscriptionRequested()),
+          create: (context) =>
+              NotificationBloc(repository: NotificationRepositoryImpl())
+                ..add(const UnreadCountSubscriptionRequested()),
         ),
         BlocProvider<LocationBloc>(
           create: (context) => LocationBloc()
             ..add(const LocationRequested())
             ..add(const LocationBackgroundStarted()),
+        ),
+        BlocProvider<AdminBloc>(
+          create: (context) =>
+              AdminBloc(adminRepository: AdminRepositoryImpl())
+                ..add(AdminStatsFetchRequested()),
         ),
       ],
       child: const FursafyApp(),

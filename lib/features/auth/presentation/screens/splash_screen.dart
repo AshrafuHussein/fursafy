@@ -5,6 +5,7 @@ import 'package:fursafy/app/router.dart';
 import 'package:fursafy/app/theme.dart';
 import 'package:fursafy/core/services/notification_service.dart';
 import 'package:fursafy/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 /// S01 — Splash screen. Checks auth and routes accordingly.
 class SplashScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  void _navigateToNextScreen(AuthState state) {
+  void _navigateToNextScreen(AuthState state) async {
     if (!mounted || _navigated) return;
     if (!_animationCompleted) return;
 
@@ -66,14 +67,24 @@ class _SplashScreenState extends State<SplashScreen>
     if (state is AuthAuthenticated) {
       _navigated = true;
       final role = state.user.role.name;
-      if (role == 'provider') {
+      if (role == 'admin') {
+        context.go(AppRoutes.admin);
+      } else if (role == 'provider') {
         context.go(AppRoutes.providerDashboard);
       } else {
         context.go(AppRoutes.home);
       }
     } else if (state is AuthUnauthenticated || state is AuthError) {
       _navigated = true;
-      context.go(AppRoutes.login);
+      // Check if user has seen onboarding
+      final box = await Hive.openBox('app_prefs');
+      final hasSeenOnboarding = box.get('hasSeenOnboarding', defaultValue: false) as bool;
+      if (!mounted) return;
+      if (!hasSeenOnboarding) {
+        context.go(AppRoutes.onboarding);
+      } else {
+        context.go(AppRoutes.login);
+      }
     }
   }
 

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e9e8e3",
+                        "primary-fixed": "#86f8c9",
+                        "surface-container-highest": "#e3e3dd",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "surface-bright": "#faf9f4",
+                        "on-secondary-container": "#6b4200",
+                        "tertiary-container": "#b85751",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#fcaa33",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "surface-container": "#efeee9",
+                        "on-tertiary-fixed": "#410003",
+                        "on-primary-fixed": "#002115",
+                        "secondary": "#855400",
+                        "primary-fixed-dim": "#68dbae",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "surface-tint": "#006c4e",
+                        "tertiary": "#993f3a",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bccac1",
+                        "primary": "#00694c",
+                        "secondary-fixed": "#ffddb7",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312d",
+                        "surface": "#faf9f4",
+                        "background": "#faf9f4",
+                        "outline": "#6d7a73",
+                        "surface-dim": "#dbdad5",
+                        "inverse-on-surface": "#f1f1eb",
+                        "on-surface": "#1a1c19",
+                        "surface-container-low": "#f4f4ee",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#2a1700",
+                        "surface-variant": "#e3e3dd",
+                        "primary-container": "#008560",
+                        "on-primary-container": "#f5fff7",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-primary-fixed-variant": "#00513a",
+                        "inverse-primary": "#68dbae",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-background": "#1a1c19",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#3d4943"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-[#faf9f4] dark:bg-slate-950 p-4 gap-y-2 border-r border-slate-100 dark:border-slate-800 z-50">
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div>
+<h1 class="font-headline font-extrabold text-2xl text-[#00694c] leading-tight">Fursafy</h1>
+<p class="text-xs font-medium text-on-surface-variant opacity-70">Growth Engine</p>
+</div>
+</div>
+<nav class="flex-grow flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">work_outline</span>
+<span class="font-medium text-sm">Opportunities</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-medium text-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#00694c] dark:text-[#1D9E75] shadow-sm rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-medium text-sm">Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium text-sm">Financials</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-medium text-sm">System Logs</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 pt-4 border-t border-slate-100">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f1ea] dark:hover:bg-slate-900 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium text-sm">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- Top App Bar -->
+<header class="bg-[#faf9f4]/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-40 w-full px-8 py-4 flex justify-between items-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+<div class="flex items-center gap-6 flex-grow max-w-2xl">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-highest border-none rounded-full text-sm focus:ring-2 focus:ring-primary transition-all" placeholder="Search user directory..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-[#f2f1ea] rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-[#f2f1ea] rounded-full transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant/30 mx-2"></div>
+<div class="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-[#f2f1ea] cursor-pointer transition-colors">
+<div class="text-right hidden xl:block">
+<p class="text-xs font-bold text-on-surface">Amara Simba</p>
+<p class="text-[10px] text-on-surface-variant">System Admin</p>
+</div>
+<img class="w-9 h-9 rounded-full object-cover border-2 border-primary-container" data-alt="professional portrait of an African female administrator with a confident expression in a bright office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUImjp5w0fCICeRcz69O5mONny699brPYgpyfLCFHJmrvp10aimgb0mPTy98kNv_srt_jc714MI-wd-l15Hf1T36fN0wmoPNK45gpGxg_Xke9ZUDzqiVLsdvN8RrNeEAua3WGO9I7I00Pid1uzCmSPDW65gsLOCWPE8q5dXgY8JQS8iYYSWHxuzhGLDUXIZOp9SGVbIwMukkfHzteepqgr_xbvB9TynLIBO-6VWf9NCXQYVZQPH5OpQhyyHFsoqw5an8-hYBRprfdG"/>
+</div>
+</div>
+</header>
+<div class="p-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+<div>
+<h2 class="text-3xl font-headline font-extrabold text-on-surface tracking-tight mb-2">User Management</h2>
+<p class="text-on-surface-variant max-w-md">Oversee the growth of the Fursafy community. Verify providers and manage worker identities.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined">person_add</span>
+<span>Invite Administrator</span>
+</button>
+</div>
+</div>
+<!-- Dashboard Stats Tonal Boxes -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+<div class="bg-surface-container-low p-6 rounded-xl">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Total Users</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-headline font-bold text-primary">12,482</h3>
+<span class="text-primary text-sm font-bold pb-1">+12%</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Verified</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-headline font-bold text-on-surface">8,920</h3>
+<span class="text-secondary text-sm font-bold pb-1">71%</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Pending</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-headline font-bold text-secondary">412</h3>
+<span class="text-secondary text-sm font-bold pb-1">High</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Active Now</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-headline font-bold text-on-surface">1,029</h3>
+<div class="w-2 h-2 rounded-full bg-primary mb-2 animate-pulse"></div>
+</div>
+</div>
+</div>
+<!-- Main Table Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-surface-container-high">
+<!-- Filter Toolbar -->
+<div class="p-4 border-b border-surface-container-high flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+<span class="text-xs font-bold text-on-surface-variant mr-2">FILTER BY:</span>
+<div class="flex gap-2">
+<button class="bg-primary-fixed text-on-primary-fixed px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">All Users</button>
+<button class="bg-surface-container text-on-surface-variant hover:bg-surface-container-high px-4 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap">Youth Workers</button>
+<button class="bg-surface-container text-on-surface-variant hover:bg-surface-container-high px-4 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap">Job Providers</button>
+<div class="w-[1px] h-4 bg-outline-variant/30 mx-1 self-center"></div>
+<button class="bg-secondary-fixed text-on-secondary-fixed px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">pending_actions</span>
+                                Pending Verification
+                            </button>
+<button class="bg-surface-container text-on-surface-variant hover:bg-surface-container-high px-4 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap">Suspended</button>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 text-on-surface-variant text-sm font-medium px-3 py-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">sort</span>
+                            Sort
+                        </button>
+<button class="flex items-center gap-2 text-on-surface-variant text-sm font-medium px-3 py-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">download</span>
+                            Export CSV
+                        </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Name &amp; Identity</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Role</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Join Date</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high/40">
+<!-- User Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="close-up of a young Tanzanian man smiling warmly against a blurred outdoor background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0NTHLX28Nv8T80EAW8tUquhaiFQXwA6C6vu_OxnsG5inZYY0WU6f35ejepYRKr3CC9K-CSWbt6P0txuh9OhRywmT3FVpI8H4-K-Au3JjR9TyD4ZpibsuqCVTpTW6_YNor8q8-J1dntc3DXx3bWj9AvW7msMMYvN6z8O3xjcTwN-smMGcGUvrQx7qc_RPPMwW51xeKTBOn-1bfl7VVACgSzGy5sZohzXVZ2z0ygYJIlYabPUh8XQR6HIWKFVb9zE8hBZlrhqYsJlnq"/>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[8px] text-white" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Juma Bakari</p>
+<p class="text-xs text-on-surface-variant">juma.bakari@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">school</span>
+                                        Youth Worker
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-tight bg-primary-fixed-dim/30 text-primary">
+                                        Verified
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 12, 2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all" title="View Details">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all" title="Suspend">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- User Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="professional African entrepreneur in a modern office wearing business casual attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT_ho2_2OOmmQXziVvxZBCoIbwTXc3LkxN3Cof4CS29ypPQuRdn4aHaoNyZKvir2_Cz9HddCKscEhLZtPRUM-FbkX5zFiVlBfp44-TzJ95OfNdBJ9lotzMAxKQn6v0MbJ006lMAcRnccsXCOOa6L6RdahtZjQ5U5-3GPNpmcjg1Uku0IszyyqUnPykWMFO7KzaQ8vAxP7D2b1UjTtOkmeohECazw6GbpvN3i5ro82Ee-G1INyCUylI8aLTX4t0gfi1eDLSYy2RrOC3"/>
+<div>
+<p class="text-sm font-bold text-on-surface">Zuwena Khatibu</p>
+<p class="text-xs text-on-surface-variant">khatibu.z@techhub.tz</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-secondary-container/20 text-on-secondary-container">
+<span class="material-symbols-outlined text-[14px]">storefront</span>
+                                        Job Provider
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-tight bg-secondary-fixed/50 text-secondary">
+                                        Pending
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Jan 05, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:opacity-90 transition-all">Verify Now</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- User Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="young professional woman with a bright smile in a natural daylight setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs-C3O2PStqQ2X6yml8WKUlAMLxpJPwiSJ1zJ8LrYumBGkuEu6bHv2OvVyxv5s1SHmmdj0QU4HVdmmoagYA5PGnnGm_JkcVPi-Mbm4uZmSDqODyP2IO6ub8arhwqa_61-48pBv4TPxooQs43qcs6ozQPjAsuiNAVAyMidxHvFU9uNnLUbjebW_Fl1Vp3uihC3l0YIQKA9TEsqghTETh5BLLs3RfWt8RtpedkuuBv7eS5qhfFmkeCU7k4Nr9tQRB7FgcL92_7n9Q9zv"/>
+<div>
+<p class="text-sm font-bold text-on-surface">Neema Maleko</p>
+<p class="text-xs text-on-surface-variant">neema@creatives.co.tz</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">school</span>
+                                        Youth Worker
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-tight bg-error-container text-on-error-container">
+                                        Suspended
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Dec 20, 2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all" title="Reinstate">
+<span class="material-symbols-outlined text-[20px]">settings_backup_restore</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- User Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="close-up of a handsome young man with a serious professional look in a contemporary workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy2wL_NPj7LFbIMz9jia-fqs_gbCgv70lfPLj4WLFZElL_8lnZ5dzXiCa0Gg0X38IEf0s9QZcKnlZj3df2xDHvkiZesOdfvopcGPfygz0URLnIy5TFB14LLWfAvhP9YvCD9KZspuApZDrZtAs7kCw0q8xLyLIOj4_RWgrc3zd3D7AHlnxFDH_4vMp7y8DzizEyVXeYNirpVyKt0cFxjIz2QjrEICCLUAA_osNEbaIRdVsQzKsNh63wmXPx6cai9msGckJwE5QoUmai"/>
+<div>
+<p class="text-sm font-bold text-on-surface">Baraka Elias</p>
+<p class="text-xs text-on-surface-variant">elias.b@agri-tech.tz</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-secondary-container/20 text-on-secondary-container">
+<span class="material-symbols-outlined text-[14px]">storefront</span>
+                                        Job Provider
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-tight bg-primary-fixed-dim/30 text-primary">
+                                        Verified
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Feb 14, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- User Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold text-sm">
+                                            SJ
+                                        </div>
+<div>
+<p class="text-sm font-bold text-on-surface">Said Juma</p>
+<p class="text-xs text-on-surface-variant">said.j@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">school</span>
+                                        Youth Worker
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-tight bg-secondary-fixed/50 text-secondary">
+                                        Pending
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Mar 01, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:opacity-90 transition-all">Verify Now</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Section -->
+<div class="px-6 py-4 bg-surface-container-low/30 border-t border-surface-container-high flex flex-col sm:flex-row items-center justify-between gap-4">
+<p class="text-sm text-on-surface-variant font-medium">
+                        Showing <span class="text-on-surface font-bold">1-10</span> of <span class="text-on-surface font-bold">1,248</span> users
+                    </p>
+<div class="flex items-center gap-1">
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined">first_page</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex gap-1 mx-2">
+<button class="w-9 h-9 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold text-sm">1</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant font-bold text-sm transition-colors">2</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant font-bold text-sm transition-colors">3</button>
+<span class="w-9 h-9 flex items-center justify-center text-on-surface-variant">...</span>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant font-bold text-sm transition-colors">125</button>
+</div>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">last_page</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Help / Insights Card -->
+<div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-gradient-to-br from-primary to-primary-container p-8 rounded-2xl text-on-primary relative overflow-hidden">
+<div class="relative z-10 max-w-lg">
+<h4 class="text-2xl font-headline font-bold mb-3">Verification Spotlight</h4>
+<p class="opacity-90 mb-6 leading-relaxed">System flags show a <span class="font-bold underline">15% increase</span> in job provider sign-ups this week. Automated verification is processing 80% of applicants; 412 users require manual review of credentials.</p>
+<button class="bg-surface-container-lowest text-primary px-6 py-3 rounded-full font-extrabold text-sm hover:bg-white transition-all flex items-center gap-2">
+                            Go to Queue
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="absolute top-0 right-0 h-full w-1/3 opacity-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[160px]">verified_user</span>
+</div>
+</div>
+<div class="bg-surface-container-high/50 p-8 rounded-2xl border border-outline-variant/20">
+<h4 class="text-lg font-headline font-bold text-on-surface mb-4">Quick Insights</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Growth Spike</p>
+<p class="text-xs text-on-surface-variant">In Dar es Salaam region</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">groups_3</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Engagement</p>
+<p class="text-xs text-on-surface-variant">Daily active users +8%</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">priority_high</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Support Load</p>
+<p class="text-xs text-on-surface-variant">14 tickets pending</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) - Suppression Logic applied (not needed on Management screen) -->
+</body></html>

@@ -468,13 +468,17 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                                 color: FursafyTheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
-                              Text(
-                                'Applied ${timeago.format(app.appliedAt)}',
-                                style: FursafyTheme.labelStyle.copyWith(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  color: FursafyTheme.onSurfaceVariant,
-                                  letterSpacing: -0.3,
+                              Expanded(
+                                child: Text(
+                                  'Applied ${timeago.format(app.appliedAt)}',
+                                  style: FursafyTheme.labelStyle.copyWith(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    color: FursafyTheme.onSurfaceVariant,
+                                    letterSpacing: -0.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],

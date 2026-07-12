@@ -112,7 +112,8 @@ class YouthProfile extends Equatable {
   final double ratingAvg;
   final int ratingCount;
   final int jobsCompleted;
-  final String status; // 'available' or 'unavailable'
+  final String status; // 'available', 'busy', or 'inactive'
+  final List<String> portfolioURLs;
 
   const YouthProfile({
     required this.uid,
@@ -123,6 +124,7 @@ class YouthProfile extends Equatable {
     this.ratingCount = 0,
     this.jobsCompleted = 0,
     this.status = 'available',
+    this.portfolioURLs = const [],
   });
 
   @override
@@ -135,6 +137,7 @@ class YouthProfile extends Equatable {
         ratingCount,
         jobsCompleted,
         status,
+        portfolioURLs,
       ];
 
   Map<String, dynamic> toMap() => {
@@ -146,6 +149,7 @@ class YouthProfile extends Equatable {
         'ratingCount': ratingCount,
         'jobsCompleted': jobsCompleted,
         'status': status,
+        'portfolioURLs': portfolioURLs,
       };
 
   factory YouthProfile.fromMap(Map<String, dynamic> map) => YouthProfile(
@@ -157,6 +161,7 @@ class YouthProfile extends Equatable {
         ratingCount: (map['ratingCount'] as num?)?.toInt() ?? 0,
         jobsCompleted: (map['jobsCompleted'] as num?)?.toInt() ?? 0,
         status: map['status'] as String? ?? 'available',
+        portfolioURLs: List<String>.from(map['portfolioURLs'] ?? []),
       );
 
   YouthProfile copyWith({
@@ -168,6 +173,7 @@ class YouthProfile extends Equatable {
     int? ratingCount,
     int? jobsCompleted,
     String? status,
+    List<String>? portfolioURLs,
   }) =>
       YouthProfile(
         uid: uid ?? this.uid,
@@ -178,5 +184,6 @@ class YouthProfile extends Equatable {
         ratingCount: ratingCount ?? this.ratingCount,
         jobsCompleted: jobsCompleted ?? this.jobsCompleted,
         status: status ?? this.status,
+        portfolioURLs: portfolioURLs ?? this.portfolioURLs,
       );
 }

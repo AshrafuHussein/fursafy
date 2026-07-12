@@ -27,26 +27,43 @@ class EnvConfig {
   /// Firebase Web API key for authentication and service access.
   static const String firebaseApiKey = String.fromEnvironment(
     'FIREBASE_API_KEY',
+    defaultValue: 'AIzaSyDimAXxesheBTTovvzZBYKqy0qvCQ_XJFw',
   );
 
   /// Firebase project identifier (e.g., "fursafy-12345").
   static const String firebaseProjectId = String.fromEnvironment(
     'FIREBASE_PROJECT_ID',
+    defaultValue: 'fursafy',
   );
 
   /// Firebase Cloud Messaging sender ID for push notifications.
   static const String firebaseMessagingSenderId = String.fromEnvironment(
     'FIREBASE_MESSAGING_SENDER_ID',
+    defaultValue: '621661779995',
   );
 
   /// Firebase application ID for this specific app registration.
   static const String firebaseAppId = String.fromEnvironment(
     'FIREBASE_APP_ID',
+    defaultValue: '1:621661779995:android:18ba11d80722b4baca20be',
   );
 
   /// Firebase Storage bucket URL (e.g., "fursafy.firebasestorage.app").
   static const String firebaseStorageBucket = String.fromEnvironment(
     'FIREBASE_STORAGE_BUCKET',
+    defaultValue: 'fursafy.firebasestorage.app',
+  );
+
+  /// Firebase Web API key.
+  static const String firebaseWebApiKey = String.fromEnvironment(
+    'FIREBASE_WEB_API_KEY',
+    defaultValue: 'AIzaSyCfW1Nf_NrVLzWB0M2plmEIJ7JKN_SNRg0',
+  );
+
+  /// Firebase Web application ID.
+  static const String firebaseWebAppId = String.fromEnvironment(
+    'FIREBASE_WEB_APP_ID',
+    defaultValue: '1:621661779995:web:1f812ff987e7d574ca20be',
   );
 
   // ======================== GOOGLE MAPS ========================
@@ -54,6 +71,7 @@ class EnvConfig {
   /// Google Maps Platform API key for map rendering and geocoding.
   static const String googleMapsApiKey = String.fromEnvironment(
     'GOOGLE_MAPS_API_KEY',
+    defaultValue: 'AIzaSyCfW1Nf_NrVLzWB0M2plmEIJ7JKN_SNRg0',
   );
 
   // ======================== AFRICA'S TALKING ========================

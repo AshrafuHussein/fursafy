@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Financials | Fursafy Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#efeee9",
+                        "outline": "#6d7a73",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dbdad5",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "tertiary": "#993f3a",
+                        "surface-container-high": "#e9e8e3",
+                        "on-secondary-container": "#6b4200",
+                        "on-primary-fixed-variant": "#00513a",
+                        "on-tertiary-fixed": "#410003",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#68dbae",
+                        "on-secondary": "#ffffff",
+                        "background": "#faf9f4",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "primary-fixed": "#86f8c9",
+                        "on-primary-fixed": "#002115",
+                        "tertiary-container": "#b85751",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "tertiary-fixed": "#ffdad6",
+                        "secondary-fixed": "#ffddb7",
+                        "on-surface-variant": "#3d4943",
+                        "primary": "#00694c",
+                        "inverse-surface": "#2f312d",
+                        "surface-variant": "#e3e3dd",
+                        "inverse-primary": "#68dbae",
+                        "secondary-fixed-dim": "#ffb95d",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#008560",
+                        "on-background": "#1a1c19",
+                        "on-tertiary-container": "#fffbff",
+                        "on-surface": "#1a1c19",
+                        "secondary-container": "#fcaa33",
+                        "on-secondary-fixed": "#2a1700",
+                        "surface": "#faf9f4",
+                        "on-tertiary-fixed-variant": "#7e2a27",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f4f4ee",
+                        "inverse-on-surface": "#f1f1eb",
+                        "surface-tint": "#006c4e",
+                        "secondary": "#855400",
+                        "surface-container-highest": "#e3e3dd",
+                        "surface-bright": "#faf9f4",
+                        "outline-variant": "#bccac1",
+                        "on-primary-container": "#f5fff7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-stone-50 dark:bg-zinc-950 flex flex-col py-6 space-y-1 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-lg font-extrabold text-emerald-800 dark:text-emerald-400">Fursafy</h1>
+<p class="text-[11px] font-medium text-stone-500 uppercase tracking-widest">Admin Portal</p>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">work_outline</span> Opportunities
+            </a>
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">analytics</span> Analytics
+            </a>
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">group</span> Users
+            </a>
+<!-- Active State: Financials -->
+<a class="flex items-center bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg px-4 py-2.5 mx-2 font-['Plus_Jakarta_Sans'] text-[13px] font-semibold" href="#">
+<span class="material-symbols-outlined mr-3" style="font-variation-settings: 'FILL' 1;">payments</span> Financials
+            </a>
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">terminal</span> System Logs
+            </a>
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">settings</span> Settings
+            </a>
+</nav>
+<div class="px-2 mt-auto">
+<a class="flex items-center text-stone-600 dark:text-zinc-400 px-4 py-2.5 mx-2 hover:bg-stone-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-['Plus_Jakarta_Sans'] text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3">logout</span> Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 flex justify-between items-center w-full px-8 py-4 bg-stone-50/80 dark:bg-zinc-950/80 backdrop-blur-xl z-40 shadow-sm shadow-emerald-900/5">
+<div class="flex items-center space-x-8">
+<h2 class="text-xl font-bold tracking-tighter text-emerald-800 dark:text-emerald-300 font-headline">Financials</h2>
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1.5 w-64 group focus-within:ring-2 ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-label placeholder:text-outline/60" placeholder="Search transactions..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-2 text-stone-500 hover:bg-emerald-50 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-stone-500 hover:bg-emerald-50 rounded-full transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-emerald-100 overflow-hidden border border-emerald-200">
+<img class="h-full w-full object-cover" data-alt="professional male administrator in high-end office setting, soft natural lighting, corporate executive portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdNvaxraIqKYuZ_vzQ84MCPjhI-RD9I-rBZqbwHcGL57B1cN_rCtHnRSooAHlT_maodiTLT0f_lUvh8-VFnH-98q_p3XqpddxLtCvQnlXNsoEiljc6JMu6zV-EuC2kmPSYItkWai2B8WdfpwrKwaH-TUguf8uC-_DRAeXJbTzoIKL04a2ZVpg28as8mnXhNNfo3ErmZYzVmVkwdz3Dfj79Fnekx4YMhtXWoUn1k1p3v-sjnUKFKqoJWWVY3CskccOcU8bYQD2x_vtq"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 space-y-8">
+<!-- Bento Metric Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Total Volume (Large Bento) -->
+<div class="md:col-span-2 bg-primary-container rounded-xl p-6 text-on-primary-container relative overflow-hidden flex flex-col justify-between min-h-[180px]">
+<div class="relative z-10">
+<p class="text-sm font-label opacity-80 mb-1">Total Transaction Volume</p>
+<h3 class="text-4xl font-bold font-headline">TZS 14,250,000</h3>
+</div>
+<div class="relative z-10 flex items-center mt-4">
+<span class="bg-primary-fixed text-on-primary-fixed text-xs font-bold px-2 py-1 rounded-full flex items-center mr-2">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12.5%
+                        </span>
+<span class="text-xs font-label opacity-80">vs last 30 days</span>
+</div>
+<!-- Abstract Background Shape -->
+<div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+</div>
+<!-- Platform Fees -->
+<div class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-6 flex flex-col justify-between shadow-sm">
+<div>
+<div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<p class="text-sm font-label text-outline mb-1">Platform Fees (3%)</p>
+<h4 class="text-2xl font-bold font-headline text-on-surface">TZS 427,500</h4>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/10">
+<p class="text-[11px] text-outline font-label uppercase tracking-widest">Net Revenue</p>
+</div>
+</div>
+<!-- Payouts Pending -->
+<div class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-6 flex flex-col justify-between shadow-sm">
+<div>
+<div class="w-10 h-10 rounded-lg bg-secondary-container/10 flex items-center justify-center text-secondary mb-4">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<p class="text-sm font-label text-outline mb-1">Worker Payouts Pending</p>
+<h4 class="text-2xl font-bold font-headline text-on-surface">182 Jobs</h4>
+</div>
+<div class="mt-4 flex items-center">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-stone-200"></div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-stone-300"></div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-stone-400"></div>
+</div>
+<span class="text-[11px] ml-4 text-outline font-label">Awaiting Verification</span>
+</div>
+</div>
+</section>
+<!-- Secondary Layout: Table and Insights -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Transaction History (Main Table) -->
+<div class="lg:col-span-2 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold font-headline text-on-surface">Recent Transactions</h3>
+<button class="text-primary text-sm font-semibold flex items-center hover:underline">
+                            View Full Ledger <span class="material-symbols-outlined text-sm ml-1">chevron_right</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/10">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/20">
+<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-widest font-label">Entity</th>
+<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-widest font-label">Service</th>
+<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-widest font-label">Amount</th>
+<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-widest font-label">Fee</th>
+<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-widest font-label">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">BM</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Bakari M.</p>
+<p class="text-[10px] text-outline font-label tracking-wide">YOUTH WORKER</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-on-surface">Data Entry Specialist</p>
+<p class="text-[11px] text-outline font-label">Provider: Clouds Media</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-bold text-on-surface">TZS 150,000</p>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-outline">
+                                        4,500
+                                    </td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold uppercase tracking-tight">Paid</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">SK</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Sarah K.</p>
+<p class="text-[10px] text-outline font-label tracking-wide">YOUTH WORKER</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-on-surface">Logo Animation</p>
+<p class="text-[11px] text-outline font-label">Provider: TechVillage</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-bold text-on-surface">TZS 220,000</p>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-outline">
+                                        6,600
+                                    </td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-[10px] font-bold uppercase tracking-tight">Pending</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center font-bold text-xs text-primary">JO</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Juma O.</p>
+<p class="text-[10px] text-outline font-label tracking-wide">YOUTH WORKER</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-medium text-on-surface">Social Media Mgt</p>
+<p class="text-[11px] text-outline font-label">Provider: NMB Bank</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm font-bold text-on-surface">TZS 85,000</p>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-outline">
+                                        2,550
+                                    </td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold uppercase tracking-tight">Paid</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Platform Insights Column -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold font-headline text-on-surface">Revenue Breakdown</h3>
+<!-- Breakdown Card -->
+<div class="bg-surface-container-low rounded-xl p-6 space-y-6">
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-sm font-label text-on-surface-variant">Worker Payouts</span>
+<span class="text-sm font-bold text-on-surface">97%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 97%"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-sm font-label text-on-surface-variant">Platform Fee</span>
+<span class="text-sm font-bold text-on-surface">3%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2">
+<div class="bg-secondary h-2 rounded-full" style="width: 3%"></div>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/30">
+<div class="flex items-center justify-between mb-4">
+<p class="text-[11px] font-bold text-outline uppercase tracking-widest">Payout Channels</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span> M-Pesa
+                                    </div>
+<span class="text-xs font-bold">68%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Airtel Money
+                                    </div>
+<span class="text-xs font-bold">22%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Tigo Pesa
+                                    </div>
+<span class="text-xs font-bold">10%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Card -->
+<div class="bg-surface-bright border-2 border-primary/10 rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<h4 class="font-bold text-primary mb-2">Reconciliation Needed</h4>
+<p class="text-xs text-outline font-label leading-relaxed mb-4">4 transactions flagged for provider-worker dispute. Review required before payout.</p>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-full text-xs font-bold tracking-tight hover:shadow-lg hover:shadow-primary/20 transition-all">
+                                Open Dispute Center
+                            </button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-primary/5 rotate-12 group-hover:rotate-0 transition-transform duration-500">gavel</span>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<footer class="flex items-center justify-between py-8 border-t border-outline-variant/10">
+<p class="text-[11px] font-label text-outline">System Status: <span class="text-emerald-600 font-bold">Operational</span> • Last Sync: 2m ago</p>
+<div class="flex space-x-4">
+<button class="text-[11px] font-bold text-outline uppercase tracking-widest hover:text-primary transition-colors">Export CSV</button>
+<button class="text-[11px] font-bold text-outline uppercase tracking-widest hover:text-primary transition-colors">Generate PDF Report</button>
+</div>
+</footer>
+</div>
+</main>
+<!-- FAB (Suppressed on this Transactional screen per guidelines) -->
+</body></html>

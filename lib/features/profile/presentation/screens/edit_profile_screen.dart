@@ -22,6 +22,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameCtrl = TextEditingController();
   final _bioCtrl = TextEditingController();
   final _locationCtrl = TextEditingController();
+  final _newUrlCtrl = TextEditingController();
+  List<String> _portfolioUrls = [];
   bool _loading = true;
   bool _saving = false;
   String? _avatarUrl;
@@ -145,6 +147,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _bioCtrl.text = u['bio'] as String? ?? '';
         } else {
           _bioCtrl.text = p['bio'] as String? ?? '';
+          _portfolioUrls = List<String>.from(p['portfolioURLs'] ?? []);
         }
         
         _loading = false;
@@ -267,6 +270,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             .collection(FirestorePaths.youthProfiles).doc(uid).set({
           'bio': _bioCtrl.text.trim(),
           'location': _selectedGeoPoint,
+          'portfolioURLs': _portfolioUrls,
         }, SetOptions(merge: true));
       }
 
@@ -291,7 +295,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    _nameCtrl.dispose(); _bioCtrl.dispose(); _locationCtrl.dispose();
+    _nameCtrl.dispose();
+    _bioCtrl.dispose();
+    _locationCtrl.dispose();
+    _newUrlCtrl.dispose();
     super.dispose();
   }
 
@@ -377,7 +384,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 icon: const Icon(Icons.my_location, color: FursafyTheme.primary),
                                 onPressed: _useCurrentLocation,
                               )),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 24),
+                          if (_role != 'provider') ...[
+                            _buildPortfolioEditor(),
+                            const SizedBox(height: 32),
+                          ] else
+                            const SizedBox(height: 32),
                           // Save
                           SizedBox(height: 56, width: double.infinity,
                             child: ElevatedButton(
@@ -412,6 +424,107 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildPortfolioEditor() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          child: Text(
+            'PORTFOLIO LINKS',
+            style: FursafyTheme.labelStyle.copyWith(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 2.0,
+              color: FursafyTheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        if (_portfolioUrls.isNotEmpty)
+          ..._portfolioUrls.map((url) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: FursafyTheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.link, size: 18, color: FursafyTheme.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        url,
+                        style: FursafyTheme.bodyStyle.copyWith(fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, size: 18, color: Colors.redAccent),
+                      onPressed: () {
+                        setState(() {
+                          _portfolioUrls.remove(url);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              )),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: FursafyTheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: _newUrlCtrl,
+                  style: FursafyTheme.bodyStyle.copyWith(
+                    color: FursafyTheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Add new link (e.g. GitHub, portfolio website)',
+                    hintStyle: FursafyTheme.bodyStyle.copyWith(
+                      color: FursafyTheme.outline.withValues(alpha: 0.5),
+                      fontSize: 13,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.add_circle, size: 36, color: FursafyTheme.primary),
+              onPressed: () {
+                final text = _newUrlCtrl.text.trim();
+                if (text.isNotEmpty) {
+                  if (text.startsWith('http://') || text.startsWith('https://')) {
+                    setState(() {
+                      _portfolioUrls.add(text);
+                      _newUrlCtrl.clear();
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter a valid URL starting with http:// or https://'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 

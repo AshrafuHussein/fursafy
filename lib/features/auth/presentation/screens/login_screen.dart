@@ -198,7 +198,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     BlocConsumer<AuthBloc, AuthState>(
                       listener: (context, state) {
                         if (state is AuthAuthenticated) {
-                          if (state.user.role.name == 'provider') {
+                          final role = state.user.role.name;
+                          if (role == 'admin') {
+                            context.go(AppRoutes.admin);
+                          } else if (role == 'provider') {
                             context.go(AppRoutes.providerDashboard);
                           } else {
                             context.go(AppRoutes.home);

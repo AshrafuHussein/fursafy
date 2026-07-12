@@ -2,13 +2,33 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // ─── Helper Functions (SRS §13.1) ───
     function isAuthenticated() {
       return request.auth != null;
     }
 
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && getRole() == 'admin';
+    }
+
+    function isProvider() {
+      return isAuthenticated() && getRole() == 'provider';
+    }
+
+    function isYouth() {
+      return isAuthenticated() && getRole() == 'youth';
+    }
+
+    function isActive() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active';
     }
 
     // 1. Users collection rules
@@ -22,10 +42,11 @@ service cloud.firestore {
         && request.resource.data.role in ['youth', 'provider']
         && request.resource.data.status == 'active';
 
-      // Allow updates only by the owner, preventing them from changing their role or uid
-      allow update: if isOwner(userId)
+      // Allow updates by owner (can't change role/uid) OR admin
+      allow update: if (isOwner(userId)
         && request.resource.data.uid == resource.data.uid
-        && request.resource.data.role == resource.data.role;
+        && request.resource.data.role == resource.data.role)
+        || isAdmin();
         
       allow delete: if false; // Users cannot be deleted directly
     }
@@ -33,7 +54,7 @@ service cloud.firestore {
     // 2. Youth Profiles collection rules
     match /youth_profiles/{userId} {
       allow read: if isAuthenticated();
-      allow create, update: if isOwner(userId);
+      allow create, update: if isOwner(userId) || isAdmin();
       allow delete: if false;
     }
 
@@ -41,31 +62,36 @@ service cloud.firestore {
     match /jobs/{jobId} {
       allow read: if isAuthenticated();
       
-      // Allow creation if the provider ID matches the authenticated user ID
-      allow create: if isAuthenticated() 
-        && request.resource.data.providerId == request.auth.uid;
+      // Allow creation if the provider ID matches and user is active, OR if user is an admin
+      allow create: if (isAuthenticated() 
+        && request.resource.data.providerId == request.auth.uid
+        && isActive())
+        || isAdmin();
 
-      // Allow updates only by the provider who created the job
-      allow update: if isAuthenticated() 
-        && resource.data.providerId == request.auth.uid;
+      // Allow updates by the provider who created the job OR admin
+      allow update: if (isAuthenticated() 
+        && resource.data.providerId == request.auth.uid)
+        || isAdmin();
         
-      allow delete: if isAuthenticated()
-        && resource.data.providerId == request.auth.uid;
+      allow delete: if (isAuthenticated()
+        && resource.data.providerId == request.auth.uid)
+        || isAdmin();
     }
 
     // 4. Applications collection rules
     match /applications/{applicationId} {
-      // Allowed to read if the user is the youth who applied or the provider who posted the job
+      // Allowed to read if youth who applied, provider who posted, or admin
       allow read: if isAuthenticated() && (
         resource.data.youthId == request.auth.uid ||
         resource.data.providerId == request.auth.uid
-      );
+      ) || isAdmin();
 
-      // Allowed to apply (create) if the youth ID matches the authenticated user ID
+      // Allowed to apply (create) if youth and active
       allow create: if isAuthenticated()
-        && request.resource.data.youthId == request.auth.uid;
+        && request.resource.data.youthId == request.auth.uid
+        && isActive();
 
-      // Allowed to update status (accept/reject) if provider, or withdraw (delete) if youth
+      // Allowed to update status (accept/reject) if provider, or withdraw if youth
       allow update: if isAuthenticated() && (
         resource.data.youthId == request.auth.uid ||
         resource.data.providerId == request.auth.uid
@@ -78,11 +104,12 @@ service cloud.firestore {
     match /ratings/{ratingId} {
       allow read: if isAuthenticated();
       
-      // Allow creation if the rater ID matches the authenticated user ID
+      // Allow creation if the rater ID matches and user is active
       allow create: if isAuthenticated()
-        && request.resource.data.raterId == request.auth.uid;
+        && request.resource.data.raterId == request.auth.uid
+        && isActive();
         
-      allow update, delete: if false; // Ratings cannot be modified or deleted
+      allow update, delete: if false; // Ratings are immutable
     }
 
     // 6. User Notifications sub-collection rules
@@ -92,6 +119,25 @@ service cloud.firestore {
       match /items/{notificationId} {
         allow read, write: if isOwner(userId);
       }
+    }
+
+    // 7. Skills Taxonomy collection (SRS §6.7)
+    match /skills_taxonomy/{skillId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin(); // Only admin can modify the taxonomy
+    }
+
+    // 8. Global Configuration collection
+    match /config/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // 9. System Logs collection
+    match /system_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if true; // Allow client events to be logged, including bootstrapping logs
+      allow update, delete: if false; // Logs are write-once/immutable
     }
   }
 }
