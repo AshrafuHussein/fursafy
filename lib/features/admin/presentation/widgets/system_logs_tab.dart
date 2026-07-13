@@ -216,8 +216,8 @@ class _SystemLogsTabState extends State<SystemLogsTab> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     color: FursafyTheme.surfaceContainerLow.withValues(alpha: 0.5),
-                    child: Row(
-                      children: const [
+                    child: const Row(
+                      children: [
                         Expanded(flex: 2, child: Text('STATUS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
                         Expanded(flex: 2, child: Text('EVENT ID', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
                         Expanded(flex: 3, child: Text('TIMESTAMP', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
@@ -361,7 +361,7 @@ class _SystemLogsTabState extends State<SystemLogsTab> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Showing ${startIndex + 1}-${endIndex} of $totalFiltered events',
+                            'Showing ${startIndex + 1}-$endIndex of $totalFiltered events',
                             style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, color: FursafyTheme.outline),
                           ),
                           Row(
@@ -541,8 +541,8 @@ class _SystemLogsTabState extends State<SystemLogsTab> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
-                          children: const [
+                        const Row(
+                          children: [
                             Icon(Icons.analytics, color: FursafyTheme.secondary, size: 20),
                             SizedBox(width: 8),
                             Text(
@@ -556,11 +556,11 @@ class _SystemLogsTabState extends State<SystemLogsTab> {
                           ],
                         ),
                         const SizedBox(height: 24),
-                        _severityTrendRow('INFO', infoPct, '${infoCount} (${(infoPct * 100).toStringAsFixed(0)}%)', FursafyTheme.primary),
+                        _severityTrendRow('INFO', infoPct, '$infoCount (${(infoPct * 100).toStringAsFixed(0)}%)', FursafyTheme.primary),
                         const SizedBox(height: 16),
-                        _severityTrendRow('WARNING', warnPct, '${warnCount} (${(warnPct * 100).toStringAsFixed(0)}%)', FursafyTheme.secondary),
+                        _severityTrendRow('WARNING', warnPct, '$warnCount (${(warnPct * 100).toStringAsFixed(0)}%)', FursafyTheme.secondary),
                         const SizedBox(height: 16),
-                        _severityTrendRow('ERROR', errorPct, '${errorCount} (${(errorPct * 100).toStringAsFixed(0)}%)', FursafyTheme.error),
+                        _severityTrendRow('ERROR', errorPct, '$errorCount (${(errorPct * 100).toStringAsFixed(0)}%)', FursafyTheme.error),
 
                         const SizedBox(height: 32),
                         // System Availability

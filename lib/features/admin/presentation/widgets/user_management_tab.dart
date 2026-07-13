@@ -471,7 +471,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Showing ${startIndex + 1}-${endIndex} of $totalFiltered users',
+                            'Showing ${startIndex + 1}-$endIndex of $totalFiltered users',
                             style: FursafyTheme.bodyStyle.copyWith(
                               fontSize: 13,
                               color: FursafyTheme.onSurfaceVariant,
@@ -1090,7 +1090,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: selectedReason,
+                initialValue: selectedReason,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),

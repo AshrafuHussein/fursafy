@@ -156,9 +156,9 @@ class AnalyticsReportsTab extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text('JAN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
                         Text('FEB', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
                         Text('MAR', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.primary)),
@@ -178,9 +178,9 @@ class AnalyticsReportsTab extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _bentoTotalValueCard('Total Match Velocity', '${totalApplications}', 'applications submitted to date', Icons.trending_up, FursafyTheme.primaryContainer, FursafyTheme.onPrimaryContainer),
+                  _bentoTotalValueCard('Total Match Velocity', '$totalApplications', 'applications submitted to date', Icons.trending_up, FursafyTheme.primaryContainer, FursafyTheme.onPrimaryContainer),
                   const SizedBox(height: 24),
-                  _bentoTotalValueCard('Active Providers', '${totalProviders}', 'verified partners listing opportunities', Icons.groups, FursafyTheme.secondaryFixed, FursafyTheme.onSecondaryFixed),
+                  _bentoTotalValueCard('Active Providers', '$totalProviders', 'verified partners listing opportunities', Icons.groups, FursafyTheme.secondaryFixed, FursafyTheme.onSecondaryFixed),
                 ],
               ),
             ),
@@ -495,7 +495,7 @@ class AnalyticsReportsTab extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-            Text(stats, style: TextStyle(fontSize: 12, color: FursafyTheme.primary, fontWeight: FontWeight.bold)),
+            Text(stats, style: const TextStyle(fontSize: 12, color: FursafyTheme.primary, fontWeight: FontWeight.bold)),
           ],
         ),
         const SizedBox(height: 8),

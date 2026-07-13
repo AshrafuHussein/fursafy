@@ -138,10 +138,10 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: const [
+                    const Row(
+                      children: [
                         Icon(Icons.tune, color: FursafyTheme.primary, size: 20),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           'Platform Settings',
                           style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 18, fontWeight: FontWeight.bold),
@@ -269,10 +269,10 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
         const SizedBox(height: 40),
 
         // Section 2: Security & API
-        Row(
-          children: const [
+        const Row(
+          children: [
             Icon(Icons.shield_outlined, color: FursafyTheme.secondary, size: 20),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'Security & Authentication',
               style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 18, fontWeight: FontWeight.bold),
@@ -323,7 +323,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                               Switch(
                                 value: _enforce2FA,
                                 onChanged: (val) => setState(() => _enforce2FA = val),
-                                activeColor: FursafyTheme.primary,
+                                activeThumbColor: FursafyTheme.primary,
                               ),
                               const SizedBox(width: 12),
                               Text(
@@ -393,10 +393,10 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
         const SizedBox(height: 40),
 
         // Section 3: Admin Management
-        Row(
-          children: const [
+        const Row(
+          children: [
             Icon(Icons.admin_panel_settings_outlined, color: FursafyTheme.primary, size: 20),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'Admin Management',
               style: TextStyle(fontFamily: FursafyTheme.headlineFont, fontSize: 18, fontWeight: FontWeight.bold),
@@ -445,7 +445,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                     Text('ROLE', style: FursafyTheme.labelStyle.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: FursafyTheme.outline)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _selectedAdminRole,
+                      initialValue: _selectedAdminRole,
                       decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
@@ -660,7 +660,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
   Widget _buildInviteCard(Map<String, dynamic> invite) {
     final email = invite['email']?.toString() ?? '';
     final role = invite['role']?.toString() ?? 'Moderator';
-    final avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+    const avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -677,7 +677,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 24,
                   backgroundImage: NetworkImage(avatarUrl),
                 ),
@@ -749,7 +749,7 @@ class _ConfigurationHubTabState extends State<ConfigurationHubTab> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: keyEnv,
+                    initialValue: keyEnv,
                     decoration: const InputDecoration(labelText: 'Environment'),
                     items: const [
                       DropdownMenuItem(value: 'test', child: Text('Sandbox / Testing')),
