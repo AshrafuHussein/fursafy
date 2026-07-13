@@ -243,7 +243,7 @@ class AdminSidebar extends StatelessWidget {
 
                     // Category
                     DropdownButtonFormField<String>(
-                      value: category,
+                      initialValue: category,
                       decoration: const InputDecoration(labelText: 'Category'),
                       items: const [
                         DropdownMenuItem(value: 'Tech', child: Text('Technology & Tech')),
@@ -280,7 +280,7 @@ class AdminSidebar extends StatelessWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: payType,
+                            initialValue: payType,
                             decoration: const InputDecoration(labelText: 'Pay Type'),
                             items: const [
                               DropdownMenuItem(value: 'fixed', child: Text('Fixed')),

@@ -157,8 +157,8 @@ class _JobModerationTabState extends State<JobModerationTab> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         color: FursafyTheme.surfaceContainer.withValues(alpha: 0.5),
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Expanded(flex: 5, child: Text('OPPORTUNITY DETAILS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
                             Expanded(flex: 3, child: Text('PROVIDER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
                             Expanded(flex: 2, child: Text('POSTED DATE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
@@ -400,7 +400,7 @@ class _JobModerationTabState extends State<JobModerationTab> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Showing ${startIndex + 1}-${endIndex} of $totalFiltered listings requiring review',
+                                'Showing ${startIndex + 1}-$endIndex of $totalFiltered listings requiring review',
                                 style: FursafyTheme.bodyStyle.copyWith(fontSize: 12, color: FursafyTheme.onSurfaceVariant, fontStyle: FontStyle.italic),
                               ),
                               Row(
@@ -484,10 +484,10 @@ class _JobModerationTabState extends State<JobModerationTab> {
                               ),
                             ],
                           ),
-                          Row(
+                          const Row(
                             crossAxisAlignment: CrossAxisAlignment.baseline,
                             textBaseline: TextBaseline.alphabetic,
-                            children: const [
+                            children: [
                               Text('4.2m', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: FursafyTheme.primary, letterSpacing: -1)),
                               SizedBox(width: 6),
                               Text('avg. review time', style: TextStyle(fontSize: 11, color: FursafyTheme.primary, fontWeight: FontWeight.bold)),
@@ -708,7 +708,7 @@ class _JobModerationTabState extends State<JobModerationTab> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: category,
+                      initialValue: category,
                       decoration: const InputDecoration(labelText: 'Category'),
                       items: const [
                         DropdownMenuItem(value: 'Tech', child: Text('Technology & Tech')),
@@ -743,7 +743,7 @@ class _JobModerationTabState extends State<JobModerationTab> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: payType,
+                            initialValue: payType,
                             decoration: const InputDecoration(labelText: 'Pay Type'),
                             items: const [
                               DropdownMenuItem(value: 'fixed', child: Text('Fixed')),

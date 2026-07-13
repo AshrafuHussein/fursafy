@@ -35,12 +35,13 @@ class FinancialOversightTab extends StatelessWidget {
     int mpesa = 0, airtel = 0, tigo = 0;
     for (var tx in transactions) {
       final ch = tx['channel']?.toString().toLowerCase();
-      if (ch == 'mpesa')
+      if (ch == 'mpesa') {
         mpesa++;
-      else if (ch == 'airtel')
+      } else if (ch == 'airtel') {
         airtel++;
-      else if (ch == 'tigo')
+      } else if (ch == 'tigo') {
         tigo++;
+      }
     }
     final totalChannels = mpesa + airtel + tigo;
     final double mpesaPct = totalChannels > 0 ? mpesa / totalChannels : 0.68;
@@ -119,8 +120,8 @@ class FinancialOversightTab extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(100),
                         ),
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Icon(
                               Icons.trending_up,
                               color: Colors.white,
@@ -382,7 +383,7 @@ class FinancialOversightTab extends StatelessWidget {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text(
+                                            const Text(
                                               'Youth Worker',
                                               style: TextStyle(
                                                 fontSize: 11,
@@ -411,10 +412,9 @@ class FinancialOversightTab extends StatelessWidget {
                                         ),
                                         Text(
                                           'Provider: $provider',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 11,
-                                            color:
-                                                FursafyTheme.onSurfaceVariant,
+                                            color: FursafyTheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -432,7 +432,7 @@ class FinancialOversightTab extends StatelessWidget {
                                   DataCell(
                                     Text(
                                       'TZS ${_formatPrice(fee.toDouble())}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         color: FursafyTheme.outline,
                                       ),
@@ -572,7 +572,7 @@ class FinancialOversightTab extends StatelessWidget {
                     ),
                     child: Stack(
                       children: [
-                        Positioned(
+                        const Positioned(
                           right: -16,
                           bottom: -16,
                           child: Opacity(
@@ -644,13 +644,13 @@ class FinancialOversightTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            const Row(
               children: [
-                const Text(
+                Text(
                   'System Status: ',
                   style: TextStyle(fontSize: 11, color: FursafyTheme.outline),
                 ),
-                const Text(
+                Text(
                   'Operational',
                   style: TextStyle(
                     fontSize: 11,
@@ -658,7 +658,7 @@ class FinancialOversightTab extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
+                Text(
                   ' • Last Sync: 2m ago',
                   style: TextStyle(fontSize: 11, color: FursafyTheme.outline),
                 ),
@@ -1044,8 +1044,8 @@ class FinancialOversightTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
 
-                        Row(
-                          children: const [
+                        const Row(
+                          children: [
                             Icon(
                               Icons.info_outline,
                               size: 14,
@@ -1094,8 +1094,8 @@ class FinancialOversightTab extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                               ),
-                              child: Row(
-                                children: const [
+                              child: const Row(
+                                children: [
                                   Text(
                                     'Release Funds',
                                     style: TextStyle(
@@ -1103,7 +1103,7 @@ class FinancialOversightTab extends StatelessWidget {
                                     ),
                                   ),
                                   SizedBox(width: 8),
-                                  Icon(Icons.send, size: 14),
+                                  Icon(Icons.check_circle_outline, size: 16),
                                 ],
                               ),
                             ),

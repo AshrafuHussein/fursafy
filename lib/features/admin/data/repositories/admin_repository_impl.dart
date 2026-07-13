@@ -376,7 +376,7 @@ class AdminRepositoryImpl implements AdminRepository {
     try {
       final keyId = _firestore.collection('config').doc('platform').collection('api_keys').doc().id;
       final randomPrefix = environment == 'live' ? 'pk_live_' : 'sk_test_';
-      final characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
       final randomString = List.generate(20, (index) => characters[DateTime.now().microsecondsSinceEpoch % characters.length]).join();
       final keyValue = '$randomPrefix$randomString';
       
@@ -553,8 +553,8 @@ class AdminRepositoryImpl implements AdminRepository {
         regionCounts[region] = (regionCounts[region] ?? 0) + 1;
       }
       final List<Map<String, dynamic>> regionalList = [];
-      regionCounts.forEach((region, count) {
-        regionalList.add({'region': region, 'count': count});
+      regionCounts.forEach((region, regionCount) {
+        regionalList.add({'region': region, 'count': regionCount});
       });
 
       // 2. Category share
@@ -564,8 +564,8 @@ class AdminRepositoryImpl implements AdminRepository {
         categoryCounts[cat] = (categoryCounts[cat] ?? 0) + 1;
       }
       final List<Map<String, dynamic>> categoryList = [];
-      categoryCounts.forEach((cat, count) {
-        categoryList.add({'category': cat, 'count': count});
+      categoryCounts.forEach((cat, categoryCount) {
+        categoryList.add({'category': cat, 'count': categoryCount});
       });
 
       // 3. Growth metrics
