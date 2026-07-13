@@ -23,8 +23,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 /// - Foreground message handling (in-app overlay banner)
 /// - Background/terminated message tap → deep-link navigation
 class NotificationService {
-  NotificationService._();
-  static final NotificationService instance = NotificationService._();
+  @visibleForTesting
+  NotificationService.internal();
+
+  static NotificationService get instance => _instance;
+  static NotificationService _instance = NotificationService.internal();
+
+  @visibleForTesting
+  static set instance(NotificationService service) => _instance = service;
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
